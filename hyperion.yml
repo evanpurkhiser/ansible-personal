@@ -1,0 +1,6 @@
+- hosts: hyperion
+  handlers:
+  - include: handlers/service-restarts.yml
+  tasks:
+  - include: tasks/user-evan.yml
+  - include: machines/hyperion/tasks/socat-tunnel.yml

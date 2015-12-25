@@ -1,0 +1,9 @@
+[Unit]
+Description=Socat IPv4 -> Home Server IPv6
+Documentation=man:socat
+
+[Service]
+ExecStart=/usr/bin/socat TCP4-LISTEN:%I,fork TCP6:server.home.evanpurkhiser.com:%I
+
+[Install]
+WantedBy=multi-user.target

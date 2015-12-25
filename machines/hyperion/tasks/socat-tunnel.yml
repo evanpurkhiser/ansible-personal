@@ -1,0 +1,22 @@
+- name: Install socat
+  become: true
+  yum: name=socat
+
+- name: Install socat-tunnel service file
+  become: true
+  copy: src=machines/hyperion/files/socat-tunnel@.service dest=/etc/systemd/system
+
+- name: Use port 2222 for sshd
+  become: true
+  lineinfile: dest=/etc/ssh/sshd_config regexp=^Port line="Port 2222"
+  notify:
+    - restart sshd
+
+  # sshd must be restarted now so that when we start the so-cat service it
+  # doesn't fail since sshd will be bound to port 22 until restarted.
+- meta: flush_handlers
+
+- name: Enable and start HTTP/SSH socat-tunnel
+  become: true
+  service: name=socat-tunnel@80 enabled=yes state=started
+  service: name=socat-tunnel@22 enabled=yes state=started

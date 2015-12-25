@@ -1,0 +1,14 @@
+---
+- name: Add user "evan"
+  become: true
+  user: name=evan groups=wheel
+
+- name: Add authorized public ssh-key for "evan"
+  authorized_key:
+    user: evan
+    key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDH52ObyJwwAQ1FdbmdAc8OsYGHMqH0Ye\
+          mqoB16bZ3NkLVVIkYYpvrU/i4mf0Pz2NePPu8Ye5B18dnJD98hRRI/YnydefKF/CtJ4j/U\
+          ZxDie90dPIf75iBET0ZmvnHKZ2pEzkLxRBIR7awqRIae8HGtgZPQF4idp8V1Kw5lfiir+S\
+          f/I7du9NjY1kfZxqidY7i7yeW8q1HBRDNwkn2c278c6O5DEBAwkFG1G6zty7ggmJs0AY9A\
+          vddSHTLhlBBr7XL1bAwJh/gHNReAyWQ4KH6KX2FZiNMXip0TXiVw43BFh9Ur7ief7BSQKK\
+          e5fi4d7vHK+5d/vmIj0DiRp2rABY1j"

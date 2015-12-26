@@ -9,8 +9,7 @@
 
 - name: Use port 2222 for sshd
   lineinfile: dest=/etc/ssh/sshd_config regexp=^Port line="Port 2222"
-  notify:
-    - restart sshd
+  notify: restart sshd
 
   # sshd must be restarted now so that when we start the so-cat service it
   # doesn't fail since sshd will be bound to port 22 until restarted.

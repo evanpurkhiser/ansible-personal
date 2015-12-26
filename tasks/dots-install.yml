@@ -1,0 +1,21 @@
+---
+- name: Install dotfiles for evan
+  git: repo=git@github.com:EvanPurkhiser/dots-personal.git
+       dest=/home/evan/.local/etc
+       update=no
+       accept_hostkey=yes
+
+- name: Install dotfile manager for evan
+  git: repo=git@github.com:EvanPurkhiser/dots.git
+       dest=/home/evan/.local/lib/dots
+       update=no
+       accept_hostkey=yes
+
+- file: path=/home/evan/.local recurse=yes owner=evan group=users
+
+- name: Install dotfiles
+  sudo_user: evan
+  shell: source /home/evan/.local/etc/init;
+         /home/evan/.local/bin/dots groups set base;
+         /home/evan/.local/bin/dots install;
+         creates=/home/evan/.local/bin/dots

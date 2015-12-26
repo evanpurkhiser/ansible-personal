@@ -15,6 +15,8 @@
   # doesn't fail since sshd will be bound to port 22 until restarted.
 - meta: flush_handlers
 
-- name: Enable and start HTTP/SSH socat-tunnel
+- name: Enable and start HTTP socat-tunnel
   service: name=socat-tunnel@80 enabled=yes state=started
+
+- name: Enable and start SSH socat-tunnel
   service: name=socat-tunnel@22 enabled=yes state=started

@@ -4,6 +4,9 @@
 - name: Install socat-tunnel service file
   copy: src=machines/hyperion/files/socat-tunnel@.service dest=/etc/systemd/system
 
+- name: Disable and stop httpd service
+  service: name=httpd enabled=no state=stopped
+
 - name: Use port 2222 for sshd
   lineinfile: dest=/etc/ssh/sshd_config regexp=^Port line="Port 2222"
   notify:

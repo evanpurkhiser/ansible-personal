@@ -1,6 +1,16 @@
-- hosts: hyperion
+# Manages: Fedora 21 Minimal image on RamNode
+#
+# This playbook configures the 'hyperion' server. This servers job is to
+# forward traffic for ports 22 and 80 to my home server. This is required as my
+# home server does not have an IPv4 address. Only an IPv6 address.
+
+- hosts: hyperion.evanpurkhiser.com
+
   handlers:
   - include: handlers/service-restarts.yml
+
   tasks:
-  - include: tasks/user-evan.yml
+  - include: machines/hyperion/tasks/packages.yml
   - include: machines/hyperion/tasks/socat-tunnel.yml
+  - include: tasks/root-password.yml
+  - include: tasks/user-evan.yml

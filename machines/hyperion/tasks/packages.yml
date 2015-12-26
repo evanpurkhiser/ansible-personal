@@ -1,0 +1,3 @@
+---
+- name: Install base packages
+  yum: name=bash-completion,git

@@ -25,5 +25,3 @@
 
 - name: Install the "Termite" termcap file
   copy: src=/usr/share/terminfo/x/xterm-termite dest=/usr/share/terminfo/x/xterm-termite
-
-- include: dots-install.yml

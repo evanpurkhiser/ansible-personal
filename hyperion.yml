@@ -5,12 +5,6 @@
 # home server does not have an IPv4 address. Only an IPv6 address.
 
 - hosts: hyperion.evanpurkhiser.com
-
-  handlers:
-  - include: handlers/service-restarts.yml
-
-  tasks:
-  - include: machines/hyperion/tasks/packages.yml
-  - include: machines/hyperion/tasks/socat-tunnel.yml
-  - include: tasks/root-password.yml
-  - include: tasks/user-evan.yml
+  roles:
+  - common
+  - hyperion

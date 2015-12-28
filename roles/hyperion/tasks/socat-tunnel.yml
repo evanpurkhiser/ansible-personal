@@ -2,7 +2,7 @@
   yum: name=socat
 
 - name: Install socat-tunnel service file
-  copy: src=machines/hyperion/files/socat-tunnel@.service dest=/etc/systemd/system
+  copy: src=socat-tunnel@.service dest=/etc/systemd/system
 
 - name: Disable and stop httpd service
   service: name=httpd enabled=no state=stopped

@@ -7,4 +7,4 @@
 - hosts: hyperion.evanpurkhiser.com
   roles:
   - common
-  - hyperion
+  - machines/hyperion

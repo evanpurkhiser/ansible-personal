@@ -1,0 +1,6 @@
+---
+- name: Add config
+  copy: src=personal-repo dest=/etc/pacman.d
+
+- name: Include config in pacman.conf
+  lineinfile: dest=/etc/pacman.conf line="Include = /etc/pacman.d/personal-repo"

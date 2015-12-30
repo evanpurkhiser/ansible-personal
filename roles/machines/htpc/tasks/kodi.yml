@@ -1,0 +1,26 @@
+---
+- name: Add documents mount point
+  mount: src="[fe80::230:67ff:fee5:e154%wlp2s0]:/mnt/documents"
+         name=/mnt/documents
+         fstype=nfs
+         opts=noatime,nodiratime,noacl,nocto,x-systemd.automount
+         state=present
+
+- name: Add standalone kodi group
+  group: name=kodi
+
+- name: Add standalone kodi user
+  user: name=kodi
+        group=kodi
+        groups=audio,video,network
+        home=/var/lib/kodi
+        shell=/usr/bin/nologin
+
+- name: Ensure proper kodi home permissions
+  file: owner=kodi group=kodi recurse=yes path=/var/lib/kodi
+
+- name: Add standone kodi service
+  copy: src=kodi.service dest=/etc/systemd/system
+
+- name: Ensure bt-power-listener is enabled and started
+  service: name=bt-power-listener enabled=yes state=started

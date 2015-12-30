@@ -1,0 +1,9 @@
+---
+- name: Install required packages
+  pacman: name=bash-completion,vim,git,nfs-utils,xorg-server,xorg-xinit,\
+               xf86-video-intel,bluez,bluez-utils,kodi,lirc,polkit,\
+               media-center-automation
+
+- include: lirc.yml
+- include: bluetooth.yml
+- include: kodi.yml

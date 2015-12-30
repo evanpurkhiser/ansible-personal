@@ -1,0 +1,6 @@
+---
+- name: Enable bluetooth service
+  service: name=bluetooth enabled=yes state=started
+
+- name: Install bluetooth udev rules
+  copy: src=10-bluetooth.rules dest=/etc/udev/rules.d/

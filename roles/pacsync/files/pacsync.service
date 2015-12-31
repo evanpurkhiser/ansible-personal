@@ -1,0 +1,7 @@
+[Unit]
+Description=Synchronize pacman databases
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/pacman --sync --refresh --logfile=/dev/null
+StandardOutput=null

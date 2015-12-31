@@ -1,0 +1,8 @@
+[Unit]
+Description=Run pacman database sync hourly
+
+[Timer]
+OnCalendar=hourly
+
+[Install]
+WantedBy=timers.target

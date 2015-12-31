@@ -2,4 +2,8 @@
 - name: Install packages
   yum: name=bash-completion,git
 
+- name: Configure iptables
+  copy: src=iptables dest=/etc/sysconfig/
+  notify: restart iptables
+
 - include: socat-tunnel.yml

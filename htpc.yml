@@ -2,5 +2,6 @@
 - hosts: htpc.home.evanpurkhiser.com
   roles:
   - common
+  - pacsync
   - personal-repo
   - machines/htpc

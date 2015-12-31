@@ -1,0 +1,10 @@
+Description='Purkhiser-5G wireless'
+Interface=wlp2s0
+Connection=wireless
+Security=wpa
+ESSID=Purkhiser-5G
+IP=static
+Gateway=192.168.1.1
+Address=('192.168.1.102/24')
+DNS=('8.8.8.8')
+Key={{ wifi_password }}

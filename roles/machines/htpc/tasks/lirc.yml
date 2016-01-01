@@ -1,4 +1,4 @@
-- name: Enable lirc daemon
+- name: Enable lirc service
   service: name=lircd enabled=yes state=started
 
 - name: Configure lirc options

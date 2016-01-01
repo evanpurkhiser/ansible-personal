@@ -25,5 +25,5 @@
 - name: Configure bt-power-listener
   copy: src=bt-power-listener.conf dest=/etc/
 
-- name: Ensure bt-power-listener is enabled and started
+- name: Enable Ensure bt-power-listener service
   service: name=bt-power-listener enabled=yes state=started

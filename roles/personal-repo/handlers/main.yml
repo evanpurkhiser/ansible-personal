@@ -1,0 +1,3 @@
+---
+- name: sync pacman cache
+  pacman: update_cache=yes

@@ -4,3 +4,7 @@
 
 - name: Include config in pacman.conf
   lineinfile: dest=/etc/pacman.conf line="Include = /etc/pacman.d/personal-repo"
+  notify: sync pacman cache
+
+# sync the package cache before we do any other package installation
+- meta: flush_handlers

@@ -1,5 +1,5 @@
 Description='Purkhiser-5G wireless'
-Interface=wlp2s0
+Interface={{ network_interface }}
 Connection=wireless
 Security=wpa
 ESSID=Purkhiser-5G

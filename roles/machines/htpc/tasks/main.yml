@@ -7,8 +7,8 @@
                xf86-video-intel,bluez,bluez-utils,kodi,lirc,polkit,\
                media-center-automation
 
-- name: Configure wireless network
-  template: src=wlp2s0-Purkhiser dest=/etc/netctl mode=0600
+- name: Install wireless network config
+  template: src=purkhiser dest=/etc/netctl mode=0600
 
 - include: lirc.yml
 - include: bluetooth.yml

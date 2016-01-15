@@ -1,4 +1,7 @@
 ---
+- name: Install git for dotfile managment
+  package: name=git
+
 - name: Install dotfiles for evan
   git: repo=git@github.com:EvanPurkhiser/dots-personal.git
        dest=/home/evan/.local/etc

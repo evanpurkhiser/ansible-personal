@@ -1,4 +1,7 @@
 ---
+- name: Install sudo
+  package: name=sudo
+
 - name: Add group sudo
   group: name=sudo
 

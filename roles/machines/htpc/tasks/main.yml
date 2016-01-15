@@ -1,8 +1,20 @@
 ---
 - name: Install required packages
-  pacman: name=bash-completion,vim,git,nfs-utils,xorg-server,xorg-xinit,\
-               xf86-video-intel,bluez,bluez-utils,kodi,lirc,polkit,\
-               media-center-automation
+  pacman: name={{ item }}
+  with_items:
+    - bash-completion
+    - vim
+    - git
+    - nfs-utils
+    - xorg-server
+    - xorg-xinit
+    - xf86-video-intel
+    - bluez
+    - bluez-utils
+    - kodi
+    - lirc
+    - polkit
+    - media-center-automation
 
 - name: Install wireless network config
   template: src=purkhiser dest=/etc/netctl mode=0600

@@ -1,6 +1,9 @@
 ---
 - name: Install packages
-  yum: name=bash-completion,git
+  yum: name={{ item }}
+  with_items:
+    - bash-completion
+    - git
 
 - name: Configure iptables
   copy: src=iptables dest=/etc/sysconfig/

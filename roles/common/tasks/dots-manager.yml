@@ -15,7 +15,7 @@
   file: path=/home/evan/.local recurse=yes owner=evan group=users
 
 - name: Install dotfiles
-  sudo_user: evan
+  become: evan
   shell: source /home/evan/.local/etc/init;
          /home/evan/.local/bin/dots groups set base;
          /home/evan/.local/bin/dots install;

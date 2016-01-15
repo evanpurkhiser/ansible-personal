@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  roles: [ DrMegahertz.cloudflare ]
+
+  tasks:
+  - name: Ensuring DNS entries
+    with_items: "{{ lookup('file', 'files/dns_records.yml') | from_yaml }}"
+    cloudflare_domain:
+      email: "{{ cloudflare_email }}"
+      token: "{{ cloudflare_token }}"
+
+      state: present
+      zone: evanpurkhiser.com
+      name: "{{ item.name }}"
+      type: "{{ item.type }}"
+      mode: "{{ item.mode | default('DNS') }}"
+      content: "{{ item.content }}"

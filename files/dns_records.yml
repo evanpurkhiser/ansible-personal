@@ -1,0 +1,52 @@
+# Github pages website
+- name: evanpurkhiser.com
+  mode: CDN
+  type: CNAME
+  content: evanpurkhiser.github.io
+- name: www
+  mode: CDN
+  type: CNAME
+  content: evanpurkhiser.github.io
+
+# IPv6 home devices
+- name: desktop.home
+  type: AAAA
+  content: 2604:5500:f:1d:96de:80ff:fe62:3913
+- name: server.home
+  type: AAAA
+  content: 2604:5500:f:1d:230:67ff:fee5:e154
+- name: htpc.home
+  type: AAAA
+  content: 2604:5500:f:1d:f606:69ff:fe0c:85a5
+
+# Hyperion IPv6 -> IPv4 proxy
+- name: hyperion
+  type: AAAA
+  content: 2604:180:3:27c::6249
+- name: hyperion
+  type: A
+  content: 168.235.77.10
+- name: server.home
+  type: A
+  content: 168.235.77.10
+
+# Services
+- name: packages
+  mode: CDN
+  type: CNAME
+  content: server.home.evanpurkhiser.com
+
+- name: public
+  mode: CDN
+  type: CNAME
+  content: server.home.evanpurkhiser.com
+
+- name: transmission
+  mode: CDN
+  type: CNAME
+  content: server.home.evanpurkhiser.com
+
+# keybase identity
+- name: evanpurkhiser.com
+  type: TXT
+  content: keybase-site-verification=ZsPm75q4bJZXoDClgmRJ-v2z3gbjhOyKUqczEj8AiBc

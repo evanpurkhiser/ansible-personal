@@ -4,7 +4,6 @@
   with_items:
     - bash-completion
     - vim
-    - git
     - nfs-utils
     - xorg-server
     - xorg-xinit

@@ -1,0 +1,6 @@
+---
+- hosts: server.home.evanpurkhiser.com
+  roles:
+  - common
+  - pacsync
+  - machines/server

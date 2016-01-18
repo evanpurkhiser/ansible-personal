@@ -1,0 +1,3 @@
+/mnt/documents \
+  {{ ansible_default_ipv4.network }}/24(rw,no_subtree_check,insecure,all_squash,anonuid=1000,anongid=100) \
+  fe80::/64(rw,no_subtree_check,insecure,all_squash,anonuid=1000,anongid=100)

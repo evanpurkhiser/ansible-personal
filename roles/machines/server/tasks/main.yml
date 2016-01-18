@@ -1,0 +1,57 @@
+---
+- name: Install required packages
+  pacman: name={{ item }}
+  with_items:
+    - bash-completion
+    - vim
+    - nfs-utils
+    - samba
+    - transmission-cli
+    - wget
+    - rsync
+
+# Configure network
+- name: Disable default network configuration
+  file: path=/etc/systemd/network/80-container-host0.network state=link src=/dev/null
+
+- name: Ensure static network config
+  template: src=00-static.network dest=/etc/systemd/network/
+  notify: restart systemd-networkd
+
+- name: Enable and start network service
+  service: name=systemd-networkd state=started enabled=yes
+
+# Configure media device mount
+- name: Ensure media drive is mounted
+  mount: name=/mnt/documents
+         src="UUID=f835ad11-bdab-41ec-97fe-9665f576082f"
+         fstype=ext4
+         opts=rw,noatime,nodiratime
+         state=mounted
+
+# Configure NFS shares
+- name: Enable nfs-server service
+  service: name=nfs-server state=started enabled=yes
+
+- name: Enable nfs rpcbind socket activation (nfs v2/3)
+  service: name=rpcbind.socket enabled=yes
+
+- name: Ensure documents device is exported
+  template: src=exports dest=/etc/exports
+  notify: reload nfs exports
+
+# Confgure Samba shares
+- name: Enable samba socket activation
+  service: name=smbd.socket enabled=yes
+
+- name: Ensure smb.conf is configured
+  copy: src=smb.conf dest=/etc/samba/
+  notify: reload smbd
+
+# Configure nginx server
+- name: Enable nginx server
+  service: name=nginx state=started enabled=yes
+
+- name: Ensure nginx server configuration
+  copy: src=nginx.conf dest=/etc/nginx/
+  notify: reload nginx

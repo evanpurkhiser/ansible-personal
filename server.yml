@@ -3,4 +3,5 @@
   roles:
   - common
   - pacsync
+  - systemd-timesyncd
   - machines/server

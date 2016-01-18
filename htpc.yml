@@ -3,5 +3,6 @@
   roles:
   - common
   - pacsync
+  - systemd-timesyncd
   - personal-repo
   - machines/htpc

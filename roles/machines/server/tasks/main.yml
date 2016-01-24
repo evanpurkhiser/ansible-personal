@@ -10,6 +10,9 @@
     - wget
     - rsync
 
+    # Required for encrypting the transmission basic auth password
+    - python2-passlib
+
 # Configure network
 - name: Disable default network configuration
   file: path=/etc/systemd/network/80-container-host0.network state=link src=/dev/null
@@ -55,3 +58,10 @@
 - name: Ensure nginx server configuration
   copy: src=nginx.conf dest=/etc/nginx/
   notify: reload nginx
+
+- name: Encrypt transmission basic-auth password
+  htpasswd: path=/etc/nginx/htpasswd_transmission
+            mode=600
+            owner=http
+            name=evan
+            password={{ transmission_rpc_password }}

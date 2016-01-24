@@ -8,6 +8,9 @@
 - name: reload nginx
   service: name=nginx state=reloaded
 
+- name: reload transmission
+  service: name=transmission state=reloaded
+
 - name: reload nfs exports
   command: exportfs -ra
 

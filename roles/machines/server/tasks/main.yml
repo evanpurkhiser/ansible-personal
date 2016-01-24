@@ -65,3 +65,14 @@
             owner=http
             name=evan
             password={{ transmission_rpc_password }}
+
+# Configure transmission
+- name: Ensure transmission runs as "evan"
+  copy: src=transmission-user.conf dest=/etc/systemd/system/transmission.service.d/
+
+- name: Ensure Transmission configuration
+  copy: src=transmission-settings.json dest=/home/evan/.config/transmission-daemon/settings.json
+  notify: reload transmission
+
+- name: Enable Transmission daemon
+  service: name=transmission state=started enabled=yes

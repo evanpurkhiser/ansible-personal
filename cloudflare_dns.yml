@@ -1,3 +1,8 @@
+# Manages: Cloudflare DNS configuration for evanpurkhiser.com
+#
+# Brings the DNS entires for my domain under configuration management. DNS
+# entires are stored in the dns_records.yml file.
+
 ---
 - hosts: localhost
   roles: [ DrMegahertz.cloudflare ]

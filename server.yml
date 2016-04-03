@@ -1,6 +1,4 @@
-# Manages: ArchLinux on hardware
-#
-# This playbook configures my 'home' server.
+# Manages: ArchLinux on hardware This playbook configures my 'home' server.
 #
 # This server has a few purposes:
 #

@@ -15,12 +15,6 @@
     - polkit
     - media-center-automation
 
-- name: Install wireless network config
-  template: src=purkhiser dest=/etc/netctl mode=0600
-
-- name: Enable wireless network config
-  command: netctl enable purkhiser creates=/etc/systemd/system/multi-user.target.wants/netctl@purkhiser.service
-
 - name: Disable tty1 post-boot screen clear
   copy: src=noclear.conf dest=/etc/systemd/system/getty@tty1.service.d/
 

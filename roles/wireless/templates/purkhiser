@@ -1,10 +1,10 @@
-Description='Purkhiser-5G wireless'
+Description='{{ wifi_ssid }} wireless'
 Interface={{ network_interface }}
 Connection=wireless
 Security=wpa
-ESSID=Purkhiser-5G
+ESSID={{ wifi_ssid }}
 IP=static
 Gateway=192.168.1.1
-Address=('192.168.1.102/24')
+Address=('{{ network_address }}/24')
 DNS=('8.8.8.8')
 Key={{ wifi_password }}

@@ -18,6 +18,9 @@
 - name: htpc.home
   type: AAAA
   content: 2604:5500:f:1d:f606:69ff:fe0c:85a5
+- name: atmosphere.home
+  type: AAAA
+  content: 2604:5500:f:1d:ba27:ebff:fea9:dfe4
 
 # Hyperion IPv6 -> IPv4 proxy
 - name: hyperion

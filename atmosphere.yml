@@ -1,0 +1,13 @@
+# Manages: ArchLinux on hardware
+#
+# This playbook configures my 'atmospher' RaspberryPi for home automation.
+
+---
+- hosts: atmosphere.home.evanpurkhiser.com
+  roles:
+  - common
+  - pacsync
+  - wireless
+  - systemd-timesyncd
+  - personal-repo
+  - machines/atmosphere

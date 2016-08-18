@@ -1,0 +1,13 @@
+---
+- name: Install eth0 network configuration
+  copy: src=eth0.network dest=/etc/systemd/network/
+
+- name: Enable IPv4 routing in the kernel
+  copy: src=30-ipfward.conf dest=/etc/sysctl.d/
+
+- name: Configure iptables
+  copy: src=iptables.rules dest=/etc/iptables/
+  notify: restart iptables
+
+- name: Ensure iptables is enabled
+  service: name=iptables enabled=yes state=started

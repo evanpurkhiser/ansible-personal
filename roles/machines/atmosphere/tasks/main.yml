@@ -1,4 +1,9 @@
 ---
+- name: Install required packages
+  pacman: name={{ item }}
+  with_items:
+    - nginx
+
 - name: Install eth0 network configuration
   copy: src=eth0.network dest=/etc/systemd/network/
 
@@ -11,3 +16,12 @@
 
 - name: Ensure iptables is enabled
   service: name=iptables enabled=yes state=started
+
+
+# Configure nginx server
+- name: Enable nginx server
+  service: name=nginx state=started enabled=yes
+
+- name: Ensure nginx server configuration
+  copy: src=nginx.conf dest=/etc/nginx/
+  notify: reload nginx

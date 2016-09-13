@@ -1,2 +1,5 @@
 - name: restart iptables
   service: name=iptables state=restarted
+
+- name: reload nginx
+  service: name=nginx state=reloaded

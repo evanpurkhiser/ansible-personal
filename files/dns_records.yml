@@ -8,6 +8,12 @@
   type: CNAME
   content: evanpurkhiser.github.io
 
+# go-meta github page
+- name: go
+  mode: CDN
+  type: CNAME
+  content: evanpurkhiser.github.io
+
 # IPv6 home devices
 - name: desktop.home
   type: AAAA

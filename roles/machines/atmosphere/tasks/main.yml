@@ -17,7 +17,6 @@
 - name: Ensure iptables is enabled
   service: name=iptables enabled=yes state=started
 
-
 # Configure nginx server
 - name: Enable nginx server
   service: name=nginx state=started enabled=yes

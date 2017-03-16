@@ -1,3 +1,6 @@
+- name: restart atmosphere-automation
+  service: name=atmosphere-automation state=restarted
+
 - name: restart iptables
   service: name=iptables state=restarted
 

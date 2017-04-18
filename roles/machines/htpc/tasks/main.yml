@@ -11,6 +11,7 @@
     - bluez
     - bluez-utils
     - kodi
+    - kodi-addon-peripheral-joystick
     - lirc
     - polkit
     - media-center-automation

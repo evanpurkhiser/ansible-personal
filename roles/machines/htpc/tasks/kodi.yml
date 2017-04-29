@@ -3,7 +3,7 @@
   mount: src="[fe80::230:67ff:fee5:e154%{{ network_interface }}]:/mnt/documents"
          name=/mnt/documents
          fstype=nfs
-         opts=noatime,nodiratime,noacl,nocto,x-systemd.automount
+         opts=noatime,nodiratime,noacl,nocto,ro,soft,x-systemd.automount
          state=present
 
 - name: Add standalone kodi group

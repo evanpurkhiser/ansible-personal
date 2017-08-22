@@ -15,9 +15,6 @@
   content: evanpurkhiser.github.io
 
 # IPv6 home devices
-- name: desktop.home
-  type: AAAA
-  content: 2604:5500:f:1d:cd24:e566:8f96:4689
 - name: server.home
   type: AAAA
   content: 2604:5500:f:1d:230:67ff:fee5:e154

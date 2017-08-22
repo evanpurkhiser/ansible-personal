@@ -61,3 +61,29 @@
 - name: evanpurkhiser.com
   type: TXT
   content: keybase-site-verification=ZsPm75q4bJZXoDClgmRJ-v2z3gbjhOyKUqczEj8AiBc
+
+# Gsuite email records
+- name: '@'
+  type: MX
+  priority: 1
+  content: ASPMX.L.GOOGLE.COM
+
+- name: '@'
+  type: MX
+  priority: 5
+  content: ALT1.ASPMX.L.GOOGLE.COM
+
+- name: '@'
+  type: MX
+  priority: 5
+  content: ALT2.ASPMX.L.GOOGLE.COM
+
+- name: '@'
+  type: MX
+  priority: 10
+  content: ALT3.ASPMX.L.GOOGLE.COM
+
+- name: '@'
+  type: MX
+  priority: 10
+  content: ALT4.ASPMX.L.GOOGLE.COM

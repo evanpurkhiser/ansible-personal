@@ -3,6 +3,7 @@
   pacman: name={{ item }}
   with_items:
     - nginx
+    - mosquitto
     - atmosphere-automation
 
 - name: Install eth0 network configuration
@@ -25,6 +26,10 @@
 - name: Ensure nginx server configuration
   copy: src=nginx.conf dest=/etc/nginx/
   notify: reload nginx
+
+# Configure mosquitto mqtt server
+- name: Enable mosquitto
+  service: name=mosquitto state=started enabled=yes
 
 # Configure atmosphere-automation service
 - name: Ensure atmosphere-automation configuration

@@ -25,14 +25,16 @@
   type: AAAA
   content: 2604:5500:f:1d:ba27:ebff:fea9:dfe4
 
-# Hyperion IPv6 -> IPv4 proxy
+# IPv4 home address
+- name: server.home
+  type: A
+  content: 136.24.27.110
+
+# Hyperion general purpose VPS
 - name: hyperion
   type: AAAA
   content: 2604:180:3:27c::6249
 - name: hyperion
-  type: A
-  content: 168.235.77.10
-- name: server.home
   type: A
   content: 168.235.77.10
 

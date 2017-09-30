@@ -30,14 +30,6 @@
   type: A
   content: 136.24.27.110
 
-# Hyperion general purpose VPS
-- name: hyperion
-  type: AAAA
-  content: 2604:180:3:27c::6249
-- name: hyperion
-  type: A
-  content: 168.235.77.10
-
 # Services
 - name: packages
   mode: CDN

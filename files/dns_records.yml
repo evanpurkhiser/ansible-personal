@@ -51,6 +51,11 @@
   type: CNAME
   content: server.home.evanpurkhiser.com
 
+- name: avatar
+  mode: CDN
+  type: CNAME
+  content: server.home.evanpurkhiser.com
+
 # Keybase.io identity
 - name: evanpurkhiser.com
   type: TXT

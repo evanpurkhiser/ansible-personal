@@ -17,13 +17,13 @@
 # IPv6 home devices
 - name: server.home
   type: AAAA
-  content: 2604:5500:f:1d:230:67ff:fee5:e154
+  content: 2604:5500:c074:0:0230:67ff:fee5:e154
 - name: htpc.home
   type: AAAA
-  content: 2604:5500:f:1d:f606:69ff:fe0c:85a5
+  content: 2604:5500:c074:0:f606:69ff:fe0c:85a5
 - name: atmosphere.home
   type: AAAA
-  content: 2604:5500:f:1d:ba27:ebff:fea9:dfe4
+  content: 2604:5500:c074:0:ba27:ebff:fea9:dfe4
 
 # IPv4 home address
 - name: server.home

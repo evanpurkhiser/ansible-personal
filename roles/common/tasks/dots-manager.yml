@@ -1,6 +1,7 @@
 ---
-- name: Install git for dotfile managment
-  package: name=git
+- name: Install dotfile required packages
+  pacman: name={{ item }}
+  with_items: [ git, python ]
 
 - name: Install dotfiles for evan
   git: repo=git@github.com:EvanPurkhiser/dots-personal.git

@@ -1,4 +1,4 @@
 ---
-- include: root-password.yml
-- include: user-evan.yml
-- include: dots-manager.yml
+- import_tasks: root-password.yml
+- import_tasks: user-evan.yml
+- import_tasks: dots-manager.yml

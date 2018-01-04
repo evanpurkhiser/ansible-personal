@@ -19,6 +19,6 @@
 - name: Disable tty1 post-boot screen clear
   copy: src=noclear.conf dest=/etc/systemd/system/getty@tty1.service.d/
 
-- include: lirc.yml
-- include: bluetooth.yml
-- include: kodi.yml
+- import_tasks: lirc.yml
+- import_tasks: bluetooth.yml
+- import_tasks: kodi.yml

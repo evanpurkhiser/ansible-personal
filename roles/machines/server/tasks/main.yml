@@ -59,6 +59,9 @@
             password={{ transmission_rpc_password }}
 
 # Configure transmission
+- name: Ensure transmission configuration directory exists
+  file: path=/home/evan/.config/transmission-daemon state=directory
+
 - name: Ensure transmission runs as "evan"
   copy: src=transmission-user.conf dest=/etc/systemd/system/transmission.service.d/
 

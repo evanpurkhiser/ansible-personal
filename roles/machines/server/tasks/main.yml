@@ -5,7 +5,6 @@
     - bash-completion
     - vim
     - nfs-utils
-    - samba
     - transmission-cli
     - wget
     - rsync
@@ -43,14 +42,6 @@
 - name: Ensure documents device is exported
   template: src=exports dest=/etc/exports
   notify: reload nfs exports
-
-# Confgure Samba shares
-- name: Enable samba socket activation
-  service: name=smbd.socket enabled=yes
-
-- name: Ensure smb.conf is configured
-  copy: src=smb.conf dest=/etc/samba/
-  notify: reload smbd
 
 # Configure nginx server
 - name: Enable nginx server

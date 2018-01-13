@@ -71,3 +71,7 @@
 
 - name: Enable Transmission daemon
   service: name=transmission state=started enabled=yes
+
+# Configure personal arch packages repo
+- name: Ensure transmission configuration directory exists
+  file: path=/srv/packages state=directory

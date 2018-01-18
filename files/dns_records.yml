@@ -17,7 +17,7 @@
 # IPv6 home devices
 - name: server.home
   type: AAAA
-  content: 2604:5500:c074:0:0230:67ff:fee5:e154
+  content: 2604:5500:c074:0:d250:99ff:fec2:9f07
 - name: htpc.home
   type: AAAA
   content: 2604:5500:c074:0:f606:69ff:fe0c:85a5

@@ -1,6 +1,6 @@
 ---
 - name: Add documents mount point
-  mount: src="[fe80::230:67ff:fee5:e154%{{ network_interface }}]:/mnt/documents"
+  mount: src="[fe80::d250:99ff:fec2:9f07%{{ network_interface }}]:/mnt/documents"
          name=/mnt/documents
          fstype=nfs
          opts=noatime,nodiratime,noacl,nocto,ro,soft,x-systemd.automount

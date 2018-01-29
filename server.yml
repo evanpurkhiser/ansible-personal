@@ -8,7 +8,7 @@
 # - Serve a small public-share directory
 
 ---
-- hosts: server.home.evanpurkhiser.com
+- hosts: server
   roles:
   - common
   - pacsync

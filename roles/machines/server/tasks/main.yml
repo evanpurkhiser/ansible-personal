@@ -2,35 +2,66 @@
 - name: Install required packages
   pacman: name={{ item }}
   with_items:
-    - bash-completion
-    - vim
-    - nfs-utils
-    - transmission-cli
-    - wget
-    - rsync
-    - nginx
+  - bash-completion
+  - vim
+  - nfs-utils
+  - dnsmasq
+  - mosquitto
+  - transmission-cli
+  - wget
+  - rsync
+  - rclone
+  - nginx
 
-    # Required for encrypting the transmission basic auth password
-    - python2-passlib
+  # Required for encrypting the transmission basic auth password
+  - python2-passlib
 
 # Configure network
 - name: Disable default network configuration
   file: path=/etc/systemd/network/80-container-host0.network state=link src=/dev/null
 
-- name: Ensure static network config
-  template: src=00-static.network dest=/etc/systemd/network/
-  notify: restart systemd-networkd
-
-- name: Enable and start network service
+- name: Ensure systemd-networkd is enabled
   service: name=systemd-networkd state=started enabled=yes
 
-# Configure media device mount
-- name: Ensure media drive is mounted
-  mount: name=/mnt/documents
-         src="UUID=f835ad11-bdab-41ec-97fe-9665f576082f"
-         fstype=ext4
-         opts=rw,noatime,nodiratime
-         state=mounted
+- name: Ensure hosts file
+  copy: src=hosts dest=/etc/
+
+# Copy network configurations
+- name: Set wan0 link name
+  copy: src={{ item }} dest=/etc/systemd/network/
+  notify: restart systemd-networkd
+  with_items:
+  - 00-lan0.link
+  - 00-wan0.link
+  - 01-internal.network
+  - 01-external.network
+
+# Setup iptable rules
+- name: Configure iptables
+  copy: src=iptables.rules dest=/etc/iptables/
+  notify: [ 'restart iptables', 'restart ip6tables' ]
+
+- name: Link iptable rules for v6 rules
+  file: path=/etc/iptables/ip6tables.rules state=link src=/etc/iptables/iptables.rules
+
+- name: Ensure iptables is enabled
+  service: name=iptables enabled=yes state=started
+
+# Setup and configure DHCP and DNS server
+- name: Configure dnsmasq
+  copy: src=dnsmasq.conf dest=/etc/
+  notify: restart dnsmasq
+
+- name: Ensure dnsmasq is enabled
+  service: name=dnsmasq enabled=yes state=started
+
+# Enable mosquito service for IoT messages
+- name: Ensure mosquitto is enabled
+  service: name=mosquitto enabled=yes state=started
+
+# Configure rclone
+- name: Ensure rclone backup configuration
+  template: src=rclone.conf dest=/etc/rclone.conf
 
 # Configure NFS shares
 - name: Enable nfs-server service
@@ -40,7 +71,7 @@
   service: name=rpcbind.socket enabled=yes
 
 - name: Ensure documents device is exported
-  template: src=exports dest=/etc/exports
+  copy: src=exports dest=/etc/exports
   notify: reload nfs exports
 
 # Configure nginx server

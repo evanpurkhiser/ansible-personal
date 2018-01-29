@@ -1,0 +1,6 @@
+[Match]
+MACAddress=d0:50:99:c2:9f:07
+
+[Link]
+Description=LAN Adapter
+Name=lan0

@@ -1,0 +1,20 @@
+127.0.0.1 localhost.localdomain localhost
+::1       localhost.localdomain localhost
+
+# Common machines
+10.0.0.1  server
+10.0.0.2  access-point
+10.0.0.3  server-bmc
+10.0.0.4  macbook
+10.0.0.5  htpc
+10.0.0.10 phone
+
+# IoT devices
+10.0.0.21 wall-light
+10.0.0.22 kitchen-light
+10.0.0.23 philips-hue
+
+# DJ Setup
+10.0.0.31 djm
+10.0.0.32 cdj1
+10.0.0.33 cdj2

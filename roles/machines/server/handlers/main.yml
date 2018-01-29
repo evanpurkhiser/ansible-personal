@@ -14,3 +14,11 @@
 - name: reload nfs exports
   command: exportfs -ra
 
+- name: restart dnsmasq
+  service: name=dnsmasq state=restarted
+
+- name: restart iptables
+  service: name=iptables state=restarted
+
+- name: restart ip6tables
+  service: name=ip6tables state=restarted

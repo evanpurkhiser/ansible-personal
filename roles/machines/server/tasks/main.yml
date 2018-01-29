@@ -106,3 +106,17 @@
 # Configure personal arch packages repo
 - name: Ensure transmission configuration directory exists
   file: path=/srv/packages state=directory
+
+# Configure DNS entires in cloudflare
+- name: Ensuring DNS entries
+  with_items: "{{ lookup('file', 'files/dns_records.yml') | from_yaml }}"
+  cloudflare_dns:
+    account_email: "{{ cloudflare_email }}"
+    account_api_token: "{{ cloudflare_token }}"
+
+    state: present
+    zone: evanpurkhiser.com
+    name: "{{ item.name }}"
+    type: "{{ item.type }}"
+    proxied: "{{ item.proxied | default('no') }}"
+    content: "{{ item.content }}"

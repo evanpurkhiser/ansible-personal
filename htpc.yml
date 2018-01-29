@@ -6,7 +6,7 @@
 # [1]: https://github.com/EvanPurkhiser/media-center-automation
 
 ---
-- hosts: htpc.home.evanpurkhiser.com
+- hosts: htpc
   roles:
   - common
   - pacsync

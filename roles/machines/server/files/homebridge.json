@@ -1,0 +1,31 @@
+{
+  "bridge": {
+    "name": "Homebridge",
+    "username": "CC:22:3D:E3:CE:30",
+    "port": 51826,
+    "pin": "031-45-154"
+  },
+
+  "accessories": [
+    {
+      "accessory": "mqtt-switch-tasmota",
+      "name": "kitchen",
+      "url": "mqtt://127.0.0.1",
+
+      "topics": {
+        "statusGet": "stat/sonoff-kitchen/POWER",
+        "statusSet": "cmnd/sonoff-kitchen/POWER"
+      }
+    },
+    {
+      "accessory": "mqtt-switch-tasmota",
+      "name": "wall",
+      "url": "mqtt://127.0.0.1",
+
+      "topics": {
+        "statusGet": "stat/sonoff-wall/POWER",
+        "statusSet": "cmnd/sonoff-wall/POWER"
+      }
+    }
+  ]
+}

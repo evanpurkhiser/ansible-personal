@@ -12,6 +12,8 @@
   - rsync
   - rclone
   - nginx
+  - homebridge-git
+  - homebridge-sonoff-git
 
   # Required for encrypting the transmission basic auth password
   - python2-passlib
@@ -106,6 +108,16 @@
 # Configure personal arch packages repo
 - name: Ensure transmission configuration directory exists
   file: path=/srv/packages state=directory
+
+# Configure homebridge
+- name: Ensure homebridge config
+  copy: src=homebridge.json dest=/var/lib/homebridge/config.json
+        owner=homebridge
+        group=homebridge
+  notify: reload homebridge
+
+- name: Enable homebridge daemon
+  service: name=homebridge state=started enabled=yes
 
 # Configure DNS entires in cloudflare
 - name: Ensuring DNS entries

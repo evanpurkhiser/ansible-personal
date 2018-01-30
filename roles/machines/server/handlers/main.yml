@@ -22,3 +22,6 @@
 
 - name: restart ip6tables
   service: name=ip6tables state=restarted
+
+- name: restart homebridge
+  service: name=homebridge state=restarted

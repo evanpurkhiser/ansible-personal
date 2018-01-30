@@ -12,5 +12,6 @@
   roles:
   - common
   - pacsync
+  - personal-repo
   - systemd-timesyncd
   - machines/server

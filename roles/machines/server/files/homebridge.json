@@ -13,8 +13,9 @@
       "url": "mqtt://127.0.0.1",
 
       "topics": {
-        "statusGet": "stat/sonoff-kitchen/POWER",
-        "statusSet": "cmnd/sonoff-kitchen/POWER"
+        "statusGet": "stat/sonoff-kitchen/RESULT",
+        "statusSet": "cmnd/sonoff-kitchen/POWER",
+        "stateGet": "tele/sonoff-kitchen/STATE"
       }
     },
     {
@@ -23,8 +24,9 @@
       "url": "mqtt://127.0.0.1",
 
       "topics": {
-        "statusGet": "stat/sonoff-wall/POWER",
-        "statusSet": "cmnd/sonoff-wall/POWER"
+        "statusGet": "stat/sonoff-wall/RESULT",
+        "statusSet": "cmnd/sonoff-wall/POWER",
+        "stateGet": "tele/sonoff-wall/STATE"
       }
     }
   ]

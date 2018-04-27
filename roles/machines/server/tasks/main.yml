@@ -106,7 +106,7 @@
 - name: Ensure transmission runs as "evan"
   copy: src=transmission-user.conf dest=/etc/systemd/system/transmission.service.d/
 
-- name: Ensure Transmission configuration
+- name: Ensure transmission configuration
   copy: src=transmission-settings.json dest=/home/evan/.config/transmission-daemon/settings.json
   notify: reload transmission
 

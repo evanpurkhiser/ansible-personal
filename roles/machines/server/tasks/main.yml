@@ -21,6 +21,7 @@
   - nginx
   - homebridge-git
   - homebridge-tasmota-git
+  - waitress
   - archzfs-linux
 
   # Required for encrypting the transmission basic auth password
@@ -131,6 +132,14 @@
 
 - name: Enable homebridge daemon
   service: name=homebridge state=started enabled=yes
+
+# Enable waitress file server
+- name: ensure waitress config
+  copy: src=waitress.conf dest=/etc/waitress.confg
+  notify: restart waitress
+
+- name: Enable waitress service
+  service: name=waitress state=started enabled=yes
 
 # Configure DNS entires in cloudflare
 - name: Ensuring DNS entries

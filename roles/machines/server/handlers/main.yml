@@ -26,5 +26,8 @@
 - name: restart homebridge
   service: name=homebridge state=restarted
 
+- name: restart waitress
+  service: name=waitress state=restarted
+
 - name: sync pacman cache
   pacman: update_cache=yes

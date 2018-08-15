@@ -135,7 +135,7 @@
 
 # Enable waitress file server
 - name: ensure waitress config
-  copy: src=waitress.conf dest=/etc/waitress.confg
+  copy: src=waitress.conf dest=/etc/waitress.conf
   notify: restart waitress
 
 - name: Enable waitress service

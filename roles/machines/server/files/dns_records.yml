@@ -35,6 +35,11 @@
   type: CNAME
   content: server.home.evanpurkhiser.com
 
+- name: tunnel
+  proxied: yes
+  type: CNAME
+  content: server.home.evanpurkhiser.com
+
 - name: transmission
   proxied: yes
   type: CNAME

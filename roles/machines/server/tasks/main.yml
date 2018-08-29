@@ -9,21 +9,22 @@
 - name: Install required packages
   pacman: name={{ item }}
   with_items:
+  - archzfs-linux
   - bash-completion
-  - vim
-  - nfs-utils
+  - dhcpcd
   - dnsmasq
-  - mosquitto
-  - transmission-cli
-  - wget
-  - rsync
-  - rclone
-  - nginx
+  - docker
   - homebridge-git
   - homebridge-tasmota-git
-  - waitress
-  - archzfs-linux
-  - dhcpcd
+  - mosquitto
+  - nfs-utils
+  - nginx
+  - rclone
+  - rsync
+  - transmission-cli
+  - vim
+  - waitress-git
+  - wget
 
   # Required for encrypting the transmission basic auth password
   - python2-passlib
@@ -88,7 +89,7 @@
   template: src=rclone.conf dest=/etc/rclone.conf
 
 - name: Install rclone timer and service
-  copy: src=rclone-sync.{{item}} dest=/etc/systemd/system/
+  copy: src=rclone-sync.{{ item }} dest=/etc/systemd/system/
   with_items: [ timer, service ]
 
 - name: Enable rclone timer service
@@ -131,7 +132,7 @@
   copy: src=transmission-settings.json dest=/home/evan/.config/transmission-daemon/settings.json
   notify: reload transmission
 
-- name: Enable Transmission daemon
+- name: Enable transmission daemon
   service: name=transmission state=started enabled=yes
 
 # Configure personal arch packages repo

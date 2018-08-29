@@ -2,6 +2,9 @@
 - name: restart systemd-networkd
   service: name=systemd-networkd state=restarted
 
+- name: restart systemd-resolved
+  service: name=systemd-resolved state=restarted
+
 - name: reload smbd
   service: name=smbd state=reloaded
 
@@ -20,8 +23,8 @@
 - name: restart iptables
   service: name=iptables state=restarted
 
-- name: restart ip6tables
-  service: name=ip6tables state=restarted
+- name: restart dhcpcd
+  service: name=dhcpcd state=restarted
 
 - name: restart homebridge
   service: name=homebridge state=restarted

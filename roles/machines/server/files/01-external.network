@@ -2,4 +2,8 @@
 Name=wan0
 
 [Network]
-DHCP=yes
+# Only handle IPv4 DHCP, dhcpcd will handle IPv6 address assignment and prefix
+# delegation as systemd-networkd is currently buggy with handling prefix
+# delegation to other interfaces.
+DHCP=ipv4
+IPv6AcceptRA=no

@@ -23,6 +23,7 @@
   - homebridge-tasmota-git
   - waitress
   - archzfs-linux
+  - dhcpcd
 
   # Required for encrypting the transmission basic auth password
   - python2-passlib
@@ -36,6 +37,10 @@
 
 - name: Ensure hosts file
   copy: src=hosts dest=/etc/
+
+- name: Ensure resolved.conf file
+  copy: src=resolved.conf dest=/etc/systemd/resolved.conf
+  notify: restart systemd-resolved
 
 # Copy network configurations
 - name: Set wan0 link name
@@ -65,6 +70,14 @@
 
 - name: Ensure dnsmasq is enabled
   service: name=dnsmasq enabled=yes state=started
+
+# Setup dhcpcd for DHCPv6-PD support
+- name: Ensure dhcpcd.conf file
+  copy: src=dhcpcd.conf dest=/etc/systemd/dhcpcd.conf
+  notify: restart dhcpcd
+
+- name: Ensure dhcpcd is enabled
+  service: name=dhcpcd state=started enabled=yes
 
 # Enable mosquito service for IoT messages
 - name: Ensure mosquitto is enabled

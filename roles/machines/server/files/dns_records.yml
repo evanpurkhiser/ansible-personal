@@ -50,11 +50,6 @@
   type: CNAME
   content: server.home.evanpurkhiser.com
 
-- name: avatar
-  proxied: yes
-  type: CNAME
-  content: server.home.evanpurkhiser.com
-
 # Keybase.io identity
 - name: evanpurkhiser.com
   type: TXT

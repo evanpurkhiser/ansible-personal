@@ -74,6 +74,13 @@
 - name: Ensure rclone backup configuration
   template: src=rclone.conf dest=/etc/rclone.conf
 
+- name: Install rclone timer and service
+  copy: src=rclone-sync.{{item}} dest=/etc/systemd/system/
+  with_items: [ timer, service ]
+
+- name: Enable rclone timer service
+  service: name=rclone-sync.timer enabled=yes
+
 # Configure NFS shares
 - name: Enable nfs-server service
   service: name=nfs-server state=started enabled=yes

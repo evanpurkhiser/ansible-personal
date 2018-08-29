@@ -1,0 +1,13 @@
+[Unit]
+Description=Backup documents to gdrive
+
+[Service]
+ReadOnlyPaths=/mnt/documents
+ExecStart=/usr/bin/rclone sync /mnt/documents documents-encrypted: \
+  --config /etc/rclone.conf \
+  --stats 0 \
+  --exclude "._*" \
+  --exclude ".DS_Store" \
+  --include "/archived/**" \
+  --include "/multimedia/**" \
+  --include "/downloads/torrents-seeding/**"

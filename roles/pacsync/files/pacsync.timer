@@ -1,5 +1,5 @@
 [Unit]
-Description=Run pacman database sync hourly
+Description=Hourly pacman database sync
 
 [Timer]
 OnCalendar=hourly

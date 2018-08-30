@@ -27,7 +27,7 @@
   - wget
 
   # Required for encrypting the transmission basic auth password
-  - python2-passlib
+  - python-passlib
 
 # Configure network
 - name: Disable default network configuration

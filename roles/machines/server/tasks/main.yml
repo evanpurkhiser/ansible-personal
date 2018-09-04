@@ -93,7 +93,7 @@
   with_items: [ timer, service ]
 
 - name: Enable rclone timer service
-  service: name=rclone-sync.timer enabled=yes
+  service: name=rclone-sync.timer enabled=yes state=started
 
 # Configure NFS shares
 - name: Enable nfs-server service

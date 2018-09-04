@@ -5,4 +5,4 @@ Description=Weekly rclone backup sync
 OnCalendar=Sun *-*-* 05:00:00
 
 [Install]
-WantedBy=rclone-sync.target
+WantedBy=timers.target

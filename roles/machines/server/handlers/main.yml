@@ -34,3 +34,6 @@
 
 - name: sync pacman cache
   pacman: update_cache=yes
+
+- name: sync personal repo database
+  shell: 'repo-add -Rn /srv/pkgs/personal.db.tar.gz /srv/pkgs/*.pkg.tar.xz'

@@ -5,8 +5,35 @@
 
 - import_role: name=personal-repo
   vars:
-    server_path: "file://srv/packages"
+    server_path: "file:///srv/pkgs"
 
+# Bootstrap personal packages repo
+- name: Install docker
+  pacman: name=docker
+
+- name: Ensure docker is enabled
+  service: name=docker enabled=yes state=started
+
+- name: Ensure personal packages repo directory exists
+  file: path=/srv/pkgs state=directory
+
+- name: Bootstrapping personal packages
+  shell: |
+    package="{{ item }}"
+    cd "$(mktemp -d)"
+    git clone https://github.com/EvanPurkhiser/PKGBUILDs.git .
+    docker run --rm --name "makepkg-$package" -e EXPORT_PKG=1 -v "$PWD/$package":/pkg whynothugo/makepkg
+    mv "$PWD/$package"/*.pkg.tar.xz /srv/pkgs && cd && rm -r "$OLDPWD"
+  args:
+    creates: /srv/pkgs/{{ item }}*.pkg.tar.xz
+  notify: sync personal repo database
+  with_items:
+  - homebridge-git
+  - homebridge-tasmota-git
+  - media-center-automation
+  - waitress-git
+
+# Setup ZFS repo
 - name: Add arch ZFS repo
   copy: src=archzfs-repo dest=/etc/pacman.d
 
@@ -21,7 +48,6 @@
   - bash-completion
   - dhcpcd
   - dnsmasq
-  - docker
   - homebridge-git
   - homebridge-tasmota-git
   - mosquitto
@@ -142,10 +168,6 @@
 
 - name: Enable transmission daemon
   service: name=transmission state=started enabled=yes
-
-# Configure personal arch packages repo
-- name: Ensure transmission configuration directory exists
-  file: path=/srv/packages state=directory
 
 # Configure homebridge
 - name: Ensure homebridge config

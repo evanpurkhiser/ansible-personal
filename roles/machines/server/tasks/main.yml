@@ -10,7 +10,7 @@
 - name: Add arch ZFS repo
   copy: src=archzfs-repo dest=/etc/pacman.d
 
-- name: Include config in pacman.conf
+- name: Include archzfs repo in pacman.conf
   lineinfile: dest=/etc/pacman.conf line="Include = /etc/pacman.d/archzfs-repo"
   notify: sync pacman cache
 

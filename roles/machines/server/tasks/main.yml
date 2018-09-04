@@ -56,7 +56,7 @@
   - rclone
   - rsync
   - transmission-cli
-  - vim
+  - neovim
   - waitress-git
   - wget
 

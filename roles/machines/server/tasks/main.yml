@@ -1,4 +1,12 @@
 ---
+- import_role: name=common
+- import_role: name=pacsync
+- import_role: name=systemd-timesyncd
+
+- import_role: name=personal-repo
+  vars:
+    server_path: "file://srv/packages"
+
 - name: Add arch ZFS repo
   copy: src=archzfs-repo dest=/etc/pacman.d
 

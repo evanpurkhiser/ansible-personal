@@ -1,0 +1,3 @@
+[personal]
+Server = {{ server_path | d('http://packages.evanpurkhiser.com') }}
+SigLevel = Never

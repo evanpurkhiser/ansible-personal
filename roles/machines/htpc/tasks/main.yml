@@ -1,20 +1,26 @@
 ---
+- import_role: name=common
+- import_role: name=pacsync
+- import_role: name=wireless
+- import_role: name=systemd-timesyncd
+- import_role: name=personal-repo
+
 - name: Install required packages
   pacman: name={{ item }}
   with_items:
-    - bash-completion
-    - vim
-    - nfs-utils
-    - xorg-server
-    - xorg-xinit
-    - xf86-video-intel
-    - bluez
-    - bluez-utils
-    - kodi
-    - kodi-addon-peripheral-joystick
-    - lirc
-    - polkit
-    - media-center-automation
+  - bash-completion
+  - vim
+  - nfs-utils
+  - xorg-server
+  - xorg-xinit
+  - xf86-video-intel
+  - bluez
+  - bluez-utils
+  - kodi
+  - kodi-addon-peripheral-joystick
+  - lirc
+  - polkit
+  - media-center-automation
 
 - name: Disable tty1 post-boot screen clear
   copy: src=noclear.conf dest=/etc/systemd/system/getty@tty1.service.d/

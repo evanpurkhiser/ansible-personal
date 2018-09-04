@@ -7,10 +7,4 @@
 
 ---
 - hosts: htpc
-  roles:
-  - common
-  - pacsync
-  - wireless
-  - systemd-timesyncd
-  - personal-repo
-  - machines/htpc
+  roles: [ machines/htpc ]

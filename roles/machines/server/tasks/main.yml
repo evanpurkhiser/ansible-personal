@@ -42,26 +42,25 @@
   notify: sync pacman cache
 
 - name: Install required packages
-  pacman: name={{ item }}
-  with_items:
-  - archzfs-linux
-  - bash-completion
-  - dhcpcd
-  - dnsmasq
-  - homebridge-git
-  - homebridge-tasmota-git
-  - mosquitto
-  - nfs-utils
-  - nginx
-  - rclone
-  - rsync
-  - transmission-cli
-  - neovim
-  - waitress-git
-  - wget
+  pacman:
+    name:
+    - archzfs-linux
+    - bash-completion
+    - dhcpcd
+    - dnsmasq
+    - mosquitto
+    - neovim
+    - nfs-utils
+    - nginx
+    - prolink-tools-git
+    - rclone
+    - rsync
+    - transmission-cli
+    - waitress-git
+    - wget
 
-  # Required for encrypting the transmission basic auth password
-  - python-passlib
+    # Required for encrypting the transmission basic auth password
+    - python-passlib
 
 # Configure network
 - name: Disable default network configuration

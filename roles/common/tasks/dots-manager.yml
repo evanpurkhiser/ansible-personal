@@ -1,7 +1,7 @@
 ---
 - name: Install dotfile required packages
-  pacman: name={{ item }}
-  with_items: [ git, python ]
+  pacman:
+    name: [ git, python ]
 
 - name: Install dotfiles for evan
   git: repo=https://github.com/EvanPurkhiser/dots-personal.git

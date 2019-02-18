@@ -26,10 +26,10 @@
     mv "$PWD/$package"/*.pkg.tar.xz /srv/pkgs && cd && rm -r "$OLDPWD"
   args:
     creates: /srv/pkgs/{{ item }}*.pkg.tar.xz
-  notify: sync personal repo database
+  notify:
+  - sync personal repo database
+  - sync pacman cache
   with_items:
-  - homebridge-git
-  - homebridge-tasmota-git
   - media-center-automation
   - waitress-git
 
@@ -167,21 +167,6 @@
 
 - name: Enable transmission daemon
   service: name=transmission state=started enabled=yes
-
-# Configure homebridge
-- name: Ensure homebridge config
-  copy: src=homebridge.json dest=/var/lib/homebridge/config.json
-        owner=homebridge
-        group=homebridge
-  notify: restart homebridge
-
-- name: Ensure homebridge persit directory
-  file: path=/var/lib/homebridge state=directory
-        owner=homebridge
-        group=homebridge
-
-- name: Enable homebridge daemon
-  service: name=homebridge state=started enabled=yes
 
 # Enable waitress file server
 - name: ensure waitress config

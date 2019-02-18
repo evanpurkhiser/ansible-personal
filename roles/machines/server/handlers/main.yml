@@ -32,8 +32,8 @@
 - name: restart waitress
   service: name=waitress state=restarted
 
-- name: sync pacman cache
-  pacman: update_cache=yes
-
 - name: sync personal repo database
   shell: 'repo-add --remove --new /srv/pkgs/personal.db.tar.gz /srv/pkgs/*.pkg.tar.xz'
+
+- name: sync pacman cache
+  pacman: update_cache=yes

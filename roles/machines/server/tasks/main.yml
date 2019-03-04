@@ -4,8 +4,7 @@
 - import_role: name=systemd-timesyncd
 
 - import_role: name=personal-repo
-  vars:
-    server_path: "file:///srv/pkgs"
+  vars: { server_path: "file:///srv/pkgs" }
 
 # Bootstrap personal packages repo
 - name: Install docker
@@ -33,6 +32,9 @@
   - media-center-automation
   - waitress-git
   - prolink-tools-git
+
+# Flush handlers to ensure new personal packages are synced into the database
+- meta: flush_handlers
 
 # Setup ZFS repo
 - name: Add arch ZFS repo

@@ -45,6 +45,11 @@
   type: CNAME
   content: server.home.evanpurkhiser.com
 
+- name: hass
+  proxied: yes
+  type: CNAME
+  content: server.home.evanpurkhiser.com
+
 - name: resume
   proxied: yes
   type: CNAME

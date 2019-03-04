@@ -24,6 +24,12 @@ fi
             jq -r '.details.fields[] | select(.name == "password").value'
     )"\'
 
+    # Home Assistant API key
+    echo home_assistant_api_key: \'"$(
+        op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' | \
+            jq -r '.details.sections[].fields[]? | select(.n == "DF8748D4968D48A7BA2D7B9CC8D45989").v'
+    )"\'
+
     # Cloudflare DNS credentials
     echo cloudflare:
     echo '  email:' \'"$(

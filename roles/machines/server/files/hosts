@@ -10,9 +10,11 @@
 10.0.0.10 phone
 
 # IoT devices
-10.0.0.21 wall-light
-10.0.0.22 kitchen-light
-10.0.0.24 philips-hue
+10.0.0.21 light-wall
+10.0.0.22 light-kitchen
+10.0.0.23 light-shelves
+10.0.0.24 switch-heater
+10.0.0.31 philips-hue
 
 # DJ Setup
 10.0.0.31 djm

@@ -62,6 +62,8 @@
 
     # Required for encrypting the transmission basic auth password
     - python-passlib
+    # Required for docker managment
+    - python-docker
 
 # Configure network
 - name: Disable default network configuration
@@ -168,6 +170,28 @@
 
 - name: Enable transmission daemon
   service: name=transmission state=started enabled=yes
+
+# Configure home-assistant
+- name: Ensure hass config directory exists
+  file: path=/var/lib/hass state=directory
+
+- name: Ensure hass configuration
+  copy: src=home-assistant.yaml dest=/var/lib/hass/configuration.yaml
+  notify: restart home-assistant
+
+- name: Ensure hass secrets
+  template: src=home-assistant-secrets.yaml dest=/var/lib/hass/secrets.yaml
+  notify: restart home-assistant
+
+- name: Ensure home-assistant docker service
+  docker_container:
+    name: home-assistant
+    image: homeassistant/home-assistant
+    init: yes
+    network_mode: host
+    volumes:
+      - '/var/lib/hass:/config'
+      - '/etc/localtime:/etc/localetime:ro'
 
 # Enable waitress file server
 - name: ensure waitress config

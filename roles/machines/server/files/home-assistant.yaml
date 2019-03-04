@@ -1,0 +1,198 @@
+homeassistant:
+  name: Apartment
+  time_zone: America/Los_Angeles
+  unit_system: imperial
+  elevation: 74
+  latitude: 37.7808295
+  longitude: -122.4133351
+
+  customize:
+    zone.home:
+      beacon:
+        uuid: 74278bda-b644-4520-8f0c-720eaf059935
+        major: 1
+        minor: 1139
+    light.wall:
+      icon: mdi:ceiling-light
+    light.desk:
+      icon: mdi:track-light
+    light.bedside:
+      icon: mdi:lamp
+    light.fluorescents:
+      icon: mdi:ceiling-light
+    light.kitchen:
+      icon: mdi:ceiling-light
+    light.livingroom:
+      icon: mdi:floor-lamp
+    light.entrance:
+      icon: mdi:lamp
+    switch.monitors:
+      icon: mdi:monitor
+    fan.xiaomi_miio_device:
+      icon: mdi:weather-windy
+    switch.heater:
+      icon: mdi:radiator
+    climate.heater:
+      icon: mdi:radiator
+
+http:
+  api_password: !secret api_key
+
+config:  # Configuration component
+history: # Event history component
+logbook: # Event logbook
+system_health:
+
+homekit:
+  filter:
+    exclude_entities:
+      - switch.heater
+      - sensor.dark_sky_temperature
+      - sensor.temperature
+
+google_assistant:
+  project_id: home-assistant-19f4f
+  api_key: AIzaSyBXi-5fWvJ5SjxVzMHugnw-H9cpyM9OJHs
+  expose_by_default: true
+  entity_config:
+    switch.heater: { expose: false }
+    group.all_fans: { expose: false }
+    group.all_switches: { expose: false }
+    group.all_devices: { expose: false }
+
+zone:
+  - name: Home
+    icon: mdi:home
+    latitude: 37.7808295
+    longitude: -122.4133351
+    radius: 100
+    beacon:
+      uuid: 74278bda-b644-4520-8f0c-720eaf059935
+      major: 1
+      minor: 1139
+
+  - name: Work
+    icon: mdi:office-building
+    latitude: 37.7839965
+    longitude: -122.397365
+    radius: 200
+
+hue:
+  bridges:
+    - host: 10.0.0.31
+
+mqtt:
+  broker: 127.0.0.1
+  port: 1883
+  client_id: home-assistant-1
+  keepalive: 60
+  protocol: 3.1
+  birth_message:
+    topic: 'tele/hass1/LWT'
+    payload: 'Online'
+    qos: 1
+    retain: false
+  will_message:
+    topic: 'tele/hass1/LWT'
+    payload: 'Offline'
+    qos: 1
+    retain: false
+
+light:
+  - platform: mqtt
+    name: kitchen
+    state_topic: 'stat/light-kitchen/POWER'
+    command_topic: 'cmnd/light-kitchen/POWER'
+    availability_topic: 'tele/light-kitchen/LWT'
+    payload_on: 'ON'
+    payload_off: 'OFF'
+    payload_available: 'Online'
+    payload_not_available: 'Offline'
+    qos: 1
+    retain: false
+
+  - platform: mqtt
+    name: shelves
+    state_topic: 'stat/light-shelves/POWER'
+    command_topic: 'cmnd/light-shelves/POWER'
+    availability_topic: 'tele/light-shelves/LWT'
+    payload_on: 'ON'
+    payload_off: 'OFF'
+    payload_available: 'Online'
+    payload_not_available: 'Offline'
+    qos: 1
+    retain: false
+
+  - platform: mqtt
+    name: wall
+    state_topic: 'stat/light-wall/POWER'
+    command_topic: 'cmnd/light-wall/POWER'
+    availability_topic: 'tele/light-wall/LWT'
+    payload_on: 'ON'
+    payload_off: 'OFF'
+    payload_available: 'Online'
+    payload_not_available: 'Offline'
+    qos: 1
+    retain: false
+
+fan:
+  # Xaiomi Airpurifier 2S. Token obtained using the miio client. Network access
+  # is restricted to the localnetwork only.
+  - platform: xiaomi_miio
+    name: Air Purifier
+    host: 10.0.0.25
+    token: a0210ed9910d5d5698743a17cdd521ff
+
+sensor:
+  - platform: template
+    sensors:
+      temperature:
+        value_template: "{{ state_attr('fan.xiaomi_miio_device', 'temperature') }}"
+        unit_of_measurement: '°C'
+        device_class: temperature
+      humidity:
+        value_template: "{{ state_attr('fan.xiaomi_miio_device', 'humidity') }}"
+        unit_of_measurement: '%'
+        device_class: humidity
+      pm25:
+        value_template: "{{ state_attr('fan.xiaomi_miio_device', 'aqi') }}"
+        unit_of_measurement: 'µg/m3'
+        # Device class is not supported for pm25, however giving it the name of
+        # 'pm25' will allow homekit to pickup that it is an air quality sensor.
+
+  - platform: darksky
+    api_key: 8a7e05e0a8ee76b808bac20301d58da1
+    forecast: [ 1 ]
+    monitored_conditions: [ temperature ]
+
+switch:
+  - platform: command_line
+    switches:
+      monitors:
+        command_state: >
+          ssh evan@macbook
+            'test 4 == $(ioreg -n IODisplayWrangler
+              | grep -i IOPowerManagement
+              | perl -pe "s/^.*DevicePowerState\"=([0-9]+).*$/\1/"
+            )'
+        command_on:  ssh evan@macbook caffeinate -u
+        command_off: ssh evan@macbook pmset displaysleepnow
+
+  - platform: mqtt
+    name: heater
+    state_topic: 'stat/switch-heater/POWER'
+    command_topic: 'cmnd/switch-heater/POWER'
+    availability_topic: 'tele/switch-heater/LWT'
+    payload_on: 'ON'
+    payload_off: 'OFF'
+    payload_available: 'Online'
+    payload_not_available: 'Offline'
+    qos: 1
+    retain: false
+
+climate:
+  - platform: generic_thermostat
+    name: Heater
+    heater: switch.heater
+    target_sensor: sensor.temperature
+    precision: 0.1

@@ -26,11 +26,11 @@
 - name: restart dhcpcd
   service: name=dhcpcd state=restarted
 
-- name: restart homebridge
-  service: name=homebridge state=restarted
-
 - name: restart waitress
   service: name=waitress state=restarted
+
+- name: restart home-assistant
+  docker_container: name=home-assistant restart=yes
 
 - name: sync personal repo database
   shell: 'repo-add --remove --new /srv/pkgs/personal.db.tar.gz /srv/pkgs/*.pkg.tar.xz'

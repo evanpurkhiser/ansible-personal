@@ -32,6 +32,7 @@
   with_items:
   - media-center-automation
   - waitress-git
+  - prolink-tools-git
 
 # Setup ZFS repo
 - name: Add arch ZFS repo
@@ -175,6 +176,10 @@
 
 - name: Enable waitress service
   service: name=waitress state=started enabled=yes
+
+# Enable prolink-server
+- name: Enable prolink-server service
+  service: name=prolink-server state=started enabled=yes
 
 # Configure DNS entires in cloudflare
 - name: Ensuring DNS entries

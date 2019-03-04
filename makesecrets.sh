@@ -25,9 +25,20 @@ fi
     )"\'
 
     # Home Assistant API key
-    echo home_assistant_api_key: \'"$(
+    echo home_assistant:
+    echo '  api_key:' \'"$(
         op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' | \
             jq -r '.details.sections[].fields[]? | select(.n == "DF8748D4968D48A7BA2D7B9CC8D45989").v'
+    )"\'
+
+    echo '  google_assistant_api_key:' \'"$(
+        op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' | \
+            jq -r '.details.sections[].fields[]? | select(.n == "DB83962019C2412B9E89D97529A352DD").v'
+    )"\'
+
+    echo '  darksky_api_key:' \'"$(
+        op get item 'skoxswyzgzh2dgwuc6d47lmnai' | \
+            jq -r '.details.sections[].fields[]? | select(.n == "CFB4195D54E34F0FAB8F25968FE7958A").v'
     )"\'
 
     # Cloudflare DNS credentials

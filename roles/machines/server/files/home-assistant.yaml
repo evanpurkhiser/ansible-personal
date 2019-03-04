@@ -52,7 +52,7 @@ homekit:
 
 google_assistant:
   project_id: home-assistant-19f4f
-  api_key: AIzaSyBXi-5fWvJ5SjxVzMHugnw-H9cpyM9OJHs
+  api_key: !secret google_assistant_api_key
   expose_by_default: true
   entity_config:
     switch.heater: { expose: false }
@@ -161,7 +161,7 @@ sensor:
         # 'pm25' will allow homekit to pickup that it is an air quality sensor.
 
   - platform: darksky
-    api_key: 8a7e05e0a8ee76b808bac20301d58da1
+    api_key: !secret darksky_api_key
     forecast: [ 1 ]
     monitored_conditions: [ temperature ]
 

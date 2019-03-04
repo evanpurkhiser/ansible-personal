@@ -193,6 +193,7 @@
     network_mode: host
     volumes:
       - '/var/lib/hass:/config'
+      - '/var/lib/hass/.ssh:/root/.ssh'
       - '/etc/localtime:/etc/localetime:ro'
 
 # Enable waitress file server

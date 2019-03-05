@@ -196,3 +196,17 @@ climate:
     heater: switch.heater
     target_sensor: sensor.temperature
     precision: 0.1
+
+automation:
+  - alias: Sonoff power state on HA start-up
+    trigger:
+      platform: homeassistant
+      event: start
+    action:
+      - service: mqtt.publish
+        data:
+          topic: sonoffs/cmnd/state
+          payload: ''
+      - service: mqtt.publish
+        data:
+          topic: cmnd/sonoffs/POWER

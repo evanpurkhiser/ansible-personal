@@ -101,37 +101,37 @@ mqtt:
 light:
   - platform: mqtt
     name: kitchen
-    state_topic: stat/light-kitchen/POWER
-    command_topic: cmnd/light-kitchen/POWER
-    availability_topic: tele/light-kitchen/LWT
-    payload_on: ON
-    payload_off: OFF
-    payload_available: Online
-    payload_not_available: Offline
+    state_topic: 'stat/light-kitchen/POWER'
+    command_topic: 'cmnd/light-kitchen/POWER'
+    availability_topic: 'tele/light-kitchen/LWT'
+    payload_on: 'ON'
+    payload_off: 'OFF'
+    payload_available: 'Online'
+    payload_not_available: 'Offline'
     qos: 1
     retain: false
 
   - platform: mqtt
     name: shelves
-    state_topic: stat/light-shelves/POWER
-    command_topic: cmnd/light-shelves/POWER
-    availability_topic: tele/light-shelves/LWT
-    payload_on: ON
-    payload_off: OFF
-    payload_available: Online
-    payload_not_available: Offline
+    state_topic: 'stat/light-shelves/POWER'
+    command_topic: 'cmnd/light-shelves/POWER'
+    availability_topic: 'tele/light-shelves/LWT'
+    payload_on: 'ON'
+    payload_off: 'OFF'
+    payload_available: 'Online'
+    payload_not_available: 'Offline'
     qos: 1
     retain: false
 
   - platform: mqtt
     name: wall
-    state_topic: stat/light-wall/POWER
-    command_topic: cmnd/light-wall/POWER
-    availability_topic: tele/light-wall/LWT
-    payload_on: ON
-    payload_off: OFF
-    payload_available: Online
-    payload_not_available: Offline
+    state_topic: 'stat/light-wall/POWER'
+    command_topic: 'cmnd/light-wall/POWER'
+    availability_topic: 'tele/light-wall/LWT'
+    payload_on: 'ON'
+    payload_off: 'OFF'
+    payload_available: 'Online'
+    payload_not_available: 'Offline'
     qos: 1
     retain: false
 
@@ -148,15 +148,15 @@ sensor:
     sensors:
       temperature:
         value_template: "{{ state_attr('fan.xiaomi_miio_device', 'temperature') }}"
-        unit_of_measurement: °C
+        unit_of_measurement: '°C'
         device_class: temperature
       humidity:
         value_template: "{{ state_attr('fan.xiaomi_miio_device', 'humidity') }}"
-        unit_of_measurement: %
+        unit_of_measurement: '%'
         device_class: humidity
       pm25:
         value_template: "{{ state_attr('fan.xiaomi_miio_device', 'aqi') }}"
-        unit_of_measurement: µg/m3
+        unit_of_measurement: 'µg/m3'
         # Device class is not supported for pm25, however giving it the name of
         # 'pm25' will allow homekit to pickup that it is an air quality sensor.
 
@@ -180,13 +180,13 @@ switch:
 
   - platform: mqtt
     name: heater
-    state_topic: stat/switch-heater/POWER
-    command_topic: cmnd/switch-heater/POWER
-    availability_topic: tele/switch-heater/LWT
-    payload_on: ON
-    payload_off: OFF
-    payload_available: Online
-    payload_not_available: Offline
+    state_topic: 'stat/switch-heater/POWER'
+    command_topic: 'cmnd/switch-heater/POWER'
+    availability_topic: 'tele/switch-heater/LWT'
+    payload_on: 'ON'
+    payload_off: 'OFF'
+    payload_available: 'Online'
+    payload_not_available: 'Offline'
     qos: 1
     retain: false
 
@@ -205,8 +205,8 @@ automation:
     action:
       - service: mqtt.publish
         data:
-          topic: sonoffs/cmnd/state
+          topic: 'sonoffs/cmnd/state'
           payload: ''
       - service: mqtt.publish
         data:
-          topic: cmnd/sonoffs/POWER
+          topic: 'cmnd/sonoffs/POWER'

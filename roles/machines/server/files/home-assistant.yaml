@@ -169,7 +169,7 @@ switch:
   - platform: command_line
     switches:
       monitors:
-        command_state: >
+        command_state:
           ssh evan@macbook
             'test 4 == $(ioreg -n IODisplayWrangler
               | grep -i IOPowerManagement

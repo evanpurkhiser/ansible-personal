@@ -124,7 +124,7 @@
 
 # Configure rclone
 - name: Ensure rclone backup configuration
-  template: src=rclone.conf dest=/etc/rclone.conf
+  template: src=rclone.conf dest=/etc/rclone.conf mode=0600
 
 - name: Install rclone timer and service
   copy: src=rclone-sync.{{ item }} dest=/etc/systemd/system/

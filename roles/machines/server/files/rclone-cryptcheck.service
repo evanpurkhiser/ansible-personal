@@ -1,0 +1,10 @@
+[Unit]
+Description=Verify encryption on gdrive backup
+
+[Service]
+ReadOnlyPaths=/mnt/documents
+ExecStart=/usr/bin/rclone cryptcheck /mnt/documents documents-encrypted: \
+  --config /etc/rclone.conf \
+  --fast-list \
+  --stats 0 \
+  --one-way

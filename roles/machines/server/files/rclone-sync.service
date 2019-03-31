@@ -3,10 +3,6 @@ Description=Backup documents to gdrive
 
 [Service]
 ReadOnlyPaths=/mnt/documents
-ExecStartPre=/usr/bin/find /mnt/documents/ \
-  -type f \
-  -name '._*' -or -name '.DS_Store' \
-  -exec rm {} \;
 ExecStart=/usr/bin/rclone sync /mnt/documents documents-encrypted: \
   --config /etc/rclone.conf \
   --fast-list \

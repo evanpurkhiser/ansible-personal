@@ -133,6 +133,14 @@
 - name: Enable rclone timer service
   service: name=rclone-sync.timer enabled=yes state=started
 
+# Configure macOS file cleaner
+- name: Install macOS file cleaner timer and service
+  copy: src=clean-macfiles.{{ item }} dest=/etc/systemd/system/
+  with_items: [ timer, service ]
+
+- name: Enable macOS file cleaner timer service
+  service: name=clean-macfiles.timer enabled=yes state=started
+
 # Configure NFS shares
 - name: Enable nfs-server service
   service: name=nfs-server state=started enabled=yes

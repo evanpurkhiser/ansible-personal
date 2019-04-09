@@ -3,6 +3,6 @@ Description=Remove macOS dot files
 
 [Service]
 ExecStart=/usr/bin/find /mnt/documents/ \
-  -type f \
-  -name '._*' -or -name '.DS_Store' \
-  -exec rm {} \;
+  -type f ( -name ._* -or -name .DS_Store ) \
+  -print
+  -delete

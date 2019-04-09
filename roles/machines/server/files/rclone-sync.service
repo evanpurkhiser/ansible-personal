@@ -5,7 +5,7 @@ Description=Backup documents to gdrive
 ReadOnlyPaths=/mnt/documents
 ExecStart=/usr/bin/rclone sync /mnt/documents documents-encrypted: \
   --config /etc/rclone.conf \
-  --log-level INFO \
+  --log-level DEBUG \
   --stats 0 \
   --fast-list \
   --filter "+ /archived/**" \

@@ -8,9 +8,9 @@ ExecStart=/usr/bin/rclone sync /mnt/documents documents-encrypted: \
   --log-level DEBUG \
   --stats 0 \
   --fast-list \
-  --filter "+ /archived/**" \
-  --filter "+ /multimedia/**" \
-  --filter "+ /downloads/torrents-seeding/**" \
-  --filter "- ._*" \
-  --filter "- .DS_Store" \
-  --filter "- *"
+  --filter '+ /archived/**' \
+  --filter '+ /multimedia/**' \
+  --filter '+ /downloads/torrents-seeding/**' \
+  --filter '- ._*' \
+  --filter '- .DS_Store' \
+  --filter '- *'

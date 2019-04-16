@@ -9,7 +9,7 @@ ExecStart=/usr/bin/rclone cryptcheck /mnt/documents documents-encrypted: \
   --log-level DEBUG \
   --stats 0 \
   --fast-list \
-  --one-way
+  --one-way \
   --filter '+ /archived/**' \
   --filter '+ /multimedia/**' \
   --filter '+ /downloads/torrents-seeding/**' \

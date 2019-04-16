@@ -30,7 +30,7 @@
   service: name=waitress state=restarted
 
 - name: restart home-assistant
-  docker_container: name=home-assistant restart=yes
+  service: name=home-assistant state=restarted
 
 - name: sync personal repo database
   shell: 'repo-add --remove --new /srv/pkgs/personal.db.tar.gz /srv/pkgs/*.pkg.tar.xz'

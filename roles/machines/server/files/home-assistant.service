@@ -1,0 +1,16 @@
+[Unit]
+Description=Home Assistant
+After=network-online.target
+
+[Service]
+KillMode=mixed
+Slice=machine.slice
+ExecStart=/usr/bin/rkt run docker://homeassistant/home-assistant:latest \
+  --insecure-options=image \
+  --hosts-entry host \
+  --dns=host \
+  --net=host \
+  --volume=volume-config,kind=host,source=/var/lib/hass
+
+[Install]
+WantedBy=multi-user.target

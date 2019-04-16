@@ -170,13 +170,16 @@ switch:
     switches:
       monitors:
         command_state:
-          ssh evan@macbook
+          LANG=C ssh -o StrictHostKeyChecking=no -i /config/id_rsa evan@macbook
             'test 4 == $(ioreg -n IODisplayWrangler
               | grep -i IOPowerManagement
-              | perl -pe "s/^.*DevicePowerState\"=([0-9]+).*$/\1/"
-            )'
-        command_on: ssh evan@macbook caffeinate -u
-        command_off: ssh evan@macbook pmset displaysleepnow
+              | perl -pe "s/^.*DevicePowerState\"=([0-9]+).*$/\1/")'
+        command_on:
+          LANG=C ssh -o StrictHostKeyChecking=no -i /config/id_rsa evan@macbook
+            caffeinate -u
+        command_off:
+          LANG=C ssh -o StrictHostKeyChecking=no -i /config/id_rsa evan@macbook
+            pmset displaysleepnow
 
   - platform: mqtt
     name: heater
@@ -199,6 +202,7 @@ climate:
 
 automation:
   - alias: Sonoff power state on HA start-up
+    initial_state: true
     trigger:
       platform: homeassistant
       event: start

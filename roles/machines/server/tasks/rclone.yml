@@ -1,0 +1,28 @@
+# Configure rclone
+- name: Ensure rclone backup configuration
+  template: src=rclone.conf dest=/etc/rclone.conf mode=0600
+
+- name: Install rclone timer and service
+  copy: src=systemd/rclone-sync.{{ item }} dest=/etc/systemd/system/
+  with_items: [ timer, service ]
+  notify: systemd daemon-reload
+
+- name: Enable rclone timer service
+  service: name=rclone-sync.timer enabled=yes state=started
+
+- name: Install rclone cryptcheck timer and service
+  copy: src=systemd/rclone-cryptcheck.{{ item }} dest=/etc/systemd/system/
+  with_items: [ timer, service ]
+  notify: systemd daemon-reload
+
+- name: Enable rclone cryptcheck timer service
+  service: name=rclone-cryptcheck.timer enabled=yes state=started
+
+# Configure macOS file cleaner
+- name: Install macOS file cleaner timer and service
+  copy: src=systemd/clean-macfiles.{{ item }} dest=/etc/systemd/system/
+  with_items: [ timer, service ]
+  notify: systemd daemon-reload
+
+- name: Enable macOS file cleaner timer service
+  service: name=clean-macfiles.timer enabled=yes state=started

@@ -67,10 +67,6 @@
 - import_tasks: network.yml
 - import_tasks: rclone.yml
 
-# Enable mosquito service for IoT messages
-- name: Ensure mosquitto is enabled
-  service: name=mosquitto enabled=yes state=started
-
 # Configure NFS shares
 - name: Enable nfs-server service
   service: name=nfs-server state=started enabled=yes
@@ -110,6 +106,10 @@
 
 - name: Enable transmission daemon
   service: name=transmission state=started enabled=yes
+
+# Enable mosquito service for IoT messages
+- name: Ensure mosquitto is enabled
+  service: name=mosquitto enabled=yes state=started
 
 # Configure home-assistant
 - name: Ensure hass config directory exists

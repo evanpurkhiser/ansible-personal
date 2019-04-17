@@ -36,6 +36,11 @@ fi
             jq -r '.details.sections[].fields[]? | select(.n == "DB83962019C2412B9E89D97529A352DD").v'
     )"\'
 
+    echo '  spotify_api_key:' \'"$(
+        op get item 'y4pxpl6oezgavidgfzvcb2nome' | \
+            jq -r '.details.sections[].fields[]? | select(.n == "0959D6B98BE74F40BF981214E1D1A491").v'
+    )"\'
+
     echo '  darksky_api_key:' \'"$(
         op get item 'skoxswyzgzh2dgwuc6d47lmnai' | \
             jq -r '.details.sections[].fields[]? | select(.n == "CFB4195D54E34F0FAB8F25968FE7958A").v'

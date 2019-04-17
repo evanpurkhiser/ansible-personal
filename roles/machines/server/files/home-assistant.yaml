@@ -34,9 +34,12 @@ homeassistant:
       icon: mdi:radiator
     climate.heater:
       icon: mdi:radiator
+    media_player.spotify:
+      entity_picture: ''
 
 http:
   api_password: !secret api_key
+  base_url: https://hass.evanpurkhiser.com
 
 config: # Configuration component
 history: # Event history component
@@ -199,6 +202,14 @@ climate:
     heater: switch.heater
     target_sensor: sensor.temperature
     precision: 0.1
+
+media_player:
+  - platform: spotify
+    client_id: e54d259d80434a8ead4b1bd82a9e5a0b
+    client_secret: !secret spotify_api_key
+    aliases:
+      abc123def456: 'Living Room'
+      9183abas000: 'Bed Room'
 
 automation:
   - alias: Sonoff power state on HA start-up

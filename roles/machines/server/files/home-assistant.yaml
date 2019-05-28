@@ -115,10 +115,10 @@ light:
     retain: false
 
   - platform: mqtt
-    name: shelves
-    state_topic: 'stat/light-shelves/POWER'
-    command_topic: 'cmnd/light-shelves/POWER'
-    availability_topic: 'tele/light-shelves/LWT'
+    name: counter
+    state_topic: 'stat/light-counter/POWER'
+    command_topic: 'cmnd/light-counter/POWER'
+    availability_topic: 'tele/light-counter/LWT'
     payload_on: 'ON'
     payload_off: 'OFF'
     payload_available: 'Online'

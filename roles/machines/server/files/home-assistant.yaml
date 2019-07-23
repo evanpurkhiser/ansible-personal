@@ -213,6 +213,7 @@ media_player:
 
 automation:
   - alias: Sonoff power state on HA start-up
+    hide_entity: true
     initial_state: true
     trigger:
       platform: homeassistant

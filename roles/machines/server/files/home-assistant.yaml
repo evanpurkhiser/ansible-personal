@@ -192,6 +192,42 @@ binary_sensor:
         # and open respectively.
         value_template: "{{ is_state('sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_access_control', '22') }}"
         device_class: door
+  # This sensor handles the inference logic to determine if home assistant
+  # *thinks* that I am at home. There are various routines that I follow that
+  # we can use to make assumptions about weather or not I am in my apartment or
+  # not. They are documented below.
+  - platform: bayesian
+    name: suspected_home
+    prior: 0.5
+    probability_threshold: 0.6
+    observations:
+      # If the computer monitors are on there's a chance that I am at home.
+      - entity_id: switch.monitors
+        platform: state
+        prob_given_true: 0.60
+        to_state: on
+      # If the computer monitors are on and have been on for over 30 minutes,
+      # there's a very good chance that I am still at home.
+      - platform: template
+        prob_given_true: 0.90
+        prob_given_false: 0.50
+        value_template: >
+          {{ is_state('switch.monitors', 'on') and
+             (now() - states.switch.monitors.last_changed).seconds > 30*60 }}
+      # If it's a weekday between 8am and 12pm and I have NOT opened my front
+      # door yet, it's very likely that I am home getting ready for work.
+      - platform: template
+        prob_given_true: 0.95
+        prob_given_false: 0.50
+        value_template: >
+          {{ now().weekday() < 5 and now().hour() >= 8 and now().hour() < 12 and
+             (now() - states.binary_sensor.front_door.last_changed).seconds > 4*60*60 }}
+      # If any lights are on, there's a good chance that I am home.
+      - entity_id: group.all_lights
+        platform: state
+        prob_given_true: 0.75
+        prob_given_false: 0.5
+        to_state: on
 
 switch:
   - platform: command_line

@@ -80,6 +80,23 @@ zone:
     longitude: -122.397365
     radius: 200
 
+zwave:
+  usb_path: /dev/zwave
+  network_key: "0x04, 0xD1, 0xD6, 0x19, 0x30, 0xFF, 0x6B, 0x71, 0x54, 0x38, 0x4C, 0x79, 0x5A, 0x31, 0x24, 0xFD"
+  device_config:
+    zwave.z_wave_sigma_designs_uzb_z_wave_usb_adapter:
+      ignored: true
+    binary_sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_sensor:
+      ignored: true
+    sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_sourcenodeid:
+      ignored: true
+    sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_burglar:
+      ignored: true
+    sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_alarm_type:
+      ignored: true
+    sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_alarm_level:
+      ignored: true
+
 hue:
   bridges:
     - host: 10.0.0.31
@@ -162,11 +179,19 @@ sensor:
         unit_of_measurement: 'µg/m3'
         # Device class is not supported for pm25, however giving it the name of
         # 'pm25' will allow homekit to pickup that it is an air quality sensor.
-
   - platform: darksky
     api_key: !secret darksky_api_key
     forecast: [1]
     monitored_conditions: [temperature]
+
+binary_sensor:
+  - platform: template
+    sensors:
+      front_door:
+        # The door sensor alternates between the values 23 and 22 for closed
+        # and open respectively.
+        value_template: "{{ is_state('sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_access_control', '22') }}"
+        device_class: door
 
 switch:
   - platform: command_line

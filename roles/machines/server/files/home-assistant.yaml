@@ -280,6 +280,8 @@ media_player:
       9183abas000: 'Bed Room'
 
 automation:
+  # Check the status of sonoff devices during boot. They do not report to us on
+  # any periodic heartbeat.
   - alias: Sonoff power state on HA start-up
     hide_entity: true
     initial_state: true

@@ -75,21 +75,26 @@
 # Configure NFS shares
 - name: Enable nfs-server service
   service: name=nfs-server state=started enabled=yes
+  tags: [nfs]
 
 - name: Enable nfs rpcbind socket activation (nfs v2/3)
   service: name=rpcbind.socket enabled=yes
+  tags: [nfs]
 
 - name: Ensure documents device is exported
   copy: src=exports dest=/etc/exports
   notify: reload nfs exports
+  tags: [nfs]
 
 # Configure nginx server
 - name: Enable nginx server
   service: name=nginx state=started enabled=yes
+  tags: [nginx]
 
 - name: Ensure nginx server configuration
   copy: src=nginx.conf dest=/etc/nginx/
   notify: reload nginx
+  tags: [nginx]
 
 - name: Encrypt transmission basic-auth password
   htpasswd: path=/etc/nginx/htpasswd_transmission
@@ -97,43 +102,54 @@
             owner=http
             name=evan
             password={{ transmission_rpc_password }}
+  tags: [nginx]
 
 # Configure transmission
 - name: Ensure transmission configuration directory exists
   file: path=/home/evan/.config/transmission-daemon state=directory
+  tags: [transmission]
 
 - name: Ensure transmission runs as "evan"
   copy: src=transmission-user.conf dest=/etc/systemd/system/transmission.service.d/
+  tags: [transmission]
 
 - name: Ensure transmission configuration
   copy: src=transmission-settings.json dest=/home/evan/.config/transmission-daemon/settings.json
   notify: reload transmission
+  tags: [transmission]
 
 - name: Enable transmission daemon
   service: name=transmission state=started enabled=yes
+  tags: [transmission]
 
 # Enable mosquito service for IoT messages
 - name: Ensure mosquitto is enabled
   service: name=mosquitto enabled=yes state=started
+  tags: [hass]
 
 # Configure home-assistant
 - name: Ensure hass config directory exists
   file: path=/var/lib/hass state=directory
+  tags: [hass]
 
 - name: Ensure hass configuration
   copy: src=home-assistant.yaml dest=/var/lib/hass/configuration.yaml
   notify: restart home-assistant
+  tags: [hass]
 
 - name: Ensure hass secrets
   template: src=home-assistant-secrets.yaml dest=/var/lib/hass/secrets.yaml
   notify: restart home-assistant
+  tags: [hass]
 
 - name: Ensure home-assistant service file
   copy: src=systemd/home-assistant.service dest=/etc/systemd/system/
   notify: systemd daemon-reload
+  tags: [hass]
 
 - name: Enable home-assistant
   service: name=home-assistant state=started enabled=yes
+  tags: [hass]
 
 # Enable waitress file server
 - name: ensure waitress config

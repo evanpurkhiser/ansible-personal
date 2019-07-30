@@ -97,6 +97,10 @@ zwave:
     sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_alarm_level:
       ignored: true
 
+zha:
+  usb_path: /dev/zigbee
+  database_path: /config/zigbee.db
+
 hue:
   bridges:
     - host: 10.0.0.31

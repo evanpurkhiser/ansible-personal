@@ -28,12 +28,12 @@ homeassistant:
       icon: mdi:lamp
     switch.monitors:
       icon: mdi:monitor
-    fan.xiaomi_miio_device:
-      icon: mdi:weather-windy
     switch.heater:
       icon: mdi:radiator
     climate.heater:
       icon: mdi:radiator
+    fan.xiaomi_miio_device:
+      icon: mdi:weather-windy
     media_player.spotify:
       entity_picture: ''
 

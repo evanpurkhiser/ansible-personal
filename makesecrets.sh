@@ -14,7 +14,7 @@ fi
 # Access point credentials
 (
     echo wifi_password: \'"$(
-        op get item 'pscarwpmj5bqpf57rqv4gfrsjq' | \
+        op get item 'hnysllbhcfa4rmsmtko2x3naeq' | \
             jq -r '.details.sections[].fields[]? | select(.n == "wireless_password").v'
     )"\'
 

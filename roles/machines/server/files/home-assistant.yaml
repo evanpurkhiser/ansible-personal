@@ -101,10 +101,6 @@ zha:
   usb_path: /dev/zigbee
   database_path: /config/zigbee.db
 
-hue:
-  bridges:
-    - host: 10.0.0.31
-
 mqtt:
   broker: 127.0.0.1
   port: 1883

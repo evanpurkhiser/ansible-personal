@@ -25,19 +25,29 @@ fi
     )"\'
 
     echo home_assistant:
-    echo '  api_key:' \'"$(
-        op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' | \
-            jq -r '.details.sections[].fields[]? | select(.n == "DF8748D4968D48A7BA2D7B9CC8D45989").v'
-    )"\'
-
     echo '  google_assistant_api_key:' \'"$(
         op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' | \
             jq -r '.details.sections[].fields[]? | select(.n == "DB83962019C2412B9E89D97529A352DD").v'
     )"\'
 
+    echo '  hacs_github_api_key:' \'"$(
+        op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' | \
+            jq -r '.details.sections[].fields[]? | select(.n == "3E7D5DBE346F4EED8B1F69B2DA1F32A1").v'
+    )"\'
+
     echo '  spotify_api_key:' \'"$(
         op get item 'y4pxpl6oezgavidgfzvcb2nome' | \
             jq -r '.details.sections[].fields[]? | select(.n == "0959D6B98BE74F40BF981214E1D1A491").v'
+    )"\'
+
+    echo '  spotify_username:' \'"$(
+        op get item 'y4pxpl6oezgavidgfzvcb2nome' | \
+            jq -r '.details.fields[] | select(.name == "username").value'
+    )"\'
+
+    echo '  spotify_password:' \'"$(
+        op get item 'y4pxpl6oezgavidgfzvcb2nome' | \
+            jq -r '.details.fields[] | select(.name == "password").value'
     )"\'
 
     echo '  darksky_api_key:' \'"$(

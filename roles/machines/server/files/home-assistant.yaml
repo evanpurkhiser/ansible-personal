@@ -274,6 +274,10 @@ media_player:
       abc123def456: 'Living Room'
       9183abas000: 'Bed Room'
 
+spotcast:
+  username: !secret spotify_username
+  password: !secret spotify_password
+
 automation:
   # Check the status of sonoff devices during boot. They do not report to us on
   # any periodic heartbeat.
@@ -343,7 +347,7 @@ automation:
 
   # Smart Things Button: 28:6d:97:00:01:08:5e:4d
   # Livingroom Light controls
-  - alias: Living room lights
+  - alias: Walked in the door
     hide_entity: true
     initial_state: true
     trigger:
@@ -359,6 +363,11 @@ automation:
         entity_id: light.entrance
       - service: light.toggle
         entity_id: light.desk
+      - service: spotcast.start
+        data:
+          device_name: 'Apartment Speaker'
+          uri: "spotify:playlist:74sUjcvpGfdOvCHvgzNEDO"
+          random_song: true
   - alias: Living room wall light
     hide_entity: true
     initial_state: true

@@ -38,7 +38,6 @@ homeassistant:
       entity_picture: ''
 
 http:
-  api_password: !secret api_key
   base_url: https://hass.evanpurkhiser.com
 
 config: # Configuration component

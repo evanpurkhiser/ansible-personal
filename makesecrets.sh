@@ -24,7 +24,6 @@ fi
             jq -r '.details.fields[] | select(.name == "password").value'
     )"\'
 
-    # Home Assistant API key
     echo home_assistant:
     echo '  api_key:' \'"$(
         op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' | \

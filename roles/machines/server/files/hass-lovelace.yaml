@@ -1,0 +1,67 @@
+title: Apartment
+resources:
+  - url: /community_plugin/mini-graph-card/mini-graph-card-bundle.js
+    type: module
+  - url: /community_plugin/mini-media-player/mini-media-player-bundle.js
+    type: module
+  - url: /local/simple-weather-card-bundle.js?v=0.5.0
+    type: module
+
+views:
+  - title: 'Home'
+    icon: 'mdi:home'
+    panel: false
+    path: default_view
+
+    cards:
+      - type: custom:mini-media-player
+        entity: media_player.spotify
+        sound_mode: icon
+        artwork: cover
+        hide:
+          volume: true
+          source: true
+          power_state: false
+
+      - type: glance
+        show_state: false
+        entities:
+          - entity: light.counter
+            tap_action: { action: toggle }
+          - entity: light.kitchen
+            tap_action: { action: toggle }
+          - entity: light.wall
+            tap_action: { action: toggle }
+          - entity: light.livingroom
+            tap_action: { action: toggle }
+          - entity: light.entrance
+            tap_action: { action: toggle }
+          - entity: light.desk
+            tap_action: { action: toggle }
+          - entity: light.bedside
+            tap_action: { action: toggle }
+          - entity: fan.xiaomi_miio_device
+            tap_action: { action: toggle }
+          - entity: climate.heater
+            tap_action: { action: toggle }
+          - entity: binary_sensor.front_door
+
+      - type: custom:mini-graph-card
+        name: Temperature
+        entities:
+          - entity: sensor.temperature
+            name: Inside Temperature
+            show_legend: false
+          - entity: sensor.dark_sky_temperature
+            name: Outside Temperature
+            show_legend: false
+        points_per_hour: 0.5
+        hours_to_show: 48
+        font_size: 75
+
+      - type: custom:mini-graph-card
+        name: Air Quality
+        entities: [sensor.pm25]
+        icon: 'mdi:weather-windy'
+        hours_to_show: 48
+

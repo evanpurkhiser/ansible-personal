@@ -7,6 +7,7 @@ ReadOnlyPaths=/mnt/documents
 ExecStart=/usr/bin/rclone cryptcheck /mnt/documents documents-encrypted: \
   --config /etc/rclone.conf \
   --log-level DEBUG \
+  --use-json-log \
   --stats 0 \
   --fast-list \
   --one-way \

@@ -3,46 +3,14 @@ homeassistant:
   time_zone: America/Los_Angeles
   unit_system: imperial
   elevation: 74
-  latitude: 37.7808295
-  longitude: -122.4133351
-
-  customize:
-    zone.home:
-      beacon:
-        uuid: 74278bda-b644-4520-8f0c-720eaf059935
-        major: 1
-        minor: 1139
-    light.wall:
-      icon: mdi:ceiling-light
-    light.desk:
-      icon: mdi:track-light
-    light.bedside:
-      icon: mdi:lamp
-    light.fluorescents:
-      icon: mdi:ceiling-light
-    light.kitchen:
-      icon: mdi:ceiling-light
-    light.livingroom:
-      icon: mdi:floor-lamp
-    light.entrance:
-      icon: mdi:lamp
-    switch.monitors:
-      icon: mdi:monitor
-    switch.heater:
-      icon: mdi:radiator
-    climate.heater:
-      icon: mdi:radiator
-    fan.xiaomi_miio_device:
-      icon: mdi:weather-windy
-    media_player.spotify:
-      entity_picture: ''
+  latitude: 37.765389
+  longitude: -122.410831
+  external_url: https://hass.evanpurkhiser.com
 
 http:
-  base_url: https://hass.evanpurkhiser.com
-
-config: # Configuration component
-history: # Event history component
-logbook: # Event logbook
+config:
+history:
+logbook:
 system_health:
 
 frontend:
@@ -53,54 +21,34 @@ lovelace:
 
 homekit:
   filter:
-    exclude_entities:
-      - switch.heater
-      - sensor.dark_sky_temperature
-      - sensor.temperature
+    include_entity_globs:
+      - light.*
+      - cover.*
+      - fan.*
 
 google_assistant:
   project_id: home-assistant-19f4f
-  api_key: !secret google_assistant_api_key
-  expose_by_default: true
+  service_account: !secret google_assistant_service_account
+  report_state: true
+  expose_by_default: false
   entity_config:
-    switch.heater: { expose: false }
-    group.all_fans: { expose: false }
-    group.all_switches: { expose: false }
-    group.all_devices: { expose: false }
+    cover.living_room_shades: { expose: true }
+    light.living_room_lights: { expose: true }
+    light.kitchen_cove_lights: { expose: true }
+    light.kitchen_lights: { expose: true }
 
-zone:
-  - name: Home
-    icon: mdi:home
-    latitude: 37.7808295
-    longitude: -122.4133351
-    radius: 100
-    beacon:
-      uuid: 74278bda-b644-4520-8f0c-720eaf059935
-      major: 1
-      minor: 1139
+ecobee:
+  api_key: !secret ecobee_api_key
 
-  - name: Work
-    icon: mdi:office-building
-    latitude: 37.7839965
-    longitude: -122.397365
-    radius: 200
+lutron_caseta:
+  - host: 10.0.0.194
+    keyfile: caseta.key
+    certfile: caseta.crt
+    ca_certs: caseta-bridge.crt
 
 zwave:
   usb_path: /dev/zwave
   network_key: "0x04, 0xD1, 0xD6, 0x19, 0x30, 0xFF, 0x6B, 0x71, 0x54, 0x38, 0x4C, 0x79, 0x5A, 0x31, 0x24, 0xFD"
-  device_config:
-    zwave.z_wave_sigma_designs_uzb_z_wave_usb_adapter:
-      ignored: true
-    binary_sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_sensor:
-      ignored: true
-    sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_sourcenodeid:
-      ignored: true
-    sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_burglar:
-      ignored: true
-    sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_alarm_type:
-      ignored: true
-    sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_alarm_level:
-      ignored: true
 
 zha:
   usb_path: /dev/zigbee
@@ -123,42 +71,14 @@ mqtt:
     qos: 1
     retain: false
 
-light:
-  - platform: mqtt
-    name: kitchen
-    state_topic: 'stat/light-kitchen/POWER'
-    command_topic: 'cmnd/light-kitchen/POWER'
-    availability_topic: 'tele/light-kitchen/LWT'
-    payload_on: 'ON'
-    payload_off: 'OFF'
-    payload_available: 'Online'
-    payload_not_available: 'Offline'
-    qos: 1
-    retain: false
-
-  - platform: mqtt
-    name: counter
-    state_topic: 'stat/light-counter/POWER'
-    command_topic: 'cmnd/light-counter/POWER'
-    availability_topic: 'tele/light-counter/LWT'
-    payload_on: 'ON'
-    payload_off: 'OFF'
-    payload_available: 'Online'
-    payload_not_available: 'Offline'
-    qos: 1
-    retain: false
-
-  - platform: mqtt
-    name: wall
-    state_topic: 'stat/light-wall/POWER'
-    command_topic: 'cmnd/light-wall/POWER'
-    availability_topic: 'tele/light-wall/LWT'
-    payload_on: 'ON'
-    payload_off: 'OFF'
-    payload_available: 'Online'
-    payload_not_available: 'Offline'
-    qos: 1
-    retain: false
+telegram_bot:
+  - platform: webhooks
+    api_key: !secret telegram_bot_token
+    parse_mode: markdown
+    trusted_networks: 127.0.0.1
+    allowed_chat_ids:
+      - -427766023 # Apartment chat
+      - 1252020315 # Evan DM
 
 fan:
   # Xaiomi Airpurifier 2S. Token obtained using the miio client. Network access
@@ -171,15 +91,18 @@ fan:
 sensor:
   - platform: template
     sensors:
-      temperature:
+      xiaomi_temperature:
+        friendly_name: Temperature (Purifier)
         value_template: "{{ state_attr('fan.xiaomi_miio_device', 'temperature') }}"
         unit_of_measurement: '°C'
         device_class: temperature
-      humidity:
+      xiaomi_humidity:
+        friendly_name: Humidity (Purifier)
         value_template: "{{ state_attr('fan.xiaomi_miio_device', 'humidity') }}"
         unit_of_measurement: '%'
         device_class: humidity
-      pm25:
+      xiaomi_pm25:
+        friendly_name: pm25
         value_template: "{{ state_attr('fan.xiaomi_miio_device', 'aqi') }}"
         unit_of_measurement: 'µg/m3'
         # Device class is not supported for pm25, however giving it the name of
@@ -195,203 +118,14 @@ binary_sensor:
       front_door:
         # The door sensor alternates between the values 23 and 22 for closed
         # and open respectively.
-        value_template: "{{ is_state('sensor.hank_electronics_ltd_hkzw_dws01_door_window_sensor_access_control', '22') }}"
+        value_template: "{{ is_state('sensor.door_state', '22') }}"
         device_class: door
+        friendly_name: Front Door
 
-switch:
-  - platform: command_line
-    switches:
-      monitors:
-        command_state:
-          LANG=C ssh -o StrictHostKeyChecking=no -i /config/id_rsa evan@macbook
-            'test 4 == $(ioreg -n IODisplayWrangler
-              | grep -i IOPowerManagement
-              | perl -pe "s/^.*DevicePowerState\"=([0-9]+).*$/\1/")'
-        command_on:
-          LANG=C ssh -o StrictHostKeyChecking=no -i /config/id_rsa evan@macbook
-            caffeinate -u
-        command_off:
-          LANG=C ssh -o StrictHostKeyChecking=no -i /config/id_rsa evan@macbook
-            pmset displaysleepnow
-
-  - platform: mqtt
-    name: heater
-    state_topic: 'stat/switch-heater/POWER'
-    command_topic: 'cmnd/switch-heater/POWER'
-    availability_topic: 'tele/switch-heater/LWT'
-    payload_on: 'ON'
-    payload_off: 'OFF'
-    payload_available: 'Online'
-    payload_not_available: 'Offline'
-    qos: 1
-    retain: false
-
-climate:
-  - platform: generic_thermostat
-    name: Heater
-    heater: switch.heater
-    target_sensor: sensor.temperature
-    precision: 0.1
-
-media_player:
-  - platform: spotify
-    client_id: e54d259d80434a8ead4b1bd82a9e5a0b
-    client_secret: !secret spotify_api_key
-    aliases:
-      abc123def456: 'Living Room'
-      9183abas000: 'Bed Room'
-
-spotcast:
-  username: !secret spotify_username
-  password: !secret spotify_password
-
-automation:
-  # Check the status of sonoff devices during boot. They do not report to us on
-  # any periodic heartbeat.
-  - alias: Sonoff power state on HA start-up
-    hide_entity: true
-    initial_state: true
-    trigger:
-      platform: homeassistant
-      event: start
-    action:
-      - service: mqtt.publish
-        data:
-          topic: 'sonoffs/cmnd/state'
-          payload: ''
-      - service: mqtt.publish
-        data:
-          topic: 'cmnd/sonoffs/POWER'
-
-  # XXX: Temporary hack to turn off lights and music when opening the door.
-  - alias: Front door opened
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.front_door
-        to: 'on'
-    action:
-      - service: light.turn_off
-        entity_id: group.all_lights
-      - service: media_player.media_pause
-        entity_id: media_player.spotify
-
-  # Smart Things Button: 28:6d:97:00:01:03:26:d2
-  # Kitchen light switch controls
-  - alias: Counter light on
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_data: { device_ieee: '28:6d:97:00:01:03:26:d2', command: button_single }
-        event_type: zha_event
-    action:
-      - service: light.toggle
-        entity_id: light.counter
-  - alias: Kichen light on
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_data: { device_ieee: '28:6d:97:00:01:03:26:d2', command: button_double }
-        event_type: zha_event
-    action:
-      - service: light.toggle
-        entity_id: light.kitchen
-  - alias: Turn off both counter and kitchen
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_data: { device_ieee: '28:6d:97:00:01:03:26:d2', command: button_hold }
-        event_type: zha_event
-    action:
-      - service: light.turn_off
-        entity_id: light.kitchen
-      - service: light.turn_off
-        entity_id: light.counter
-
-  # Smart Things Button: 28:6d:97:00:01:08:5e:4d
-  # Livingroom Light controls
-  - alias: Walked in the door
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_data: { device_ieee: '28:6d:97:00:01:08:5e:4d', command: button_single }
-        event_type: zha_event
-    action:
-      # TODO: This would be cool to have on a selector to toggle between a few
-      # different scenes here
-      - service: light.toggle
-        entity_id: light.livingroom
-      - service: light.toggle
-        entity_id: light.entrance
-      - service: light.toggle
-        entity_id: light.desk
-      - service: spotcast.start
-        data:
-          device_name: 'Apartment Speaker'
-          uri: "spotify:playlist:74sUjcvpGfdOvCHvgzNEDO"
-          random_song: true
-  - alias: Living room wall light
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_data: { device_ieee: '28:6d:97:00:01:08:5e:4d', command: button_double }
-        event_type: zha_event
-    action:
-      - service: light.toggle
-        entity_id: light.wall
-  - alias: Turn off living room lights
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_data: { device_ieee: '28:6d:97:00:01:08:5e:4d', command: button_hold }
-        event_type: zha_event
-    action:
-      - service: light.turn_off
-        entity_id: light.wall
-      - service: light.turn_off
-        entity_id: light.livingroom
-      - service: light.turn_off
-        entity_id: light.entrance
-      - service: light.turn_off
-        entity_id: light.desk
-
-  # Smart Things Button: 28:6d:97:00:01:08:5e:54
-  # Livingroom Light controls
-  - alias: Bedside light
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_data: { device_ieee: '28:6d:97:00:01:08:5e:54', command: button_single }
-        event_type: zha_event
-    action:
-      - service: light.toggle
-        entity_id: light.bedside
-  # TODO: Toggle kodi TV on / off
-  - alias: Toggle upstairs TV on / off
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_data: { device_ieee: '28:6d:97:00:01:08:5e:54', command: button_double }
-        event_type: zha_event
-    action: []
-  - alias: Turn off everything
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_data: { device_ieee: '28:6d:97:00:01:08:5e:54', command: button_hold }
-        event_type: zha_event
-    action:
-      - service: light.turn_off
-        entity_id: group.all_lights
-      - service: switch.turn_off
-        entity_id: switch.monitors
+cover:
+  - platform: group
+    name: Living Room Shades
+    entities:
+      - cover.living_room_left_shade
+      - cover.living_room_middle_shade
+      - cover.living_room_right_shade

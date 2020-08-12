@@ -132,6 +132,21 @@
   file: path=/var/lib/hass state=directory
   tags: [hass]
 
+- name: Ensure Lutron caseta.crt
+  copy: content="{{ lutron.caseta_crt }}" dest=/var/lib/hass/caseta.crt
+  notify: restart home-assistant
+  tags: [hass]
+
+- name: Ensure Lutron caseta.key
+  copy: content="{{ lutron.caseta_key }}" dest=/var/lib/hass/caseta.key
+  notify: restart home-assistant
+  tags: [hass]
+
+- name: Ensure Lutron caseta-bridge.crt
+  copy: content="{{ lutron.caseta_bridge_crt }}" dest=/var/lib/hass/caseta-bridge.crt
+  notify: restart home-assistant
+  tags: [hass]
+
 - name: Ensure hass configuration
   copy: src=home-assistant.yaml dest=/var/lib/hass/configuration.yaml
   notify: restart home-assistant

@@ -1,0 +1,26 @@
+{
+  "name": "callbox",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prestart": "tsc",
+    "start": "twilio-run start",
+    "predeploy": "tsc",
+    "deploy": "twilio-run deploy"
+  },
+  "devDependencies": {
+    "@twilio-labs/serverless-runtime-types": "^1.1.8",
+    "@types/node-fetch": "^2.5.7",
+    "prettier": "^2.0.5",
+    "twilio-cli": "^2.7.0",
+    "twilio-run": "^2.0.0",
+    "typescript": "^3.9.7"
+  },
+  "dependencies": {
+    "@sentry/node": "^5.21.1",
+    "node-fetch": "^2.6.0",
+    "twilio": "^3.48.2"
+  }
+}

@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/node';
 import fetch from 'node-fetch';
 import Twilio from 'twilio';
-import VoiceResponse from 'twilio/lib/twiml/VoiceResponse';
 import {ServerlessFunctionSignature} from '@twilio-labs/serverless-runtime-types/types';
+import VoiceResponse from 'twilio/lib/twiml/VoiceResponse';
 
 Sentry.init({
   dsn: 'https://2f93a9000711464a8c6fa4f19563c612@o126623.ingest.sentry.io/5391542',
@@ -69,6 +69,11 @@ const unlock = (twiml: VoiceResponse) => {
   twiml.play({digits: '9'});
 };
 
+const say = (instance: {say: VoiceResponse['say']}, m: string) => {
+  const speech = instance.say('');
+  speech.prosody({volume: 'x-loud'}, m);
+};
+
 /**
  * Handle when a call first comes in, and no authorization has been provded.
  */
@@ -100,6 +105,8 @@ const handleCall: Handler = async function (ctx, event, callback) {
 
   const data = await resp.json();
 
+  twiml.say('This is normal volume');
+
   // When we have single use codes available, give the user more time to enter.
   const gather = twiml.gather({
     numDigits: data.numDigits,
@@ -107,7 +114,7 @@ const handleCall: Handler = async function (ctx, event, callback) {
     input: ['dtmf'],
   });
 
-  gather.say('If you have an access code, enter it now. Otherwies please wait.');
+  say(gather, 'Enter an access code, or wait to be connected.');
 
   // User did not dial the an access code, call the target person
   twiml.dial(target.number);
@@ -129,7 +136,7 @@ const handleAuth: Handler = async function (ctx, event, callback) {
   const data: AuthResponse = await resp.json();
 
   if (data.status === 'denied') {
-    twiml.say(`Sorry, the access code ${event.Digits.split('').join('-')} is not valid`);
+    say(twiml, `Sorry, ${event.Digits.split('').join('-')} is invalid.`);
     twiml.redirect('/index');
     callback(null, twiml);
     return;
@@ -137,8 +144,9 @@ const handleAuth: Handler = async function (ctx, event, callback) {
 
   // If it's a single use code give them specific instructions to find the apartment.
   if (data.isSingleUse) {
-    twiml.say(
-      'Valid access code. Apartment 3-0-1 is on floor 3 up the stairs to the right. Please enter.'
+    say(
+      twiml,
+      'Valid access code. Apartment 3-0-1 is on floor 3 up the stairs to the right.'
     );
     unlock(twiml);
     callback(null, twiml);
@@ -150,15 +158,15 @@ const handleAuth: Handler = async function (ctx, event, callback) {
   const welcome = data.name !== null ? `Welcome ${data.name}` : 'Welcome in';
   const visit = addNumberSuffix(data.visitNumber);
 
-  twiml.say(`Access granted! ${welcome}. This is your ${visit} visit.`);
+  say(twiml, `Access granted! ${welcome}. This is your ${visit} visit.`);
 
   if (data.lastVisit) {
-    twiml.say(`You last visited ${data.lastVisit}.`);
+    say(twiml, `You last visited ${data.lastVisit}.`);
   }
 
   // Tell them where the door is
   if (data.visitNumber === 1) {
-    twiml.say('Find apartment 3-0-1 on floor 3 up the stairs to the right.');
+    say(twiml, 'Find apartment 3-0-1 on floor 3 up the stairs to the right.');
   }
 
   unlock(twiml);

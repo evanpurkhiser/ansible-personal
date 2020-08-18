@@ -105,8 +105,6 @@ const handleCall: Handler = async function (ctx, event, callback) {
 
   const data = await resp.json();
 
-  twiml.say('This is normal volume');
-
   // When we have single use codes available, give the user more time to enter.
   const gather = twiml.gather({
     numDigits: data.numDigits,

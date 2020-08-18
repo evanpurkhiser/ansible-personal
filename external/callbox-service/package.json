@@ -9,7 +9,7 @@
     "start": "twilio-run start",
     "predeploy": "tsc",
     "deploy": "twilio-run deploy",
-    "deploy-prod": "twilio-run deploy --environment=prod"
+    "deploy-prod": "twilio-run deploy --account-sid=$ACCOUNT_SID --auth-token=$AUTH_TOKEN --override-existing-project --environment=prod"
   },
   "devDependencies": {
     "@twilio-labs/serverless-runtime-types": "^1.1.8",

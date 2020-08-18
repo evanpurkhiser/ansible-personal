@@ -1,0 +1,19 @@
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    name: Deploy Twilio callbox service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - run: yarn
+        working-directory: external/callbox-service
+      - name: Deploying to Twilio
+        run: yarn deploy-prod
+        working-directory: external/callbox-service
+        env:
+          ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}

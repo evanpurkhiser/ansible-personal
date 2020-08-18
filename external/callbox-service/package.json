@@ -4,11 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prestart": "tsc",
     "start": "twilio-run start",
     "predeploy": "tsc",
     "deploy": "twilio-run deploy",
+    "predeploy-prod": "tsc",
     "deploy-prod": "twilio-run deploy --account-sid=$ACCOUNT_SID --auth-token=$AUTH_TOKEN --override-existing-project --environment=prod"
   },
   "devDependencies": {

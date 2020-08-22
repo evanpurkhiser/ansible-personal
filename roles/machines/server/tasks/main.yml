@@ -144,23 +144,25 @@
   notify: restart home-assistant
   tags: [hass]
 
-- name: Ensure hass UI configuration
-  copy: src=hass-lovelace.yaml dest=/var/lib/hass/ui-lovelace.yaml
-  tags: [hass, hass-ui]
-
 - name: Ensure hass secrets
   template: src=home-assistant-secrets.yaml dest=/var/lib/hass/secrets.yaml
   notify: restart home-assistant
   tags: [hass]
 
-- name: Ensure home-assistant service file
-  copy: src=systemd/home-assistant.service dest=/etc/systemd/system/
-  notify: systemd daemon-reload
-  tags: [hass]
+- name: Ensure hass UI configuration
+  copy: src=hass-lovelace.yaml dest=/var/lib/hass/ui-lovelace.yaml
+  tags: [hass, hass-ui]
 
-- name: Enable home-assistant
-  service: name=home-assistant state=started enabled=yes
+- name: Ensure hass docker container
   tags: [hass]
+  docker_container:
+    name: home-assistant
+    image: homeassistant/home-assistant
+    init: true
+    network_mode: host
+    restart_policy: unless-stopped
+    volumes: [ '/var/lib/hass:/config', '/etc/localtime:/etc/localtime:ro' ]
+    devices: [ '/dev/zwave:/dev/zwave', '/dev/zigbee:/dev/zigbee' ]
 
 # Enable waitress file server
 - name: ensure waitress config

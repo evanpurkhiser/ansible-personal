@@ -32,10 +32,16 @@ google_assistant:
   report_state: true
   expose_by_default: false
   entity_config:
+    sensor.xiaomi_pm25: { expose: true }
+    fan.xiaomi_miio_device: { expose: true }
+    climate.apartment: { expose: true }
     cover.living_room_shades: { expose: true }
     light.living_room_lights: { expose: true }
     light.kitchen_cove_lights: { expose: true }
     light.kitchen_lights: { expose: true }
+    light.front_foyer_lights: { expose: true }
+    light.joes_room_lights: { expose: true }
+    light.joes_room_lights: { expose: true }
 
 ecobee:
   api_key: !secret ecobee_api_key

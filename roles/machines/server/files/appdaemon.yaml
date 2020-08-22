@@ -1,0 +1,15 @@
+appdaemon:
+  elevation: 16
+  latitude: 37.765389
+  longitude: -122.410831
+  time_zone: America/Los_Angeles
+
+  plugins:
+    hass:
+      type: hass
+      ha_url: https://hass.evanpurkhiser.com
+      token: !secret hass_token
+
+api:
+http:
+  url: http://127.0.0.1:5050

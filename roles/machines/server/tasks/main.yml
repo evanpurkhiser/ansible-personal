@@ -164,6 +164,34 @@
     volumes: [ '/var/lib/hass:/config', '/etc/localtime:/etc/localtime:ro' ]
     devices: [ '/dev/zwave:/dev/zwave', '/dev/zigbee:/dev/zigbee' ]
 
+# Setup app daemon
+- name: Ensure appdaemon config directory exists
+  file: path=/var/lib/appdaemon state=directory
+  tags: [appdaemon]
+
+- name: Ensure appdaemon configuration
+  copy: src=appdaemon.yaml dest=/var/lib/appdaemon/
+  notify: restart appdaemon
+  tags: [appdaemon]
+
+- name: Ensure appdaemon secrets
+  template: src=appdaemon-secrets.yaml dest=/var/lib/appdaemon/secrets.yaml
+  notify: restart appdaemon
+  tags: [appdaemon]
+
+- name: Ensure appdaemon apps
+  copy: src=appdaemon/ dest=/var/lib/appdaemon/apps/
+  tags: [appdaemon]
+
+- name: Ensure appdaemon docker container
+  tags: [appdaemon]
+  docker_container:
+    name: appdaemon
+    image: acockburn/appdaemon
+    published_ports: [ '5050' ]
+    restart_policy: unless-stopped
+    volumes: [ '/var/lib/appdaemon:/conf' ]
+
 # Enable waitress file server
 - name: ensure waitress config
   copy: src=waitress.conf dest=/etc/waitress.conf

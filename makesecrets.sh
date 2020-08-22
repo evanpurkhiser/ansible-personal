@@ -25,6 +25,10 @@ fi
     )"\'
 
     echo home_assistant:
+    echo '  hass_token:' \'"$(
+        op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' |
+            jq -r '.details.sections[].fields[]? | select(.n == "A86D845A35CB43199C5FD6F656D466A7").v'
+    )"\'
     echo '  hacs_github_api_key:' \'"$(
         op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' |
             jq -r '.details.sections[].fields[]? | select(.n == "3E7D5DBE346F4EED8B1F69B2DA1F32A1").v'

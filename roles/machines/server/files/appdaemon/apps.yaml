@@ -1,0 +1,3 @@
+callbox:
+  module: callbox
+  class: Callbox

@@ -85,6 +85,7 @@ telegram_bot:
     allowed_chat_ids:
       - -427766023 # Apartment chat
       - 1252020315 # Evan DM
+      - 1050261397 # Joe DM
 
 fan:
   # Xaiomi Airpurifier 2S. Token obtained using the miio client. Network access

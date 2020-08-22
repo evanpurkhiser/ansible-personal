@@ -29,7 +29,6 @@
   with_items:
   - media-center-automation
   - waitress-git
-  - prolink-tools-git
 
 # Flush handlers to ensure new personal packages are synced into the database
 - meta: flush_handlers
@@ -53,7 +52,6 @@
     - neovim
     - nfs-utils
     - nginx
-    - prolink-tools-git
     - rclone
     - rkt
     - rsync
@@ -177,10 +175,6 @@
 
 - name: Enable waitress service
   service: name=waitress state=started enabled=yes
-
-# Enable prolink-server
-- name: Enable prolink-server service
-  service: name=prolink-server state=started enabled=yes
 
 # Configure DNS entires in cloudflare
 - name: Ensuring DNS entries

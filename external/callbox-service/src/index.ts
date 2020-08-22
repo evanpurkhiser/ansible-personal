@@ -10,6 +10,11 @@ Sentry.init({
 
 const ENDPOINT_URL = 'https://hass.evanpurkhiser.com/api/appdaemon';
 
+/**
+ * The number of the aparment callbox.
+ *
+ * Not currently used for anything, but maybe it will be later.
+ */
 const CALLBOX = '+14155031506';
 
 const NUMBER_MAP = {
@@ -103,7 +108,7 @@ const handleCall: Handler = async function (ctx, event, callback) {
     return;
   }
 
-  const data = await resp.json();
+  const data: TriggerResponse = await resp.json();
 
   // When we have single use codes available, give the user more time to enter.
   const gather = twiml.gather({

@@ -1,3 +1,13 @@
 callbox:
   module: callbox
   class: Callbox
+
+button_blue:
+  module: buttons
+  class: ButtonBlue
+  key: 28:6d:97:00:01:03:26:d2:1:0x0500
+
+button_green:
+  module: buttons
+  class: ButtonGreen
+  key: 28:6d:97:00:01:08:5e:54:1:0x0500

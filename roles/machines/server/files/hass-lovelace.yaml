@@ -12,23 +12,28 @@ views:
     path: default_view
 
     cards:
-      - type: glance
-        show_state: false
+      - type: entities
+        title: Livingroom
+        show_header_toggle: false
         entities:
           - entity: light.living_room_lights
             tap_action: { action: toggle }
+          - entity: cover.living_room_shades
+          - entity: fan.xiaomi_miio_device
+            tap_action: { action: toggle }
+
+      - type: entities
+        title: Kitchen
+        entities:
           - entity: light.kitchen_lights
             tap_action: { action: toggle }
           - entity: light.kitchen_cove_lights
             tap_action: { action: toggle }
-          - entity: fan.xiaomi_miio_device
-            tap_action: { action: toggle }
-          - entity: binary_sensor.front_door
 
       - type: custom:mini-graph-card
         name: Temperature
         entities:
-          - entity: sensor.temperature
+          - entity: sensor.apartment_temperature
             name: Inside Temperature
             show_legend: false
           - entity: sensor.dark_sky_temperature
@@ -40,7 +45,7 @@ views:
 
       - type: custom:mini-graph-card
         name: Air Quality
-        entities: [sensor.pm25]
+        entities: [sensor.xiaomi_pm25]
         icon: 'mdi:weather-windy'
         hours_to_show: 48
 

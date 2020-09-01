@@ -41,7 +41,7 @@ google_assistant:
     light.kitchen_lights: { expose: true }
     light.front_foyer_lights: { expose: true }
     light.joes_room_lights: { expose: true }
-    light.joes_room_lights: { expose: true }
+    light.evans_room_lights: { expose: true }
 
 ecobee:
   api_key: !secret ecobee_api_key
@@ -125,7 +125,7 @@ binary_sensor:
       front_door:
         # The door sensor alternates between the values 23 and 22 for closed
         # and open respectively.
-        value_template: "{{ is_state('sensor.door_state', '22') }}"
+        value_template: "{{ is_state('sensor.front_door_state', '22') }}"
         device_class: door
         friendly_name: Front Door
 

@@ -29,9 +29,6 @@
 - name: restart dhcpcd
   service: name=dhcpcd state=restarted
 
-- name: restart waitress
-  service: name=waitress state=restarted
-
 - name: restart home-assistant
   docker_container: name=home-assistant restart=yes
 

@@ -7,28 +7,25 @@
   vars: { server_path: "file:///srv/pkgs" }
 
 # Bootstrap personal packages repo
-- name: Install rkt
-  pacman: name=rkt
-
-- name: Ensure personal packages repo directory exists
-  file: path=/srv/pkgs state=directory
-
-- name: Bootstrapping personal packages
-  shell: |
-    package="{{ item }}"
-    cd "$(mktemp -d)"
-    git clone https://github.com/EvanPurkhiser/PKGBUILDs.git .
-    # TODO: Figure out how to make this happen with rkt
-    #rkt run -e EXPORT_PKG=1 -v "$PWD/$package":/pkg docker://whynothugo/makepkg
-    mv "$PWD/$package"/*.pkg.tar.xz /srv/pkgs && cd && rm -r "$OLDPWD"
-  args:
-    creates: /srv/pkgs/{{ item }}*.pkg.tar.xz
-  notify:
-  - sync personal repo database
-  - sync pacman cache
-  with_items:
-  - media-center-automation
-  - waitress-git
+#- name: Ensure personal packages repo directory exists
+#  file: path=/srv/pkgs state=directory
+#
+#- name: Bootstrapping personal packages
+#  shell: |
+#    package="{{ item }}"
+#    cd "$(mktemp -d)"
+#    git clone https://github.com/EvanPurkhiser/PKGBUILDs.git .
+#    # TODO: Figure out how to make this happen with rkt
+#    #rkt run -e EXPORT_PKG=1 -v "$PWD/$package":/pkg docker://whynothugo/makepkg
+#    mv "$PWD/$package"/*.pkg.tar.xz /srv/pkgs && cd && rm -r "$OLDPWD"
+#  args:
+#    creates: /srv/pkgs/{{ item }}*.pkg.tar.xz
+#  notify:
+#  - sync personal repo database
+#  - sync pacman cache
+#  with_items:
+#  - media-center-automation
+#  - waitress-git
 
 # Flush handlers to ensure new personal packages are synced into the database
 - meta: flush_handlers
@@ -55,7 +52,6 @@
     - rclone
     - rsync
     - transmission-cli
-    - waitress-git
     - wget
 
     # Required for encrypting the transmission basic auth password
@@ -191,13 +187,16 @@
     restart_policy: unless-stopped
     volumes: [ '/var/lib/appdaemon:/conf' ]
 
-# Enable waitress file server
-- name: ensure waitress config
-  copy: src=waitress.conf dest=/etc/waitress.conf
-  notify: restart waitress
-
-- name: Enable waitress service
-  service: name=waitress state=started enabled=yes
+# Setup waitress file server
+- name: Ensure waitress docker container
+  tags: [waitress]
+  docker_container:
+    name: waitress
+    image: evanpurkhiser/waitress
+    published_ports: [ '9005:80' ]
+    volumes: [ '/mnt/documents:/mnt/documents' ]
+    env:
+      DATA_PATH: /mnt/documents/public-share
 
 # Configure DNS entires in cloudflare
 - name: Ensuring DNS entries

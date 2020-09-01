@@ -183,7 +183,7 @@
   docker_container:
     name: appdaemon
     image: acockburn/appdaemon
-    published_ports: [ '5050' ]
+    published_ports: [ '5050:5050' ]
     restart_policy: unless-stopped
     volumes: [ '/var/lib/appdaemon:/conf' ]
 

@@ -115,12 +115,23 @@
   service: name=transmission state=started enabled=yes
   tags: [transmission]
 
+# Configure docker watchtower
+- name: Ensure watchtower docker serivce
+  tags: [watchtower]
+  docker_container:
+    name: watchtower
+    image: containrrr/watchtower
+    volumes: [ '/var/run/docker.sock:/var/run/docker.sock' ]
+    env:
+      WATCHTOWER_CLEANUP: 'true'
+      WATCHTOWER_POLL_INTERVAL: '30'
+
 # Enable mosquito service for IoT messages
 - name: Ensure mosquitto is enabled
   service: name=mosquitto enabled=yes state=started
   tags: [hass]
 
-# Configure home-assistant
+# Configure home-assistant service
 - name: Ensure hass config directory exists
   file: path=/var/lib/hass state=directory
   tags: [hass]
@@ -159,7 +170,7 @@
     volumes: [ '/var/lib/hass:/config', '/etc/localtime:/etc/localtime:ro' ]
     devices: [ '/dev/zwave:/dev/zwave', '/dev/zigbee:/dev/zigbee' ]
 
-# Setup app daemon
+# Setup appdaemon service
 - name: Ensure appdaemon config directory exists
   file: path=/var/lib/appdaemon state=directory
   tags: [appdaemon]
@@ -187,7 +198,7 @@
     restart_policy: unless-stopped
     volumes: [ '/var/lib/appdaemon:/conf' ]
 
-# Setup waitress file server
+# Setup waitress file server service
 - name: Ensure waitress docker container
   tags: [waitress]
   docker_container:

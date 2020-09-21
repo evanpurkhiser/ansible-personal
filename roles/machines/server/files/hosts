@@ -7,14 +7,8 @@
 10.0.0.3  server-bmc
 10.0.0.4  macbook
 10.0.0.5  htpc
+10.0.0.8  octoprint
 10.0.0.10 phone
-
-# IoT devices
-10.0.0.21 light-wall
-10.0.0.22 light-kitchen
-10.0.0.23 light-counter
-10.0.0.24 switch-heater
-10.0.0.31 philips-hue
 
 # DJ Setup
 10.0.0.31 djm

@@ -198,6 +198,22 @@
     env:
       DATA_PATH: /mnt/documents/public-share
 
+# Setup tune-manager service
+- name: Ensure tune-manager storage directory exists
+  file: path=/var/lib/tune-manager state=directory
+  tags: [tune-manager]
+
+- name: Ensure tune-manager docker container
+  tags: [tune-manager]
+  docker_container:
+    name: tune-manager
+    image: evanpurkhiser/tune-manager
+    published_ports: [ '6060:80' ]
+    volumes:
+      - '/mnt/documents/multimedia/djing/tracks:/library'
+      - '/mnt/documents/multimedia/djing/tracks-importable:/staging'
+      - '/var/lib/tune-manager:/storage'
+
 # Configure DNS entires in cloudflare
 - name: Ensuring DNS entries
   tags: [dns]

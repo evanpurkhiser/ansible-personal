@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import hassapi as hass
 import typing
 from datetime import datetime, timedelta
@@ -60,7 +62,7 @@ class AccessCode(Base):
 
 
 msg_help = """
-Control the callbox for 2421 16th.
+📞 Control the callbox for 2421 16th.
 
 */callbox register [name]* - Add a permanent access code
 */callbox singleuse [expires after]* - Add a temporary access code
@@ -288,12 +290,12 @@ class Callbox(hass.Hass):
 
         if ac.expires_at is not None:
             self.send_msg(
-                f"Callbox: One time use code `{ac.code}` has been used.\n*DOOR UNLOCKED*"
+                f"🔓 Callbox: One time use code `{ac.code}` has been used.\n*DOOR UNLOCKED*"
             )
             self.db.delete(ac)
         else:
             # TODO: Send these messages to specific users
-            self.send_msg(f"Callbox: Door unlocked for *{ac.name or '[anon]'}*")
+            self.send_msg(f"🔓 Callbox: Door unlocked for *{ac.name or '[anon]'}*")
             self.db.add(UsageHistory(access_code=ac))
         self.db.commit()
 

@@ -1,3 +1,7 @@
+dishwasher:
+  module: dishwasher
+  class: Dishwasher
+
 callbox:
   module: callbox
   class: Callbox

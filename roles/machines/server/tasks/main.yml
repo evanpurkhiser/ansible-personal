@@ -196,7 +196,7 @@
     image: acockburn/appdaemon
     published_ports: [ '5050:5050' ]
     restart_policy: unless-stopped
-    volumes: [ '/var/lib/appdaemon:/conf' ]
+    volumes: [ '/var/lib/appdaemon:/conf', '/etc/localtime:/etc/localtime:ro' ]
 
 # Setup waitress file server service
 - name: Ensure waitress docker container

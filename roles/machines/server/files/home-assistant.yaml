@@ -34,6 +34,7 @@ google_assistant:
   entity_config:
     sensor.xiaomi_pm25: { expose: true }
     fan.xiaomi_miio_device: { expose: true }
+    fan.joes_bedroom_fan: { expose: true }
     climate.apartment: { expose: true }
     cover.living_room_shades: { expose: true }
     light.living_room_lights: { expose: true }
@@ -41,6 +42,7 @@ google_assistant:
     light.kitchen_lights: { expose: true }
     light.front_foyer_lights: { expose: true }
     light.joes_room_lights: { expose: true }
+    light.joes_bedside_light: { expose: true }
     light.evans_room_lights: { expose: true }
 
 ecobee:
@@ -93,6 +95,7 @@ light:
       # Joes desk lamp is currently mapped to switch 1
       joes_bedside_light:
         unique_id: light.joes_bedside_light
+        friendly_name: Joe's Bedside Light
         value_template: "{{ states('switch.plug_1') }}"
         turn_on:
           service: switch.turn_on
@@ -113,6 +116,7 @@ fan:
     fans:
       # Joes fan is currently mapped to switch 2
       joes_bedroom_fan:
+        friendly_name: Joe's Bedroom Fan
         value_template: "{{ states('switch.plug_2') }}"
         turn_on:
           service: switch.turn_on

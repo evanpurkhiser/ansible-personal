@@ -144,6 +144,36 @@ sensor:
     api_key: !secret darksky_api_key
     forecast: [1]
     monitored_conditions: [temperature]
+  - platform: mqtt
+    name: "Dishwasher Current"
+    state_topic: "dishwasher_plug/tele/SENSOR"
+    value_template: "{{ value_json['ENERGY']['Current'] }}"
+    device_class: current
+    unit_of_measurement: Amps
+    availability_topic: "dishwasher_plug/tele/LWT"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+  - platform: mqtt
+    name: "Dishwasher Power"
+    state_topic: "dishwasher_plug/tele/SENSOR"
+    value_template: "{{ value_json['ENERGY']['Power'] }}"
+    device_class: power
+    unit_of_measurement: Watts
+    availability_topic: "dishwasher_plug/tele/LWT"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+  - platform: mqtt
+    name: "Dishwasher Power Factor"
+    state_topic: "dishwasher_plug/tele/SENSOR"
+    value_template: "{{ value_json['ENERGY']['PowerFactor'] }}"
+    device_class: power_factor
+    unit_of_measurement: '%'
+    availability_topic: "dishwasher_plug/tele/LWT"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
 
 binary_sensor:
   - platform: template

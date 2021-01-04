@@ -34,7 +34,6 @@ google_assistant:
   entity_config:
     sensor.xiaomi_pm25: { expose: true }
     fan.xiaomi_miio_device: { expose: true }
-    fan.joes_bedroom_fan: { expose: true }
     climate.apartment: { expose: true }
     cover.living_room_shades: { expose: true }
     light.living_room_lights: { expose: true }
@@ -105,19 +104,10 @@ light:
           service: switch.turn_off
           entity_id: switch.plug_1
 
-fan:
-  # Xaiomi Airpurifier 2S. Token obtained using the miio client. Network access
-  # is restricted to the localnetwork only.
-  - platform: xiaomi_miio
-    name: Air Purifier
-    host: 10.0.0.25
-    token: a0210ed9910d5d5698743a17cdd521ff
-
-  - platform: template
-    fans:
-      # Joes fan is currently mapped to switch 2
-      joes_bedroom_fan:
-        friendly_name: Joe's Bedroom Fan
+      # The work-closet light is currently mapped to switch 2
+      work_closet_light:
+        unique_id: light.work_closet
+        friendly_name: Work Closet Light
         value_template: "{{ states('switch.plug_2') }}"
         turn_on:
           service: switch.turn_on
@@ -125,6 +115,14 @@ fan:
         turn_off:
           service: switch.turn_off
           entity_id: switch.plug_2
+
+fan:
+  # Xaiomi Airpurifier 2S. Token obtained using the miio client. Network access
+  # is restricted to the localnetwork only.
+  - platform: xiaomi_miio
+    name: Air Purifier
+    host: 10.0.0.25
+    token: a0210ed9910d5d5698743a17cdd521ff
 
 sensor:
   - platform: template

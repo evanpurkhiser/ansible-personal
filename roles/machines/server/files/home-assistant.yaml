@@ -44,6 +44,7 @@ google_assistant:
     light.joes_room_lights: { expose: true }
     light.joes_bedside_light: { expose: true }
     light.evans_room_lights: { expose: true }
+    light.evans_room_opal: { expose: true }
 
 ecobee:
   api_key: !secret ecobee_api_key

@@ -270,9 +270,13 @@ class Callbox(hass.Hass):
         return resp, 200
 
     def handle_door_auth(self, data):
+        try_code = data["code"]
         try:
-            ac = self.get_active_codes().filter(AccessCode.code == data["code"]).one()
+            ac = self.get_active_codes().filter(AccessCode.code == try_code).one()
         except NoResultFound:
+            self.send_msg(
+                f"🔓 Callbox: *Invalid code used* - code entered was `{try_code}."
+            )
             # TODO: Log denied attempts
             return {"status": "denied"}, 200
 

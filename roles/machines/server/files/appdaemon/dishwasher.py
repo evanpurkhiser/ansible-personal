@@ -38,7 +38,7 @@ class Dishwasher(hass.Hass):
         history.reverse()
         return history
 
-    def power_update(self):
+    def power_update(self, *args, **kwargs):
         ln = self.last_notification
         now = datetime.now().astimezone()
 

@@ -22,6 +22,10 @@ from sqlalchemy import (
     or_,
 )
 
+from utils import time_ago
+
+print(datetime.now() - timedelta(days=2)
+
 
 class TelegramMessage(typing.TypedDict):
     user_id: str
@@ -290,7 +294,7 @@ class Callbox(hass.Hass):
 
         if len(ac.usage_history) > 0:
             last_visit = ac.usage_history[0]
-            resp["lastVisit"] = time_ago_in_words(last_visit.created_at)
+            resp["lastVisit"] = time_ago(last_visit.created_at)
 
         if ac.expires_at is not None:
             self.send_msg(

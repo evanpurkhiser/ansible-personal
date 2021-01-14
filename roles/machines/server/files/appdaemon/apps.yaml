@@ -1,10 +1,14 @@
+global_modules: [utils]
+
 dishwasher:
   module: dishwasher
   class: Dishwasher
+  global_dependencies: [utils]
 
 callbox:
   module: callbox
   class: Callbox
+  global_dependencies: [utils]
 
 button_blue:
   module: buttons

@@ -3,9 +3,10 @@
 import hassapi as hass
 import collections
 
-from human_dates import time_ago_in_words
-from dateutil import parser, tz
+from dateutil import parser
 from datetime import datetime, timedelta
+
+from .utils import time_ago
 
 # The cutoff current that we consider the dishwasher to be "off"
 THRESHOLD = 0.1
@@ -69,8 +70,7 @@ class Dishwasher(hass.Hass):
         if ln is not None and last.date < ln:
             return
 
-        finished_at = last.date.astimezone(tz=tz.tzlocal()).replace(tzinfo=None)
-        finished_human = time_ago_in_words(finished_at)
+        finished_human = time_ago(last.date)
 
         self.send_msg(f"💦 Dishwasher finished cleaning! ({finished_human})")
         self.last_notification = now

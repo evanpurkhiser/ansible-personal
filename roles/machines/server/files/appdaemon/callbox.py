@@ -24,8 +24,6 @@ from sqlalchemy import (
 
 from utils import time_ago
 
-print(datetime.now() - timedelta(days=2)
-
 
 class TelegramMessage(typing.TypedDict):
     user_id: str
@@ -279,7 +277,7 @@ class Callbox(hass.Hass):
             ac = self.get_active_codes().filter(AccessCode.code == try_code).one()
         except NoResultFound:
             self.send_msg(
-                f"🔓 Callbox: *Invalid code used* - code entered was `{try_code}."
+                f"🔓 Callbox: *Invalid code used* - code entered was `{try_code}`."
             )
             # TODO: Log denied attempts
             return {"status": "denied"}, 200

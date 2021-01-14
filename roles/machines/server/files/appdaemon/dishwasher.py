@@ -6,7 +6,7 @@ import collections
 from dateutil import parser
 from datetime import datetime, timedelta
 
-from .utils import time_ago
+from utils import time_ago
 
 # The cutoff current that we consider the dishwasher to be "off"
 THRESHOLD = 0.1

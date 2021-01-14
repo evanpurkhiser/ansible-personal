@@ -16,9 +16,9 @@ SECOND_INCREMENTS = [
 
 
 def time_ago(dt):
-    diff = datetime.now() - dt
+    diff = datetime.utcnow() - dt
     if diff.days < 0:
-        return "in the future?!?"
+        return "just now"
     for increment, label in DAY_INCREMENTS:
         if diff.days >= increment:
             increment_diff = int(diff.days / increment)

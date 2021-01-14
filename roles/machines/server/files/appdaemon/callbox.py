@@ -276,9 +276,7 @@ class Callbox(hass.Hass):
         try:
             ac = self.get_active_codes().filter(AccessCode.code == try_code).one()
         except NoResultFound:
-            self.send_msg(
-                f"🔓 Callbox: *Invalid code used* - code entered was `{try_code}`."
-            )
+            self.send_msg(f"🔓 Callbox: *Invalid code used* `{try_code}`.")
             # TODO: Log denied attempts
             return {"status": "denied"}, 200
 

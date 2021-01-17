@@ -68,6 +68,11 @@ fi
         op get document 'xld4lu7ccfby7hjpo4efoulrru' | sed 's/\\n/\\\\n/g;s/^/    /'
     )"
 
+    echo '  octoprint_api_key:' \'"$(
+        op get item 'zwtxalkf65h2fa5inxwtv4h2tu' |
+            jq -r '.details.sections[].fields[]? | select(.n == "581B9DFB59E24ED79D457393265C1F22").v'
+    )"\'
+
     # Cloudflare DNS credentials
     echo cloudflare:
     echo '  email:' \'"$(

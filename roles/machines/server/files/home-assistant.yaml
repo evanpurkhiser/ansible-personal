@@ -89,6 +89,15 @@ telegram_bot:
       - 1252020315 # Evan DM
       - 1050261397 # Joe DM
 
+octoprint:
+  - host: octoprint
+    api_key: !secret octoprint_api_key
+    name: Ender 3 V2
+    number_of_tools: 1
+    bed: true
+    sensors:
+      monitored_conditions: ['Current State', 'Job Percentage', 'Time Elapsed', 'Time Remaining']
+
 light:
   - platform: template
     lights:

@@ -70,7 +70,7 @@ class Dishwasher(hass.Hass):
         if ln is not None and last.date < ln:
             return
 
-        finished_human = time_ago(last.date)
+        finished_human = time_ago(last.date, now=now)
 
         self.send_msg(f"💦 Dishwasher finished cleaning! ({finished_human})")
         self.last_notification = now

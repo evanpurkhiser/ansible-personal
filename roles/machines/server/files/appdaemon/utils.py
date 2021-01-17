@@ -15,8 +15,11 @@ SECOND_INCREMENTS = [
 ]
 
 
-def time_ago(dt):
-    diff = datetime.utcnow() - dt
+def time_ago(dt, now=None):
+    if now is None:
+        now = datetime.utcnow()
+    diff = now - dt
+
     if diff.days < 0:
         return "just now"
     for increment, label in DAY_INCREMENTS:

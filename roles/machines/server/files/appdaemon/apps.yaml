@@ -5,6 +5,11 @@ dishwasher:
   class: Dishwasher
   global_dependencies: [utils]
 
+printer:
+  module: printer
+  class: Printer
+  global_dependencies: [utils]
+
 callbox:
   module: callbox
   class: Callbox

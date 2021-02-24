@@ -65,6 +65,23 @@ class Dishwasher(hass.Hass):
         if last.date > now - timedelta(minutes=5):
             return
 
+        # Verify that it has a power history from ~ 10-20m ago
+        time_ago_10 = now - timedelta(minutes=15)
+        time_ago_20 = now - timedelta(minutes=25)
+
+        try:
+            ten_min_ago_event = next(
+                value
+                for _, value in enumerate(history[last_index:])
+                if value.date < time_ago_10 and value.date > time_ago_20
+            )
+        except StopIteration:
+            # Probably not enough data
+            return
+
+        if ten_min_ago_event.value < THRESHOLD:
+            return
+
         # If the last high value was before the last notification it's already
         # been reported.
         if ln is not None and last.date < ln:

@@ -32,7 +32,7 @@ class Dishwasher(hass.Hass):
                     parser.parse(v["last_updated"]),
                     float(0 if v["state"] == "unknown" else v["state"]),
                 ),
-                self.get_history("sensor.dishwasher_current", days=1)[0],
+                self.get_history(entity_id="sensor.dishwasher_current", days=1)[0],
             )
         )
         history.reverse()

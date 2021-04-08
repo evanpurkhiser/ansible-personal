@@ -26,7 +26,9 @@ class Printer(hass.Hass):
                     parser.parse(v["last_updated"]),
                     float(0 if v["state"] == "unknown" else v["state"]),
                 ),
-                self.get_history("sensor.ender_3_v2_job_percentage", days=1)[0],
+                self.get_history(entity_id="sensor.ender_3_v2_job_percentage", days=1)[
+                    0
+                ],
             )
         )
         history.reverse()

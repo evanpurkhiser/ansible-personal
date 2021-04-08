@@ -36,6 +36,9 @@ google_assistant:
     fan.xiaomi_miio_device: { expose: true }
     climate.apartment: { expose: true }
     cover.living_room_shades: { expose: true }
+    cover.evans_window: { expose: true }
+    cover.evans_patio_door: { expose: true }
+    cover.joes_patio_door: { expose: true }
     light.living_room_lights: { expose: true }
     light.kitchen_cove_lights: { expose: true }
     light.kitchen_lights: { expose: true }

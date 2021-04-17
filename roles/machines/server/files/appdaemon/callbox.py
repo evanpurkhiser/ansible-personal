@@ -7,7 +7,6 @@ from random import randint
 from pathlib import Path
 
 import parsedatetime
-from human_dates import time_ago_in_words
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 from sqlalchemy.orm.exc import NoResultFound

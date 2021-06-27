@@ -33,11 +33,11 @@ google_assistant:
   expose_by_default: false
   entity_config:
     sensor.xiaomi_pm25: { expose: true }
-    fan.xiaomi_miio_device: { expose: true }
     climate.apartment: { expose: true }
     cover.living_room_shades: { expose: true }
     cover.evans_window: { expose: true }
     cover.evans_patio_door: { expose: true }
+    cover.joes_window: { expose: true }
     cover.joes_patio_door: { expose: true }
     light.living_room_lights: { expose: true }
     light.kitchen_cove_lights: { expose: true }
@@ -128,30 +128,22 @@ light:
           service: switch.turn_off
           entity_id: switch.plug_2
 
-fan:
-  # Xaiomi Airpurifier 2S. Token obtained using the miio client. Network access
-  # is restricted to the localnetwork only.
-  - platform: xiaomi_miio
-    name: Air Purifier
-    host: 10.0.0.25
-    token: a0210ed9910d5d5698743a17cdd521ff
-
 sensor:
   - platform: template
     sensors:
       xiaomi_temperature:
         friendly_name: Temperature (Purifier)
-        value_template: "{{ state_attr('fan.xiaomi_miio_device', 'temperature') }}"
+        value_template: "{{ state_attr('zhimi.airpurifier.ma2', 'temperature') }}"
         unit_of_measurement: '°C'
         device_class: temperature
       xiaomi_humidity:
         friendly_name: Humidity (Purifier)
-        value_template: "{{ state_attr('fan.xiaomi_miio_device', 'humidity') }}"
+        value_template: "{{ state_attr('zhimi.airpurifier.ma2', 'humidity') }}"
         unit_of_measurement: '%'
         device_class: humidity
       xiaomi_pm25:
         friendly_name: pm25
-        value_template: "{{ state_attr('fan.xiaomi_miio_device', 'aqi') }}"
+        value_template: "{{ state_attr('zhimi.airpurifier.ma2', 'aqi') }}"
         unit_of_measurement: 'µg/m3'
         # Device class is not supported for pm25, however giving it the name of
         # 'pm25' will allow homekit to pickup that it is an air quality sensor.

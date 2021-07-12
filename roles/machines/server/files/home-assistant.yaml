@@ -150,10 +150,13 @@ sensor:
         unit_of_measurement: 'µg/m3'
         # Device class is not supported for pm25, however giving it the name of
         # 'pm25' will allow homekit to pickup that it is an air quality sensor.
+
   - platform: darksky
     api_key: !secret darksky_api_key
     forecast: [1]
     monitored_conditions: [temperature]
+
+  # Dishwasher current monitoring
   - platform: mqtt
     name: "Dishwasher Current"
     state_topic: "dishwasher_plug/tele/SENSOR"
@@ -181,6 +184,38 @@ sensor:
     device_class: power_factor
     unit_of_measurement: '%'
     availability_topic: "dishwasher_plug/tele/LWT"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+
+  # Laundry current monitoring
+  - platform: mqtt
+    name: "Laundry Current"
+    state_topic: "laundry_plug/tele/SENSOR"
+    value_template: "{{ value_json['ENERGY']['Current'] }}"
+    device_class: current
+    unit_of_measurement: Amps
+    availability_topic: "laundry_plug/tele/LWT"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+  - platform: mqtt
+    name: "Laundry Power"
+    state_topic: "laundry_plug/tele/SENSOR"
+    value_template: "{{ value_json['ENERGY']['Power'] }}"
+    device_class: power
+    unit_of_measurement: Watts
+    availability_topic: "laundry_plug/tele/LWT"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    qos: 1
+  - platform: mqtt
+    name: "Laundry Power Factor"
+    state_topic: "laundry_plug/tele/SENSOR"
+    value_template: "{{ value_json['ENERGY']['PowerFactor'] }}"
+    device_class: power_factor
+    unit_of_measurement: '%'
+    availability_topic: "laundry_plug/tele/LWT"
     payload_available: "Online"
     payload_not_available: "Offline"
     qos: 1

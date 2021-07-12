@@ -131,6 +131,11 @@
   service: name=mosquitto enabled=yes state=started
   tags: [hass]
 
+- name: Ensure mosquitto configuration
+  copy: src=mosquitto.conf dest=/etc/mosquitto/mosquitto.conf
+  notify: restart mosquitto
+  tags: [hass]
+
 # Configure home-assistant service
 - name: Ensure hass config directory exists
   file: path=/var/lib/hass state=directory

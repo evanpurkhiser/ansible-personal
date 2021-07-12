@@ -19,7 +19,7 @@ views:
           - entity: light.living_room_lights
             tap_action: { action: toggle }
           - entity: cover.living_room_shades
-          - entity: fan.xiaomi_miio_device
+          - entity: fan.air_purifier
             tap_action: { action: toggle }
 
       - type: entities
@@ -45,7 +45,7 @@ views:
 
       - type: custom:mini-graph-card
         name: Air Quality
-        entities: [sensor.xiaomi_pm25]
+        entities: [sensor.purifier_pm25]
         icon: 'mdi:weather-windy'
         hours_to_show: 48
 

@@ -35,7 +35,7 @@ google_assistant:
   report_state: true
   expose_by_default: false
   entity_config:
-    sensor.xiaomi_pm25: { expose: true }
+    sensor.purifier_pm25: { expose: true }
     climate.apartment: { expose: true }
     cover.living_room_shades: { expose: true }
     cover.evans_window: { expose: true }
@@ -134,19 +134,19 @@ light:
 sensor:
   - platform: template
     sensors:
-      xiaomi_temperature:
+      purifier_temperature:
         friendly_name: Temperature (Purifier)
-        value_template: "{{ state_attr('zhimi.airpurifier.ma2', 'temperature') }}"
+        value_template: "{{ state_attr('fan.air_purifier', 'temperature') }}"
         unit_of_measurement: '°C'
         device_class: temperature
-      xiaomi_humidity:
+      purifier_humidity:
         friendly_name: Humidity (Purifier)
-        value_template: "{{ state_attr('zhimi.airpurifier.ma2', 'humidity') }}"
+        value_template: "{{ state_attr('fan.air_purifier', 'humidity') }}"
         unit_of_measurement: '%'
         device_class: humidity
-      xiaomi_pm25:
+      purifier_pm25:
         friendly_name: pm25
-        value_template: "{{ state_attr('zhimi.airpurifier.ma2', 'aqi') }}"
+        value_template: "{{ state_attr('fan.air_purifier', 'aqi') }}"
         unit_of_measurement: 'µg/m3'
         # Device class is not supported for pm25, however giving it the name of
         # 'pm25' will allow homekit to pickup that it is an air quality sensor.

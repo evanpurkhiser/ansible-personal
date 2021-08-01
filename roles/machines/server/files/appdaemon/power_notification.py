@@ -8,17 +8,18 @@ from datetime import datetime, timedelta
 
 from utils import time_ago
 
-# The cutoff current that we consider the dishwasher to be "off"
-THRESHOLD = 0.1
-
 Value = collections.namedtuple("Value", ["date", "value"])
 
 
-class Dishwasher(hass.Hass):
+class PowerNotification(hass.Hass):
     last_notification = None
 
     def initialize(self):
-        self.listen_state(self.power_update, entity="sensor.dishwasher_current")
+        self.cutoff = self.args["power_cutoff"]
+        self.current_entity = self.args["current_entity"]
+        self.done_message = self.args["done_message"]
+
+        self.listen_state(self.power_update, entity=self.current_entity)
         self.power_update()
 
     @property
@@ -32,7 +33,7 @@ class Dishwasher(hass.Hass):
                     parser.parse(v["last_updated"]),
                     float(0 if v["state"] == "unknown" else v["state"]),
                 ),
-                self.get_history(entity_id="sensor.dishwasher_current", days=1)[0],
+                self.get_history(entity_id=self.current_entity, days=1)[0],
             )
         )
         history.reverse()
@@ -42,26 +43,26 @@ class Dishwasher(hass.Hass):
         ln = self.last_notification
         now = datetime.now().astimezone()
 
-        # We already recently reported the dishwasher as having finished
+        # We already recently reported the entity as having finished
         if ln is not None and now - timedelta(minutes=30) > ln:
             return
 
         history = self.current_history
 
-        # Locate the most recent point the current was above the threshold
+        # Locate the most recent point the current was above the cutoff
         try:
-            last_index = next(i for i, v in enumerate(history) if v.value > THRESHOLD)
+            last_index = next(i for i, v in enumerate(history) if v.value > self.cutoff)
         except StopIteration:
             # No history of the machine being run
             return
 
-        # Dishwasher is still running if most recent entry is above the threshold
+        # Still running if most recent entry is above the cutoff
         if last_index == 0:
             return
 
         last = history[last_index]
 
-        # We want at least 5 minutes of below threshold before reporting
+        # We want at least 5 minutes of below cutoff before reporting
         if last.date > now - timedelta(minutes=5):
             return
 
@@ -79,7 +80,7 @@ class Dishwasher(hass.Hass):
             # Probably not enough data
             return
 
-        if ten_min_ago_event.value < THRESHOLD:
+        if ten_min_ago_event.value < self.cutoff:
             return
 
         # If the last high value was before the last notification it's already
@@ -89,7 +90,7 @@ class Dishwasher(hass.Hass):
 
         finished_human = time_ago(last.date, now=now)
 
-        self.send_msg(f"💦 Dishwasher finished cleaning! ({finished_human})")
+        self.send_msg(f"{self.done_message} ({finished_human})")
         self.last_notification = now
 
     def send_msg(self, msg, **kwargs):

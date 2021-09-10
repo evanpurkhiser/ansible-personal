@@ -81,8 +81,8 @@ ACCESS_CODE_LEN = 5
 class Callbox(hass.Hass):
     def initialize(self):
         self.listen_event(self.handle_telegram, event="telegram_command")
-        self.register_endpoint(self.handle_door_call, name="callbox_trigger")
-        self.register_endpoint(self.handle_door_auth, name="callbox_auth")
+        self.register_endpoint(self.handle_door_call, endpoint="callbox_trigger")
+        self.register_endpoint(self.handle_door_auth, endpoint="callbox_auth")
 
         db_path = Path(self.config_dir) / "callbox.db"
         engine = create_engine(
@@ -256,7 +256,7 @@ class Callbox(hass.Hass):
         # No valid command provided
         self.send_msg(msg_help)
 
-    def handle_door_call(self, data):
+    async def handle_door_call(self, request, kwargs):
         num_codes = self.get_active_codes().count()
         num_single_use = (
             self.get_active_codes().filter(AccessCode.expires_at != None).count()
@@ -270,7 +270,9 @@ class Callbox(hass.Hass):
 
         return resp, 200
 
-    def handle_door_auth(self, data):
+    async def handle_door_auth(self, request, kwargs):
+        data = await request.json()
+
         try_code = data["code"]
         try:
             ac = self.get_active_codes().filter(AccessCode.code == try_code).one()

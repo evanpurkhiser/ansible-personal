@@ -85,7 +85,6 @@ telegram_bot:
   - platform: webhooks
     api_key: !secret telegram_bot_token
     parse_mode: markdown
-    trusted_networks: 127.0.0.1
     allowed_chat_ids:
       - -427766023 # Apartment chat
       - 1252020315 # Evan DM

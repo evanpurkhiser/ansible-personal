@@ -65,9 +65,6 @@ type AuthResponse =
 
 type Handler = ServerlessFunctionSignature<Env, RequestParameters>;
 
-const addNumberSuffix = (n: number) =>
-  `${n}${['st', 'nd', 'rd'][((((n + 90) % 100) - 10) % 10) - 1] || 'th'}`;
-
 const unlock = (twiml: VoiceResponse) => {
   // Unlock the door with the DTMF digit 9
   twiml.pause({length: 1});
@@ -158,10 +155,7 @@ const handleAuth: Handler = async function (ctx, event, callback) {
 
   // Welcome the user differently depending on if a name is configured for this
   // registered acess code.
-  const welcome = data.name !== null ? `Welcome ${data.name}` : 'Welcome in';
-  const visit = addNumberSuffix(data.visitNumber);
-
-  say(twiml, `Welcome ${welcome}.`);
+  say(twiml, data.name !== null ? `Welcome ${data.name}` : 'Welcome in');
 
   // Tell them where the door is
   if (data.visitNumber === 1) {

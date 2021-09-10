@@ -138,7 +138,7 @@ const handleAuth: Handler = async function (ctx, event, callback) {
   });
   const data: AuthResponse = await resp.json();
 
-  if (data.status === 'denied') {
+  if (data.status !== 'granted') {
     say(twiml, `Sorry, ${event.Digits.split('').join('-')} is invalid.`);
     twiml.redirect('/index');
     callback(null, twiml);

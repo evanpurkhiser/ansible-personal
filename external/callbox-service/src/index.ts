@@ -161,11 +161,7 @@ const handleAuth: Handler = async function (ctx, event, callback) {
   const welcome = data.name !== null ? `Welcome ${data.name}` : 'Welcome in';
   const visit = addNumberSuffix(data.visitNumber);
 
-  say(twiml, `Access granted! ${welcome}. This is your ${visit} visit.`);
-
-  if (data.lastVisit) {
-    say(twiml, `You last visited ${data.lastVisit}.`);
-  }
+  say(twiml, `Welcome ${welcome}.`);
 
   // Tell them where the door is
   if (data.visitNumber === 1) {

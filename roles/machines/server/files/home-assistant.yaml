@@ -6,6 +6,7 @@ homeassistant:
   latitude: 37.765389
   longitude: -122.410831
   external_url: https://hass.evanpurkhiser.com
+  allowlist_external_dirs: [ '/var/lib/hass-ad' ]
 
 http:
   use_x_forwarded_for: true

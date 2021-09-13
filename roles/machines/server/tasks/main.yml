@@ -172,8 +172,13 @@
     init: true
     network_mode: host
     restart_policy: unless-stopped
-    volumes: [ '/var/lib/hass:/config', '/etc/localtime:/etc/localtime:ro' ]
-    devices: [ '/dev/zwave:/dev/zwave', '/dev/zigbee:/dev/zigbee' ]
+    volumes:
+      - '/var/lib/hass:/config'
+      - '/tmp/hass-ad:/var/lib/hass-ad'
+      - '/etc/localtime:/etc/localtime:ro'
+    devices:
+      - '/dev/zwave:/dev/zwave'
+      - '/dev/zigbee:/dev/zigbee'
 
 # Setup appdaemon service
 - name: Ensure appdaemon config directory exists
@@ -201,7 +206,10 @@
     image: acockburn/appdaemon
     published_ports: [ '5050:5050' ]
     restart_policy: unless-stopped
-    volumes: [ '/var/lib/appdaemon:/conf', '/etc/localtime:/etc/localtime:ro' ]
+    volumes:
+      - '/var/lib/appdaemon:/conf'
+      - '/tmp/hass-ad:/var/lib/hass-ad'
+      - '/etc/localtime:/etc/localtime:ro'
 
 # Setup waitress file server service
 - name: Ensure waitress docker container

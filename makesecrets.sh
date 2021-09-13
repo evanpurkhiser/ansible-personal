@@ -73,6 +73,11 @@ fi
             jq -r '.details.sections[].fields[]? | select(.n == "581B9DFB59E24ED79D457393265C1F22").v'
     )"\'
 
+    echo '  pge_password:' \'"$(
+        op get item 'behtdcxervd35nul5222bcui3y' |
+            jq -r '.details.fields[] | select(.name == "password").value'
+    )"\'
+
     # Cloudflare DNS credentials
     echo cloudflare:
     echo '  email:' \'"$(

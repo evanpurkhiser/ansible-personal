@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import hassapi as hass
 
+import urllib.parse
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Tuple, TypedDict, List
 from pathlib import Path
 import itertools
@@ -13,6 +14,7 @@ from io import BytesIO
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import (
+    exc,
     create_engine,
     Column,
     Integer,
@@ -23,10 +25,17 @@ from matplotlib.colors import ColorConverter
 import matplotlib.pyplot as plt
 import matplotlib.ticker as plticker
 
+import parsedatetime
 import pytz
 import requests
 from bs4 import BeautifulSoup
 from dateutil import parser
+
+
+# XXX: Note that the path here is mounted on both the AD and HASS
+# docker images. So they 'share' a filesystem, which is why the two
+# paths here are the same
+CHART_PATH = "/var/lib/hass-ad/pge-usage-chart.png"
 
 
 class TelegramMessage(TypedDict):
@@ -38,6 +47,8 @@ class TelegramMessage(TypedDict):
     args: List[str]
 
 
+tz = pytz.timezone("America/Los_Angeles")
+
 Base = declarative_base()
 
 
@@ -45,21 +56,30 @@ class BillingHistory(Base):
     __tablename__ = "usage_history"
 
     id = Column(Integer, primary_key=True)
-    start = Column(DateTime)
+    start = Column(DateTime, index=True, unique=True)
+    end = Column(DateTime)
     total = Column(Integer)
 
 
 msg_help = """
 🔌 Query PG&E power usage for the apartment
 
-*/pge lastbill* - Show the last bill and usage graph
-*/pge current* - Show the usage for the current billing period
-*/pge [date]* - Show 30 days of usage ending with [date]
+*/pge lastbill* - Show previous bill and usage graph
+*/pge current* - Show the current billing period usage
+*/pge [date]* - Show usage from a particular day
 """
 
-msg_usage = """
-📅 *Billing Period {start} → {end}*
-💸 *Bill:* ${total_cost} (${split_cost} split)
+new_bill_msg = """
+💡 *New PG&E Bill*
+
+📅 *Period:* {start} → {end}
+🏷 *Total:* ${total_cost:1.2f}
+💸 [Venmo ${split_cost:1.2f} to Evan](https://venmo.com/EvanPurkhiser?txn=pay&note={venmo_note}&amount={split_cost:1.2f})
+"""
+
+basic_usage_msg = """
+📅 *Period:* {start} → {end}
+🏷 *Total:* ${total_cost:1.2f} (${split_cost:1.2f} split)
 """
 
 
@@ -153,7 +173,9 @@ class PGEApi:
         resp.raise_for_status()
         return resp.json()
 
-    def get_usage(self, start_date: datetime, end_date: datetime, utility="ELEC"):
+    def get_usage(
+        self, start_date: datetime, end_date: datetime, aggregate="day", utility="ELEC"
+    ):
         opowerCustomer = self.session.get(
             "https://pge.opower.com/ei/edge/apis/multi-account-v1/cws/pge/customers/current",
             headers=self.common_headers,
@@ -167,12 +189,12 @@ class PGEApi:
         }
 
         resp = self.session.get(
-            f"https://pge.opower.com/ei/edge/apis/DataBrowser-v1/cws/cost/utilityAccount/{utilities['ELEC']['uuid']}",
+            f"https://pge.opower.com/ei/edge/apis/DataBrowser-v1/cws/cost/utilityAccount/{utilities[utility]['uuid']}",
             headers=self.common_headers,
             params={
                 "startDate": start_date.isoformat(),
                 "endDate": end_date.isoformat(),
-                "aggregateType": "day",
+                "aggregateType": aggregate,
                 "includePtr": False,
             },
         )
@@ -184,7 +206,18 @@ def scale_lightness(rgb, scale_l):
     return colorsys.hls_to_rgb(h, min(1, l * scale_l), s=s)
 
 
-def generate_chart(usage, path):
+def get_billing_start_end(billing_info):
+    bill_start = datetime.fromtimestamp(
+        int(billing_info["billSummary"]["billStatementStartDate"]) // 1000, tz
+    )
+    bill_end = datetime.fromtimestamp(
+        int(billing_info["billSummary"]["billStatementEndDate"]) // 1000, tz
+    )
+
+    return bill_start, bill_end
+
+
+def generate_chart(usage, aggregate="day"):
     DAY_PEAK = "ON_PEAK"
     DAY_OFF_PEAK = "OFF_PEAK"
     day_parts = [DAY_OFF_PEAK, DAY_PEAK]
@@ -259,8 +292,13 @@ def generate_chart(usage, path):
 
         bars.append(bar)
 
+    agg_fmt = {
+        "day": "%m/%d",
+        "hour": "%H",
+    }
+
     dates = [parser.parse(read["startTime"]) for read in usage["reads"]]
-    labels = [dt.strftime("%m/%d") for dt in dates]
+    labels = [dt.strftime(agg_fmt[aggregate]) for dt in dates]
     totals = [read["providedCost"] for read in usage["reads"]]
 
     fig, ax = plt.subplots(figsize=(14, 5), tight_layout=True)
@@ -276,7 +314,10 @@ def generate_chart(usage, path):
     ax.tick_params(axis="y", colors=main_color)
 
     ax.xaxis.label.set_color(main_color)
-    ax.xaxis.set_major_locator(plticker.MultipleLocator(base=5.0))
+
+    # Spread out the labels for days
+    if aggregate == "day":
+        ax.xaxis.set_major_locator(plticker.MultipleLocator(base=6.0))
 
     ax.yaxis.label.set_color(main_color)
     ax.yaxis.set_major_formatter("${x:1.2f}")
@@ -298,14 +339,15 @@ def generate_chart(usage, path):
         )
         bar_containers.append(b1)
 
-    ax.bar_label(
-        bar_containers[-1],
-        labels=["${x:1.2f}".format(x=t) for t in totals],
-        rotation_mode="anchor",
-        fontsize=7,
-        fontweight="bold",
-        padding=3,
-    )
+    if len(bar_containers) > 0:
+        ax.bar_label(
+            bar_containers[-1],
+            labels=["${x:1.2f}".format(x=t) for t in totals],
+            rotation_mode="anchor",
+            fontsize=7,
+            fontweight="bold",
+            padding=3,
+        )
 
     ax.legend(
         loc="lower left",
@@ -316,7 +358,19 @@ def generate_chart(usage, path):
 
     fig.subplots_adjust(bottom=0.2)
 
-    fig.savefig(fname=path, format="png")
+    fig.savefig(fname=CHART_PATH, format="png")
+
+
+def get_tomorrow_time(hour=18):
+    dtnow = datetime.now()
+
+    if dtnow.hour < 6:
+        dt = datetime(dtnow.year, dtnow.month, dtnow.day, hour, 0, 0, 0)
+    else:
+        tomorrow = dtnow + timedelta(days=1)
+        dt = datetime(tomorrow.year, tomorrow.month, tomorrow.day, 6, 0, 0, 0)
+
+    return dt
 
 
 class PGE(hass.Hass):
@@ -336,11 +390,65 @@ class PGE(hass.Hass):
 
         self.api = PGEApi(self.args["pge_username"], self.args["pge_password"])
 
+        # Immediately check for a new bill
+        self.check_for_new_bill()
+
+    def check_for_new_bill(self):
+        self.api.ensure_authorized()
+
+        account = self.api.get_account(self.args["account_address"])
+        billing_info = self.api.get_billing_info(account)
+
+        bill_start, bill_end = get_billing_start_end(billing_info)
+        total_cost = float(billing_info["billSummary"]["currentAmountDue"])
+
+        # If it's already in there we'll have an error
+        try:
+            self.db.add(
+                BillingHistory(start=bill_start, end=bill_end, total=total_cost)
+            )
+            self.db.commit()
+            self.notify_new_bill(billing_info)
+        except exc.IntegrityError:
+            self.db.rollback()
+            # Nothing to do if it's not a new bill
+            pass
+
+        # Run again tomorrow at 6pm
+        tomorrow = get_tomorrow_time(18)
+        tomorrow_delta = tomorrow - datetime.now()
+        self.run_in(self.check_for_new_bill, tomorrow_delta.total_seconds())
+
     def send_msg(self, msg, **kwargs):
         self.call_service("telegram_bot/send_message", message=msg, **kwargs)
 
     def send_photo(self, file, **kwargs):
         self.call_service("telegram_bot/send_photo", file=file, **kwargs)
+
+    def notify_new_bill(self, billing_info):
+        account = self.api.get_account(self.args["account_address"])
+        billing_info = self.api.get_billing_info(account)
+
+        # Get the last billing preiod
+        bill_start, bill_end = get_billing_start_end(billing_info)
+        total_cost = float(billing_info["billSummary"]["currentAmountDue"])
+
+        usage = self.api.get_usage(bill_start, bill_end)
+
+        start = bill_start.strftime("%b %d")
+        end = bill_end.strftime("%b %d")
+
+        generate_chart(usage)
+        self.send_photo(
+            CHART_PATH,
+            caption=new_bill_msg.format(
+                start=start,
+                end=end,
+                total_cost=total_cost,
+                split_cost=total_cost / 2,
+                venmo_note=urllib.parse.quote_plus(f"PG&E Bill Split ({start})"),
+            ),
+        )
 
     def handle_telegram(self, _, msg: TelegramMessage, *args):
         if not msg["command"].startswith("/pge"):
@@ -354,37 +462,78 @@ class PGE(hass.Hass):
 
         action = args.pop(0)
 
+        # Ensure our API client is authorized
         self.api.ensure_authorized()
 
-        if action == "lastbill":
-            account = self.api.get_account(self.args["account_address"])
-            billing_info = self.api.get_billing_info(account)
-
-            # Compute bill start and end times
-            tz = pytz.timezone("America/Los_Angeles")
-
-            bill_start = datetime.fromtimestamp(
-                int(billing_info["billSummary"]["billStatementStartDate"]) // 1000, tz
-            )
-            bill_end = datetime.fromtimestamp(
-                int(billing_info["billSummary"]["billStatementEndDate"]) // 1000, tz
+        # Current billing period
+        if action == "current":
+            last_bill = (
+                self.db.query(BillingHistory)
+                .order_by(BillingHistory.start.desc())
+                .first()
             )
 
-            # Query usage for the billing period
-            usage = self.api.get_usage(bill_start, bill_end)
+            last_bill_end = last_bill.end
+            now = datetime.now(tz=tz)
 
-            total_cost = float(billing_info["billSummary"]["currentAmountDue"])
+            usage = self.api.get_usage(last_bill_end, now)
+            total_cost = sum(read["providedCost"] for read in usage["reads"])
 
-            # XXX: Note that the path here is mounted on both the AD and HASS
-            # docker images. So they 'share' a filesystem, which is why the two
-            # paths here are the same
-            generate_chart(usage, "/var/lib/hass-ad/pge-usage-chart.png")
+            generate_chart(usage)
             self.send_photo(
-                "/var/lib/hass-ad/pge-usage-chart.png",
-                caption=msg_usage.format(
-                    start=bill_start.strftime("%B %d"),
-                    end=bill_end.strftime("%B %d"),
+                CHART_PATH,
+                caption=basic_usage_msg.format(
+                    start=last_bill_end.strftime("%b %d"),
+                    end=now.strftime("%b %d"),
                     total_cost=total_cost,
                     split_cost=total_cost / 2,
                 ),
             )
+
+        # Most recent billing period
+        elif action == "lastbill":
+            account = self.api.get_account(self.args["account_address"])
+            billing_info = self.api.get_billing_info(account)
+
+            # Get the last billing preiod
+            bill_start, bill_end = get_billing_start_end(billing_info)
+            total_cost = float(billing_info["billSummary"]["currentAmountDue"])
+
+            # Query usage for the billing period
+            usage = self.api.get_usage(bill_start, bill_end)
+
+            generate_chart(usage)
+            self.send_photo(
+                CHART_PATH,
+                caption=basic_usage_msg.format(
+                    start=bill_start.strftime("%b %d"),
+                    end=bill_end.strftime("%b %d"),
+                    total_cost=total_cost,
+                    split_cost=total_cost / 2,
+                ),
+            )
+
+        # Usage from a specific day
+        else:
+            parser = parsedatetime.Calendar()
+
+            # Get now as the parsedatetime struct
+            dt_struct, status = parser.parse(" ".join([action] + args))
+
+            if status == 0:
+                self.send_msg("I don't undestand that date")
+                return
+
+            parsed_date = datetime(*dt_struct[:6], tzinfo=tz)
+
+            target_start = parsed_date.replace(hour=0, minute=0, second=0)
+            target_end = parsed_date.replace(hour=23, minute=59, second=59)
+
+            # Query usage for the billing period
+            usage = self.api.get_usage(target_start, target_end, aggregate="hour")
+            total_cost = sum(read["providedCost"] for read in usage["reads"])
+
+            date = target_start.strftime("%B %d %Y")
+
+            generate_chart(usage, aggregate="hour")
+            self.send_photo(CHART_PATH, caption=f"🗓 Daily usage on *{date}*")

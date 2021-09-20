@@ -446,7 +446,7 @@ class PGE(hass.Hass):
                 end=end,
                 total_cost=total_cost,
                 split_cost=total_cost / 2,
-                venmo_note=urllib.parse.quote_plus(f"PG&E Bill Split ({start})"),
+                venmo_note=urllib.parse.quote_plus(f"PGE Bill Split ({start} → {end})"),
             ),
         )
 

@@ -402,6 +402,8 @@ class PGE(hass.Hass):
         bill_start, bill_end = get_billing_start_end(billing_info)
         total_cost = float(billing_info["billSummary"]["currentAmountDue"])
 
+        self.log("Checking for new bill...")
+
         # If it's already in there we'll have an error
         try:
             self.db.add(
@@ -432,6 +434,8 @@ class PGE(hass.Hass):
         # Get the last billing preiod
         bill_start, bill_end = get_billing_start_end(billing_info)
         total_cost = float(billing_info["billSummary"]["currentAmountDue"])
+
+        self.log(f"Reporting new bill: ${total_cost}")
 
         usage = self.api.get_usage(bill_start, bill_end)
 

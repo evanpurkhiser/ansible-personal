@@ -393,7 +393,9 @@ class PGE(hass.Hass):
         # Immediately check for a new bill
         self.check_for_new_bill()
 
-    def check_for_new_bill(self):
+    def check_for_new_bill(self, *args, **kwargs):
+        self.log("Checking for new bill")
+
         self.api.ensure_authorized()
 
         account = self.api.get_account(self.args["account_address"])
@@ -402,23 +404,20 @@ class PGE(hass.Hass):
         bill_start, bill_end = get_billing_start_end(billing_info)
         total_cost = float(billing_info["billSummary"]["currentAmountDue"])
 
-        self.log("Checking for new bill...")
-
         # If it's already in there we'll have an error
         try:
             self.db.add(
                 BillingHistory(start=bill_start, end=bill_end, total=total_cost)
             )
-            self.db.commit()
             self.notify_new_bill(billing_info)
+            self.db.commit()
         except exc.IntegrityError:
             self.db.rollback()
-            # Nothing to do if it's not a new bill
-            pass
 
         # Run again tomorrow at 6pm
         tomorrow = get_tomorrow_time(18)
         tomorrow_delta = tomorrow - datetime.now()
+
         self.run_in(self.check_for_new_bill, tomorrow_delta.total_seconds())
 
     def send_msg(self, msg, **kwargs):
@@ -441,6 +440,8 @@ class PGE(hass.Hass):
 
         start = bill_start.strftime("%b %d")
         end = bill_end.strftime("%b %d")
+
+        self.log(f"New bill recorded for {start} -> {end}")
 
         generate_chart(usage)
         self.send_photo(

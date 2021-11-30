@@ -22,7 +22,7 @@
 # IPv4 home address
 - name: server.home
   type: A
-  content: 136.25.104.133
+  content: 136.25.106.42
 
 # Services
 - name: packages

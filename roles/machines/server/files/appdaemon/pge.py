@@ -404,15 +404,20 @@ class PGE(hass.Hass):
         bill_start, bill_end = get_billing_start_end(billing_info)
         total_cost = float(billing_info["billSummary"]["currentAmountDue"])
 
+        skipped = False
+
         # If it's already in there we'll have an error
         try:
             self.db.add(
                 BillingHistory(start=bill_start, end=bill_end, total=total_cost)
             )
-            self.notify_new_bill(billing_info)
             self.db.commit()
         except exc.IntegrityError:
+            skipped = True
             self.db.rollback()
+
+        if not skipped:
+            self.notify_new_bill(billing_info)
 
         # Run again tomorrow at 6pm
         tomorrow = get_tomorrow_time(18)

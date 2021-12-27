@@ -6,12 +6,14 @@ import hassapi as hass
 class ThermostatNotification(hass.Hass):
     def initialize(self):
         self.listen_state(self.state_update, entity="climate.apartment")
-        self.listen_state(self.temp_update, entity="climate.apartment", attribute="temperature")
+        self.listen_state(
+            self.temp_update, entity="climate.apartment", attribute="temperature"
+        )
 
     def state_update(self, _entity, _attr, prev, new, kwargs):
-        temp = self.get_state(entity_id='climate.apartment', attribute='temperature')
+        temp = self.get_state(entity_id="climate.apartment", attribute="temperature")
 
-        if new == 'heat':
+        if new == "heat":
             self.send_msg(f"🥶 Thermostat set to *heat* @ *{int(temp)}º*")
         else:
             self.send_msg(f"🥵 Thermostat set to *off*")

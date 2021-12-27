@@ -34,6 +34,10 @@ pge:
   pge_password: !secret pge_password
   account_address: '2421 16TH ST UNIT 301'
 
+thermostat_notification:
+  module: thermostat_notification
+  class: ThermostatNotification
+
 button_blue:
   module: buttons
   class: ButtonBlue

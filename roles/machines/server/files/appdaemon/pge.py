@@ -404,26 +404,36 @@ class PGE(hass.Hass):
         bill_start, bill_end = get_billing_start_end(billing_info)
         total_cost = float(billing_info["billSummary"]["currentAmountDue"])
 
-        skipped = False
+        # Check if we've already recorded this bill
+        already_recorded = (
+            self.db.query(BillingHistory.id)
+            .filter_by(start=bill_start, total=total_cost)
+            .first()
+            is not None
+        )
 
-        # If it's already in there we'll have an error
+        def schedule_next():
+            tomorrow = get_tomorrow_time(18)
+            tomorrow_delta = tomorrow - datetime.now()
+
+            self.run_in(self.check_for_new_bill, tomorrow_delta.total_seconds())
+
+        # Nothing to do if we already recorded this bill.. try again tomorrow
+        if already_recorded:
+            schedule_next()
+            return
+
         try:
             self.db.add(
                 BillingHistory(start=bill_start, end=bill_end, total=total_cost)
             )
-            self.db.commit()
-        except exc.IntegrityError:
-            skipped = True
-            self.db.rollback()
 
-        if not skipped:
             self.notify_new_bill(billing_info)
-
-        # Run again tomorrow at 6pm
-        tomorrow = get_tomorrow_time(18)
-        tomorrow_delta = tomorrow - datetime.now()
-
-        self.run_in(self.check_for_new_bill, tomorrow_delta.total_seconds())
+            self.db.commit()
+        except Exception as e:
+            self.db.rollback()
+            schedule_next()
+            raise e
 
     def send_msg(self, msg, **kwargs):
         self.call_service("telegram_bot/send_message", message=msg, **kwargs)

@@ -131,25 +131,6 @@ light:
           entity_id: switch.plug_2
 
 sensor:
-  - platform: template
-    sensors:
-      purifier_temperature:
-        friendly_name: Temperature (Purifier)
-        value_template: "{{ state_attr('fan.air_purifier', 'temperature') }}"
-        unit_of_measurement: '°C'
-        device_class: temperature
-      purifier_humidity:
-        friendly_name: Humidity (Purifier)
-        value_template: "{{ state_attr('fan.air_purifier', 'humidity') }}"
-        unit_of_measurement: '%'
-        device_class: humidity
-      purifier_pm25:
-        friendly_name: pm25
-        value_template: "{{ state_attr('fan.air_purifier', 'aqi') }}"
-        unit_of_measurement: 'µg/m3'
-        # Device class is not supported for pm25, however giving it the name of
-        # 'pm25' will allow homekit to pickup that it is an air quality sensor.
-
   - platform: darksky
     api_key: !secret darksky_api_key
     forecast: [1]

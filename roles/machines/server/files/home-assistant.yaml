@@ -46,11 +46,14 @@ google_assistant:
     light.living_room_lights: { expose: true }
     light.kitchen_cove_lights: { expose: true }
     light.kitchen_lights: { expose: true }
+    light.work_closet_light: { expose: true }
     light.front_foyer_lights: { expose: true }
     light.joes_room_lights: { expose: true }
     light.joes_bedside_light: { expose: true }
     light.evans_room_lights: { expose: true }
     light.evans_room_opal: { expose: true }
+    light.evans_bathroom_vanity_lights: { expose: true }
+    light.evans_bathroom_tub_light: { expose: true }
 
 ecobee:
   api_key: !secret ecobee_api_key

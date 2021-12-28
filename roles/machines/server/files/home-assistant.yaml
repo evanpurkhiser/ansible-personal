@@ -25,10 +25,25 @@ lovelace:
 
 homekit:
   filter:
-    include_entity_globs:
-      - light.*
-      - cover.*
-      - fan.*
+    include_entities:
+      - sensor.purifier_pm25
+      - climate.apartment
+      - cover.living_room_shades
+      - cover.evans_window
+      - cover.evans_patio_door
+      - cover.joes_window
+      - cover.joes_patio_door
+      - light.living_room_lights
+      - light.kitchen_cove_lights
+      - light.kitchen_lights
+      - light.work_closet_light
+      - light.front_foyer_lights
+      - light.joes_room_lights
+      - light.joes_bedside_light
+      - light.evans_room_lights
+      - light.evans_room_opal
+      - light.evans_bathroom_vanity_lights
+      - light.evans_bathroom_tub_light
 
 google_assistant:
   project_id: home-assistant-19f4f

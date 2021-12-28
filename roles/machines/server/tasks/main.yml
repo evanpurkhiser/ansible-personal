@@ -43,7 +43,6 @@
     name:
     - archzfs-linux
     - bash-completion
-    - dhcpcd
     - dnsmasq
     - mosquitto
     - neovim

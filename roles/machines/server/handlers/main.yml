@@ -26,9 +26,6 @@
 - name: restart ip6tables
   service: name=ip6tables state=restarted
 
-- name: restart dhcpcd
-  service: name=dhcpcd state=restarted
-
 - name: restart mosquitto
   service: name=mosquitto state=restarted
 

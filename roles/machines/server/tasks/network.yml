@@ -33,18 +33,10 @@
 - name: Ensure iptables is enabled
   service: name=iptables enabled=yes state=started
 
-# Setup and configure DHCP and DNS server
+# Setup and configure DNS server
 - name: Configure dnsmasq
   copy: src=dnsmasq.conf dest=/etc/
   notify: restart dnsmasq
 
 - name: Ensure dnsmasq is enabled
   service: name=dnsmasq enabled=yes state=started
-
-# Setup dhcpcd for DHCPv6-PD support
-- name: Ensure dhcpcd.conf file
-  copy: src=dhcpcd.conf dest=/etc/systemd/dhcpcd.conf
-  notify: restart dhcpcd
-
-- name: Ensure dhcpcd is enabled
-  service: name=dhcpcd state=started enabled=yes

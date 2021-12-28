@@ -31,7 +31,9 @@ class PowerNotification(hass.Hass):
             map(
                 lambda v: Value(
                     parser.parse(v["last_updated"]),
-                    float(0 if v["state"] == "unknown" else v["state"]),
+                    float(
+                        0 if v["state"] in ("unknown", "unavailable") else v["state"]
+                    ),
                 ),
                 self.get_history(entity_id=self.current_entity, days=1)[0],
             )

@@ -74,7 +74,7 @@ ecobee:
   api_key: !secret ecobee_api_key
 
 lutron_caseta:
-  - host: 10.0.0.194
+  - host: 10.0.0.20
     keyfile: caseta.key
     certfile: caseta.crt
     ca_certs: caseta-bridge.crt

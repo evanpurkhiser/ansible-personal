@@ -1,6 +1,0 @@
-title: Apartment
-resources:
-  - url: /local/community/mini-graph-card/mini-graph-card-bundle.js
-    type: module
-  - url: /local/community/simple-weather-card/simple-weather-card-bundle.js
-    type: module

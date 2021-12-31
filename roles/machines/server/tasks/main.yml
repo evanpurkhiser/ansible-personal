@@ -159,10 +159,6 @@
   notify: restart home-assistant
   tags: [hass]
 
-- name: Ensure hass UI configuration
-  copy: src=hass-lovelace.yaml dest=/var/lib/hass/ui-lovelace.yaml
-  tags: [hass, hass-ui]
-
 - name: Ensure hass docker container
   tags: [hass]
   docker_container:

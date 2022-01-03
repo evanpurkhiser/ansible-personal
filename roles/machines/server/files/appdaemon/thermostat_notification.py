@@ -26,9 +26,9 @@ class TelegramMessage(TypedDict):
 class ThermostatNotification(hass.Hass):
     def initialize(self):
         self.listen_event(self.handle_telegram, event="telegram_command")
-        self.listen_state(self.state_update, entity="climate.apartment")
+        self.listen_state(self.state_update, "climate.apartment")
         self.listen_state(
-            self.temp_update, entity="climate.apartment", attribute="temperature"
+            self.temp_update, "climate.apartment", attribute="temperature"
         )
 
     def state_update(self, *args):

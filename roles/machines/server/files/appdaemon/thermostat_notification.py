@@ -75,11 +75,11 @@ class ThermostatNotification(hass.Hass):
             return
 
         if action == "heat":
-            self.set_state(entity="climate.apartment", state="heat")
+            self.set_state(entity_id="climate.apartment", state="heat")
             return
 
         if action == "off":
-            self.set_state(entity="climate.apartment", state="off")
+            self.set_state(entity_id="climate.apartment", state="off")
             return
 
         try:
@@ -89,5 +89,5 @@ class ThermostatNotification(hass.Hass):
             return
 
         self.set_state(
-            entity="climate.apartment", state="heat", attributes={"temperature": temp}
+            entity_id="climate.apartment", state="heat", attributes={"temperature": temp}
         )

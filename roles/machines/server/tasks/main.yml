@@ -233,6 +233,15 @@
       - "/mnt/documents/multimedia/djing/tracks-importable:/staging"
       - "/var/lib/tune-manager:/storage"
 
+# Setup venmo-auto-cashout service
+- name: Install venmo-auto-cashout timer and service
+  copy: src=systemd/venmo-auto-cashout.{{ item }} dest=/etc/systemd/system/
+  with_items: [timer, service]
+  notify: systemd daemon-reload
+
+- name: Enable venmo-auto-cashout timer service
+  service: name=venmo-auto-cashout.timer enabled=yes state=started
+
 # Configure DNS entires in cloudflare
 - name: Ensuring DNS entries
   tags: [dns]

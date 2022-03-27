@@ -1,0 +1,6 @@
+[Unit]
+Description=Cashout current venmo balance
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker run --rm --env-file=/etc/venmo-auto-cashout.conf evanpurkhiser/venmo-auto-cashout

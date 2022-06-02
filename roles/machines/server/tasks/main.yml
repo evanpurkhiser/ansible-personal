@@ -234,6 +234,9 @@
       - "/var/lib/tune-manager:/storage"
 
 # Setup venmo-auto-cashout service
+- name: Ensure venmo-auto-cashout database directory exists
+  file: path=/var/lib/venmo-auto-cashout state=directory
+
 - name: Install venmo-auto-cashout timer and service
   copy: src=systemd/venmo-auto-cashout.{{ item }} dest=/etc/systemd/system/
   with_items: [timer, service]

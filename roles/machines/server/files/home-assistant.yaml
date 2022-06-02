@@ -109,7 +109,7 @@ telegram_bot:
       - 1050261397 # Joe DM
 
 octoprint:
-  - host: octoprint
+  - host: 10.0.0.8
     api_key: !secret octoprint_api_key
     name: Ender 3 V2
     number_of_tools: 1

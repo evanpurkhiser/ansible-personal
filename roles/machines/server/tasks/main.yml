@@ -164,7 +164,7 @@
   docker_container:
     name: home-assistant
     image: homeassistant/home-assistant
-    init: true
+    init: false
     network_mode: host
     restart_policy: unless-stopped
     volumes:

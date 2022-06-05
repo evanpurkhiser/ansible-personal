@@ -1,6 +1,0 @@
-- name: Enable lirc service
-  service: name=lircd enabled=yes state=started
-
-- name: Configure lirc options
-  copy: src=lirc_options.conf dest=/etc/lirc/
-  notify: restart lircd

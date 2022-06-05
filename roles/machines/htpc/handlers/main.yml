@@ -1,3 +1,0 @@
----
-- name: restart lircd
-  service: name=lircd state=restarted

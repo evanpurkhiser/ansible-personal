@@ -45,7 +45,6 @@
       - bash-completion
       - dnsmasq
       - mosquitto
-      - neovim
       - nfs-utils
       - nginx
       - rclone

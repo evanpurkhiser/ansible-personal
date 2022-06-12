@@ -171,16 +171,6 @@ sensor:
     payload_available: "Online"
     payload_not_available: "Offline"
     qos: 1
-  - platform: mqtt
-    name: "Dishwasher Power Factor"
-    state_topic: "dishwasher_plug/tele/SENSOR"
-    value_template: "{{ value_json['ENERGY']['PowerFactor'] }}"
-    device_class: power_factor
-    unit_of_measurement: '%'
-    availability_topic: "dishwasher_plug/tele/LWT"
-    payload_available: "Online"
-    payload_not_available: "Offline"
-    qos: 1
 
   # Laundry current monitoring
   - platform: mqtt
@@ -199,16 +189,6 @@ sensor:
     value_template: "{{ value_json['ENERGY']['Power'] }}"
     device_class: power
     unit_of_measurement: Watts
-    availability_topic: "laundry_plug/tele/LWT"
-    payload_available: "Online"
-    payload_not_available: "Offline"
-    qos: 1
-  - platform: mqtt
-    name: "Laundry Power Factor"
-    state_topic: "laundry_plug/tele/SENSOR"
-    value_template: "{{ value_json['ENERGY']['PowerFactor'] }}"
-    device_class: power_factor
-    unit_of_measurement: '%'
     availability_topic: "laundry_plug/tele/LWT"
     payload_available: "Online"
     payload_not_available: "Offline"

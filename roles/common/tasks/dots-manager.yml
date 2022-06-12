@@ -4,13 +4,13 @@
     name: [ git, python ]
 
 - name: Install dotfiles for evan
-  git: repo=https://github.com/EvanPurkhiser/dots-personal.git
+  git: repo=https://github.com/evanpurkhiser/dots-personal.git
        dest=/home/evan/.local/etc
        update=no
        accept_hostkey=yes
 
 - name: Install dotfile manager for evan
-  git: repo=https://github.com/EvanPurkhiser/dots.git
+  git: repo=https://github.com/evanpurkhiser/dots.git
        dest=/home/evan/.local/lib/dots
        update=no
        accept_hostkey=yes

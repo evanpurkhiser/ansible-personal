@@ -6,118 +6,103 @@ set -e
 # 1password vault. This automatically extracts them.
 
 # Ensure authentication
-if ! op list vaults >/dev/null; then
-    echo "Signin to 1password using 'op signin'"
-    exit 1
+if ! op vault list >/dev/null; then
+	echo "Signin to 1password using 'op signin'"
+	exit 1
 fi
 
 # Access point credentials
 (
-    echo wifi_password: \'"$(
-        op get item 'hnysllbhcfa4rmsmtko2x3naeq' |
-            jq -r '.details.sections[].fields[]? | select(.n == "wireless_password").v'
-    )"\'
+	echo wifi_password: \'"$(
+		op item get 'hnysllbhcfa4rmsmtko2x3naeq' --field='wireless network password'
+	)"\'
 
-    # Transmission RPC API HTTP password
-    echo transmission_rpc_password: \'"$(
-        op get item 'er47ejg7jjcgxh3ztyvzlsrlzy' |
-            jq -r '.details.fields[] | select(.name == "password").value'
-    )"\'
+	# Transmission RPC API HTTP password
+	echo transmission_rpc_password: \'"$(
+		op item get 'er47ejg7jjcgxh3ztyvzlsrlzy' --field='password'
+	)"\'
 
-    echo home_assistant:
-    echo '  hass_token:' \'"$(
-        op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' |
-            jq -r '.details.sections[].fields[]? | select(.n == "A86D845A35CB43199C5FD6F656D466A7").v'
-    )"\'
-    echo '  hacs_github_api_key:' \'"$(
-        op get item 'mfv2dujsrfa4bl6hdexjwqwdoq' |
-            jq -r '.details.sections[].fields[]? | select(.n == "3E7D5DBE346F4EED8B1F69B2DA1F32A1").v'
-    )"\'
+	echo home_assistant:
+	echo '  hass_token:' \'"$(
+		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='Appdaemon Key'
 
-    echo '  spotify_api_key:' \'"$(
-        op get item 'y4pxpl6oezgavidgfzvcb2nome' |
-            jq -r '.details.sections[].fields[]? | select(.n == "0959D6B98BE74F40BF981214E1D1A491").v'
-    )"\'
+	)"\'
+	echo '  hacs_github_api_key:' \'"$(
+		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='HACS Github API Key'
+	)"\'
 
-    echo '  spotify_username:' \'"$(
-        op get item 'y4pxpl6oezgavidgfzvcb2nome' |
-            jq -r '.details.fields[] | select(.name == "username").value'
-    )"\'
+	echo '  spotify_api_key:' \'"$(
+		op item get 'y4pxpl6oezgavidgfzvcb2nome' --field='Client Secret'
+	)"\'
 
-    echo '  spotify_password:' \'"$(
-        op get item 'y4pxpl6oezgavidgfzvcb2nome' |
-            jq -r '.details.fields[] | select(.name == "password").value'
-    )"\'
+	echo '  spotify_username:' \'"$(
+		op item get 'y4pxpl6oezgavidgfzvcb2nome' --field='username'
+	)"\'
 
-    echo '  darksky_api_key:' \'"$(
-        op get item 'skoxswyzgzh2dgwuc6d47lmnai' |
-            jq -r '.details.sections[].fields[]? | select(.n == "CFB4195D54E34F0FAB8F25968FE7958A").v'
-    )"\'
+	echo '  spotify_password:' \'"$(
+		op item get 'y4pxpl6oezgavidgfzvcb2nome' --field='password'
+	)"\'
 
-    echo '  telegram_bot_token:' \'"$(
-        op get item 'wddknbssdbdpbilpy25olziegm' |
-            jq -r '.details.sections[].fields[]? | select(.n == "58F0E29A9DFC4A6691E9A913A627A9E5").v'
-    )"\'
+	echo '  darksky_api_key:' \'"$(
+		op item get 'skoxswyzgzh2dgwuc6d47lmnai' --field='API Key'
+	)"\'
 
-    echo '  ecobee_api_key:' \'"$(
-        op get item 'rr3xuvp23zanvbs4lqqadwt6yi' |
-            jq -r '.details.sections[].fields[]? | select(.n == "0F81E181656B412FBBD687137544BA1F").v'
-    )"\'
+	echo '  telegram_bot_token:' \'"$(
+		op item get 'wddknbssdbdpbilpy25olziegm' --field='Apartment Bot Token'
+	)"\'
 
-    echo "  google_assistant_service_account: |\n$(
-        op get document 'xld4lu7ccfby7hjpo4efoulrru' | sed 's/\\n/\\\\n/g;s/^/    /'
-    )"
+	echo '  ecobee_api_key:' \'"$(
+		op item get 'rr3xuvp23zanvbs4lqqadwt6yi' --field='API Key'
+	)"\'
 
-    echo '  octoprint_api_key:' \'"$(
-        op get item 'zwtxalkf65h2fa5inxwtv4h2tu' |
-            jq -r '.details.sections[].fields[]? | select(.n == "581B9DFB59E24ED79D457393265C1F22").v'
-    )"\'
+	echo "  google_assistant_service_account: |\n$(
+		op document get 'xld4lu7ccfby7hjpo4efoulrru' | sed 's/\\n/\\\\n/g;s/^/    /'
+	)"
 
-    echo '  pge_password:' \'"$(
-        op get item 'behtdcxervd35nul5222bcui3y' |
-            jq -r '.details.fields[] | select(.name == "password").value'
-    )"\'
+	echo '  octoprint_api_key:' \'"$(
+		op item get 'zwtxalkf65h2fa5inxwtv4h2tu' --field='HASS API Key'
+	)"\'
 
-    # Cloudflare DNS credentials
-    echo cloudflare:
-    echo '  email:' \'"$(
-        op get item 'z7qz2rxy6rb4xphfzmktsnauv4' |
-            jq -r '.details.fields[] | select(.name == "username").value'
-    )"\'
+	echo '  pge_password:' \'"$(
+		op item get 'behtdcxervd35nul5222bcui3y' --field='password'
+	)"\'
 
-    echo '  token:' \'"$(
-        op get item 'z7qz2rxy6rb4xphfzmktsnauv4' |
-            jq -r '.details.sections[].fields[]? | select(.n == "B12E0ECF27AC4357B784CCF59A455C49").v'
-    )"\'
+	# Cloudflare DNS credentials
+	echo cloudflare:
+	echo '  email:' \'"$(
+		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='username'
+	)"\'
 
-    # Backup solution encryption and access token
-    echo rclone:
-    echo '  backup_key:' \'"$(
-        op get item 'rzki4bpthbcx3dvunjvect545e' | jq -r '.details.password'
-    )"\'
+	echo '  token:' \'"$(
+		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='API Key'
+	)"\'
 
-    echo '  backup_salt:' \'"$(
-        op get item 'rzki4bpthbcx3dvunjvect545e' |
-            jq -r '.details.sections[].fields[]? | select(.n == "C1C73CD15D304C168BA41338A0792881").v'
-    )"\'
+	# Backup solution encryption and access token
+	echo rclone:
+	echo '  backup_key:' \'"$(
+		op item get 'rzki4bpthbcx3dvunjvect545e' --field='password'
+	)"\'
 
-    echo '  gdrive_token:' \'"$(
-        op get item 'rzki4bpthbcx3dvunjvect545e' |
-            jq -r '.details.sections[].fields[]? | select(.n == "A36E5CA6867D4AE385AAC496F302535B").v'
-    )"\'
+	echo '  backup_salt:' \'"$(
+		op item get 'rzki4bpthbcx3dvunjvect545e' --field='salt'
+	)"\'
 
-    # 2421 16th street Lutron
-    echo lutron:
-    echo "  caseta_crt: |\n$(
-        op get document 'if7jhrbauracxa45xtlybscrja' | sed 's/^/    /'
-    )"
+	echo '  gdrive_token:' \'"$(
+		op item get 'rzki4bpthbcx3dvunjvect545e' --field='gdrive API Token'
+	)"\'
 
-    echo "  caseta_key: |\n$(
-        op get document '5sxyarlqife5hfcmzn5zioit2e' | sed 's/^/    /'
-    )"
+	# 2421 16th street Lutron
+	echo lutron:
+	echo "  caseta_crt: |\n$(
+		op document get 'if7jhrbauracxa45xtlybscrja' | sed 's/^/    /'
+	)"
 
-    echo "  caseta_bridge_crt: |\n$(
-        op get document 'mi47nw77vrbujg2bp5nnxztyuy' | sed 's/^/    /'
-    )"
+	echo "  caseta_key: |\n$(
+		op document get '5sxyarlqife5hfcmzn5zioit2e' | sed 's/^/    /'
+	)"
+
+	echo "  caseta_bridge_crt: |\n$(
+		op document get 'mi47nw77vrbujg2bp5nnxztyuy' | sed 's/^/    /'
+	)"
 
 ) >"$(dirname "$0")/vars/secrets.yml"

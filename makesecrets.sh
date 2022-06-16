@@ -88,7 +88,8 @@ fi
 	)"\'
 
 	echo '  gdrive_token:' \'"$(
-		op item get 'rzki4bpthbcx3dvunjvect545e' --field='gdrive API Token'
+		# JSON format extration to avoid etra double quotes on the JSON string
+		op item get 'rzki4bpthbcx3dvunjvect545e' --field='gdrive API Token' --format=json | jq -r .value
 	)"\'
 
 	# 2421 16th street Lutron

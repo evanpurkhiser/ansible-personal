@@ -26,13 +26,13 @@ callbox:
   class: Callbox
   global_dependencies: [utils]
 
-pge:
-  module: pge
-  class: PGE
-  global_dependencies: [utils]
-  pge_username: evanpurkhiser@gmail.com
-  pge_password: !secret pge_password
-  account_address: '2421 16TH ST UNIT 301'
+# pge:
+#   module: pge
+#   class: PGE
+#   global_dependencies: [utils]
+#   pge_username: evanpurkhiser@gmail.com
+#   pge_password: !secret pge_password
+#   account_address: '2421 16TH ST UNIT 301'
 
 thermostat_notification:
   module: thermostat_notification

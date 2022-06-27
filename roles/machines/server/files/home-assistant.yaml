@@ -6,7 +6,7 @@ homeassistant:
   latitude: 37.765389
   longitude: -122.410831
   external_url: https://hass.evanpurkhiser.com
-  allowlist_external_dirs: [ '/var/lib/hass-ad' ]
+  allowlist_external_dirs: ["/var/lib/hass-ad"]
 
 http:
   use_x_forwarded_for: true
@@ -115,7 +115,8 @@ octoprint:
     number_of_tools: 1
     bed: true
     sensors:
-      monitored_conditions: ['Current State', 'Job Percentage', 'Time Elapsed', 'Time Remaining']
+      monitored_conditions:
+        ["Current State", "Job Percentage", "Time Elapsed", "Time Remaining"]
 
 light:
   - platform: template

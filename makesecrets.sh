@@ -47,7 +47,7 @@ fi
 		op item get 'skoxswyzgzh2dgwuc6d47lmnai' --field='API Key'
 	)"\'
 
-	echo '  telegram_bot_token:' \'"$(
+	echo '  apartment_bot_token:' \'"$(
 		op item get 'wddknbssdbdpbilpy25olziegm' --field='Apartment Bot Token'
 	)"\'
 

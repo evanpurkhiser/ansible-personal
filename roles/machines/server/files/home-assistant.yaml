@@ -101,7 +101,7 @@ mqtt:
 
 telegram_bot:
   - platform: webhooks
-    api_key: !secret telegram_bot_token
+    api_key: !secret apartment_bot_token
     parse_mode: markdown
     allowed_chat_ids:
       - -427766023 # Apartment chat

@@ -31,18 +31,6 @@ fi
 		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='HACS Github API Key'
 	)"\'
 
-	echo '  spotify_api_key:' \'"$(
-		op item get 'y4pxpl6oezgavidgfzvcb2nome' --field='Client Secret'
-	)"\'
-
-	echo '  spotify_username:' \'"$(
-		op item get 'y4pxpl6oezgavidgfzvcb2nome' --field='username'
-	)"\'
-
-	echo '  spotify_password:' \'"$(
-		op item get 'y4pxpl6oezgavidgfzvcb2nome' --field='password'
-	)"\'
-
 	echo '  darksky_api_key:' \'"$(
 		op item get 'skoxswyzgzh2dgwuc6d47lmnai' --field='API Key'
 	)"\'

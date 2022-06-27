@@ -232,6 +232,22 @@
       - "/mnt/documents/multimedia/djing/tracks-importable:/staging"
       - "/var/lib/tune-manager:/storage"
 
+# Setup doppovich bot
+- name: Ensure doppovich bot directory exists
+  file: path=/var/lib/doppovich-bot state=directory
+  tags: [doppovich-bot]
+
+- name: Ensure doppovich-bot docker container
+  tags: [doppovich-bot]
+  docker_container:
+    name: doppovich-bot
+    image: evanpurkhiser/doppovich-bot
+    env:
+      TELEGRAM_TOKEN: "{{ doppovich_bot_token }}"
+    volumes:
+      - "/var/lib/doppovich-bot/chats:/app/data"
+      - "/var/lib/doppovich-bot/db:/app/db"
+
 # Setup venmo-auto-cashout service
 - name: Ensure venmo-auto-cashout database directory exists
   file: path=/var/lib/venmo-auto-cashout state=directory

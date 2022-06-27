@@ -22,6 +22,10 @@ fi
 		op item get 'er47ejg7jjcgxh3ztyvzlsrlzy' --field='password'
 	)"\'
 
+	echo doppovich_bot_token: \'"$(
+		op item get 'wddknbssdbdpbilpy25olziegm' --field='Doppovich Bot Token'
+	)"\'
+
 	echo home_assistant:
 	echo '  hass_token:' \'"$(
 		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='Appdaemon Key'

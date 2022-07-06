@@ -1,7 +1,7 @@
 ---
 - name: Install pacsync timer and service
   copy: src=pacsync.{{item}} dest=/etc/systemd/system/
-  with_items: [ timer, service ]
+  with_items: [timer, service]
 
 - name: Enable pacsync timer service
   service: name=pacsync.timer enabled=yes state=started

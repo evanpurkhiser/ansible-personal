@@ -33,16 +33,16 @@
   docker_container:
     name: home-assistant
     restart: yes
-    comparisons: { '*': ignore }
+    comparisons: { "*": ignore }
 
 - name: restart appdaemon
   docker_container:
     name: appdaemon
     restart: yes
-    comparisons: { '*': ignore }
+    comparisons: { "*": ignore }
 
 - name: sync personal repo database
-  shell: 'repo-add --remove --new /srv/pkgs/personal.db.tar.gz /srv/pkgs/*.pkg.tar.xz'
+  shell: "repo-add --remove --new /srv/pkgs/personal.db.tar.gz /srv/pkgs/*.pkg.tar.xz"
 
 - name: systemd daemon-reload
   systemd: daemon_reload=yes

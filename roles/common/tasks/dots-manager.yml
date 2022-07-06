@@ -1,19 +1,19 @@
 ---
 - name: Install dotfile required packages
   pacman:
-    name: [ git, python ]
+    name: [git, python]
 
 - name: Install dotfiles for evan
   git: repo=https://github.com/evanpurkhiser/dots-personal.git
-       dest=/home/evan/.local/etc
-       update=no
-       accept_hostkey=yes
+    dest=/home/evan/.local/etc
+    update=no
+    accept_hostkey=yes
 
 - name: Install dotfile manager for evan
   git: repo=https://github.com/evanpurkhiser/dots.git
-       dest=/home/evan/.local/lib/dots
-       update=no
-       accept_hostkey=yes
+    dest=/home/evan/.local/lib/dots
+    update=no
+    accept_hostkey=yes
 
 - name: Set installed dotfile permissions
   file: path=/home/evan/.local recurse=yes owner=evan group=users
@@ -22,6 +22,6 @@
   become: true
   become_user: evan
   shell: source /home/evan/.local/etc/init;
-         /home/evan/.local/bin/dots groups set base;
-         /home/evan/.local/bin/dots install;
-         creates=/home/evan/.local/bin/dots
+    /home/evan/.local/bin/dots groups set base;
+    /home/evan/.local/bin/dots install;
+    creates=/home/evan/.local/bin/dots

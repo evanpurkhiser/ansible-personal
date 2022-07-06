@@ -17,15 +17,15 @@
   copy: src=network/{{ item }} dest=/etc/systemd/network/
   notify: restart systemd-networkd
   with_items:
-  - 00-lan0.link
-  - 00-wan0.link
-  - 01-internal.network
-  - 01-external.network
+    - 00-lan0.link
+    - 00-wan0.link
+    - 01-internal.network
+    - 01-external.network
 
 # Setup iptable rules
 - name: Configure iptables
   copy: src=iptables.rules dest=/etc/iptables/
-  notify: [ 'restart iptables', 'restart ip6tables' ]
+  notify: ["restart iptables", "restart ip6tables"]
 
 - name: Link iptable rules for v6 rules
   file: path=/etc/iptables/ip6tables.rules state=link src=/etc/iptables/iptables.rules

@@ -9,4 +9,4 @@
 
 ---
 - hosts: server.home.evanpurkhiser.com
-  roles: [ machines/server ]
+  roles: [machines/server]

@@ -5,8 +5,8 @@
 - name: restart systemd-resolved
   service: name=systemd-resolved state=restarted
 
-- name: reload smbd
-  service: name=smbd state=reloaded
+- name: restart sshd
+  service: name=sshd state=restarted
 
 - name: reload nginx
   service: name=nginx state=reloaded

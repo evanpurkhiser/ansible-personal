@@ -30,6 +30,15 @@
 # Flush handlers to ensure new personal packages are synced into the database
 - meta: flush_handlers
 
+# More secure SSH authentication
+- name: Disable empty password login
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^#?PermitEmptyPasswords" line="PermitEmptyPasswords no"
+  notify: restart sshd
+
+- name: Disable password login
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^#?PasswordAuthentication" line="PasswordAuthentication no"
+  notify: restart sshd
+
 # Setup ZFS repo
 - name: Add arch ZFS repo
   copy: src=archzfs-repo dest=/etc/pacman.d

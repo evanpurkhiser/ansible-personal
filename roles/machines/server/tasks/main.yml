@@ -60,6 +60,7 @@
       - rsync
       - transmission-cli
       - wget
+      - tailscale
 
       # Required for encrypting the transmission basic auth password
       - python-passlib
@@ -85,6 +86,11 @@
   copy: src=exports dest=/etc/exports
   notify: reload nfs exports
   tags: [nfs]
+
+# Enable tailscale
+- name: Enable tailscaled
+  service: name=tailscaled state=started enabled=yes
+  tags: [tailscale]
 
 # Configure nginx server
 - name: Enable nginx server

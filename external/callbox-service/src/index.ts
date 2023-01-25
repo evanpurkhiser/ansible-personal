@@ -1,7 +1,10 @@
 import * as Sentry from '@sentry/node';
 import fetch from 'node-fetch';
 import Twilio from 'twilio';
-import {ServerlessFunctionSignature} from '@twilio-labs/serverless-runtime-types/types';
+import {
+  ServerlessFunctionSignature,
+  ServerlessEventObject,
+} from '@twilio-labs/serverless-runtime-types/types';
 import VoiceResponse from 'twilio/lib/twiml/VoiceResponse';
 
 Sentry.init({
@@ -10,25 +13,14 @@ Sentry.init({
 
 const ENDPOINT_URL = 'https://hass.evanpurkhiser.com/api/appdaemon';
 
-/**
- * The number of the aparment callbox.
- *
- * Not currently used for anything, but maybe it will be later.
- */
-const CALLBOX = '+14155031506';
-
 const NUMBER_MAP = {
-  '+16159888483': {
+  '+16802255269': {
     name: 'evan',
     number: '+13306220474',
   },
-  '+16155278719': {
-    name: 'joe',
-    number: '+13306317370',
-  },
 } as const;
 
-type RequestParameters = {
+interface RequestParameters extends ServerlessEventObject {
   /**
    * Number called from
    */
@@ -41,7 +33,7 @@ type RequestParameters = {
    * When authorization has been gathered, this will be present
    */
   Digits?: string;
-};
+}
 
 type Env = {
   API_KEY: string;
@@ -94,7 +86,7 @@ const handleCall: Handler = async function (ctx, event, callback) {
   if (!resp.ok) {
     const err = new Error('Failed to trigger callbox API');
     Sentry.captureException(err, {
-      level: Sentry.Severity.Critical,
+      level: 'fatal',
       extra: {error: resp.statusText, ...event},
     });
 
@@ -105,7 +97,7 @@ const handleCall: Handler = async function (ctx, event, callback) {
     return;
   }
 
-  const data: TriggerResponse = await resp.json();
+  const data = (await resp.json()) as TriggerResponse;
 
   // When we have single use codes available, give the user more time to enter.
   const gather = twiml.gather({
@@ -133,7 +125,7 @@ const handleAuth: Handler = async function (ctx, event, callback) {
     body: JSON.stringify({code: event.Digits}),
     headers: {'x-ad-access': ctx.API_KEY},
   });
-  const data: AuthResponse = await resp.json();
+  const data = (await resp.json()) as AuthResponse;
 
   if (data.status !== 'granted') {
     say(twiml, `Sorry, ${event.Digits.split('').join('-')} is invalid.`);

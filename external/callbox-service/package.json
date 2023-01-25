@@ -12,20 +12,23 @@
     "deploy-prod": "twilio-run deploy --account-sid=$ACCOUNT_SID --auth-token=$AUTH_TOKEN --override-existing-project --environment=prod"
   },
   "devDependencies": {
-    "@twilio-labs/serverless-runtime-types": "^1.1.8",
+    "@twilio-labs/serverless-runtime-types": "^2.2.3",
     "@types/node-fetch": "^2.5.7",
-    "prettier": "^2.0.5",
-    "twilio-cli": "^2.7.0",
-    "twilio-run": "^2.0.0",
-    "typescript": "^3.9.7"
+    "prettier": "^2.8.3",
+    "twilio-cli": "^5.3.2",
+    "twilio-run": "^3.5.3",
+    "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@sentry/node": "^5.21.1",
-    "node-fetch": "^2.6.0",
-    "twilio": "^3.48.2"
+    "@sentry/node": "^7.33.0",
+    "node-fetch": "^3.3.0",
+    "twilio": "^3.84.1"
   },
   "volta": {
-    "node": "18.11.0",
+    "node": "16.16.0",
     "yarn": "1.22.19"
+  },
+  "twilioserverless": {
+    "runtime": "node16"
   }
 }

@@ -1,6 +1,6 @@
 ## Evan Purkhiser's Ansible Playbooks
 
-[![Build Status](https://github.com/evanpurkhiser/ansible-personal/actions/workflows/lint.yml/badge.svg)](https://github.com/evanpurkhiser/ansible-personal/actions/workflows/lint.yml)
+[![Build Status](https://github.com/evanpurkhiser/ansible-personal/workflows/lint/badge.svg)](https://github.com/evanpurkhiser/ansible-personal/actions?query=workflow%3Alint)
 
 These are my personal playbooks for configurating my machines.
 

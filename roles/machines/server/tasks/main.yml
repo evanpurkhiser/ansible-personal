@@ -190,6 +190,7 @@
     env:
       WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_POLL_INTERVAL: "120"
+    restart_policy: unless-stopped
 
 # Enable mosquito service for IoT messages
 - name: Ensure mosquitto is enabled
@@ -296,11 +297,11 @@
     name: appdaemon
     image: acockburn/appdaemon
     published_ports: ["5050:5050"]
-    restart_policy: unless-stopped
     volumes:
       - "/var/lib/appdaemon:/conf"
       - "/tmp/hass-ad:/var/lib/hass-ad"
       - "/etc/localtime:/etc/localtime:ro"
+    restart_policy: unless-stopped
 
 # Setup waitress file server service
 - name: Ensure waitress docker container
@@ -312,6 +313,7 @@
     volumes: ["/mnt/documents:/mnt/documents"]
     env:
       DATA_PATH: /mnt/documents/public-share
+    restart_policy: unless-stopped
 
 # Setup tune-manager service
 - name: Ensure tune-manager storage directory exists
@@ -331,6 +333,7 @@
       - "/mnt/documents/multimedia/djing/tracks:/library"
       - "/mnt/documents/multimedia/djing/tracks-importable:/staging"
       - "/var/lib/tune-manager:/storage"
+    restart_policy: unless-stopped
 
 # Setup doppovich bot
 - name: Ensure doppovich bot directory exists
@@ -350,6 +353,7 @@
     volumes:
       - "/var/lib/doppovich-bot/chats:/app/data"
       - "/var/lib/doppovich-bot/db:/app/db"
+    restart_policy: unless-stopped
 
 # Setup venmo-auto-cashout service
 - name: Ensure venmo-auto-cashout database directory exists

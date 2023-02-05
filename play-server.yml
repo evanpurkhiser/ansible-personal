@@ -7,6 +7,6 @@
 # - Serve the transmission rpc interface through a nginx proxy
 # - Serve a small public-share directory
 
----
-- hosts: server.home.evanpurkhiser.com
+- name: Server
+  hosts: server.home.evanpurkhiser.com
   roles: [machines/server]

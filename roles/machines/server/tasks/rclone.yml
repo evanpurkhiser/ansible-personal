@@ -1,28 +1,49 @@
 # Configure rclone
 - name: Ensure rclone backup configuration
-  template: src=rclone.conf dest=/etc/rclone.conf mode=0600
+  ansible.builtin.template:
+    src: rclone.conf
+    dest: /etc/rclone.conf
+    mode: 0600
 
 - name: Install rclone timer and service
-  copy: src=systemd/rclone-sync.{{ item }} dest=/etc/systemd/system/
+  notify: Systemd daemon-reload
   with_items: [timer, service]
-  notify: systemd daemon-reload
+  ansible.builtin.copy:
+    src: systemd/rclone-sync.{{ item }}
+    dest: /etc/systemd/system/
+    mode: 0644
 
 - name: Enable rclone timer service
-  service: name=rclone-sync.timer enabled=yes state=started
+  ansible.builtin.service:
+    name: rclone-sync.timer
+    state: started
+    enabled: true
 
 - name: Install rclone cryptcheck timer and service
-  copy: src=systemd/rclone-cryptcheck.{{ item }} dest=/etc/systemd/system/
+  notify: Systemd daemon-reload
   with_items: [timer, service]
-  notify: systemd daemon-reload
+  ansible.builtin.copy:
+    src: systemd/rclone-cryptcheck.{{ item }}
+    dest: /etc/systemd/system/
+    mode: 0644
 
 - name: Enable rclone cryptcheck timer service
-  service: name=rclone-cryptcheck.timer enabled=yes state=started
+  ansible.builtin.service:
+    name: rclone-cryptcheck.timer
+    state: started
+    enabled: true
 
 # Configure macOS file cleaner
 - name: Install macOS file cleaner timer and service
-  copy: src=systemd/clean-macfiles.{{ item }} dest=/etc/systemd/system/
+  notify: Systemd daemon-reload
   with_items: [timer, service]
-  notify: systemd daemon-reload
+  ansible.builtin.copy:
+    src: systemd/clean-macfiles.{{ item }}
+    dest: /etc/systemd/system/
+    mode: 0644
 
 - name: Enable macOS file cleaner timer service
-  service: name=clean-macfiles.timer enabled=yes state=started
+  ansible.builtin.service:
+    name: clean-macfiles.timer
+    state: started
+    enabled: true

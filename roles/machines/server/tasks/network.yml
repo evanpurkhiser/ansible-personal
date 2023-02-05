@@ -1,42 +1,72 @@
 # Configure network
 - name: Disable default network configuration
-  file: path=/etc/systemd/network/80-container-host0.network state=link src=/dev/null
+  ansible.builtin.file:
+    path: /etc/systemd/network/80-container-host0.network
+    state: link
+    src: /dev/null
 
 - name: Ensure systemd-networkd is enabled
-  service: name=systemd-networkd state=started enabled=yes
+  ansible.builtin.service:
+    name: systemd-networkd
+    state: started
+    enabled: true
 
 - name: Ensure hosts file
-  copy: src=hosts dest=/etc/
+  ansible.builtin.copy:
+    src: hosts
+    dest: /etc/
+    mode: 0644
 
 - name: Ensure resolved.conf file
-  copy: src=resolved.conf dest=/etc/systemd/resolved.conf
-  notify: restart systemd-resolved
+  notify: Restart systemd-resolved
+  ansible.builtin.copy:
+    src: resolved.conf
+    dest: /etc/systemd/resolved.conf
+    mode: 0644
 
 # Copy network configurations
 - name: Set wan0 link name
-  copy: src=network/{{ item }} dest=/etc/systemd/network/
-  notify: restart systemd-networkd
+  notify: Restart systemd-networkd
   with_items:
     - 00-lan0.link
     - 00-wan0.link
     - 01-internal.network
     - 01-external.network
+  ansible.builtin.copy:
+    src: network/{{ item }}
+    dest: /etc/systemd/network/
+    mode: 0644
 
 # Setup iptable rules
 - name: Configure iptables
-  copy: src=iptables.rules dest=/etc/iptables/
-  notify: ["restart iptables", "restart ip6tables"]
+  notify: [Restart iptables, Restart ip6tables]
+  ansible.builtin.copy:
+    src: iptables.rules
+    dest: /etc/iptables/
+    mode: 0644
 
 - name: Link iptable rules for v6 rules
-  file: path=/etc/iptables/ip6tables.rules state=link src=/etc/iptables/iptables.rules
+  ansible.builtin.file:
+    path: /etc/iptables/ip6tables.rules
+    state: link
+    src: /etc/iptables/iptables.rules
 
 - name: Ensure iptables is enabled
-  service: name=iptables enabled=yes state=started
+  ansible.builtin.service:
+    name: iptables
+    state: started
+    enabled: true
 
 # Setup and configure DNS server
 - name: Configure dnsmasq
-  copy: src=dnsmasq.conf dest=/etc/
-  notify: restart dnsmasq
+  ansible.builtin.copy:
+    src: dnsmasq.conf
+    dest: /etc/
+    mode: 0644
+  notify: Restart dnsmasq
 
 - name: Ensure dnsmasq is enabled
-  service: name=dnsmasq enabled=yes state=started
+  ansible.builtin.service:
+    name: dnsmasq
+    state: started
+    enabled: true

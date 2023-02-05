@@ -1,0 +1,14 @@
+- name: Add config
+  ansible.builtin.template:
+    src: personal-repo
+    dest: /etc/pacman.d
+    mode: 0644
+
+- name: Include config in pacman.conf
+  notify: Sync pacman cache
+  ansible.builtin.lineinfile:
+    dest: /etc/pacman.conf
+    line: "Include = /etc/pacman.d/personal-repo"
+
+- name: Sync the package cache before we do any other package installation
+  ansible.builtin.meta: flush_handlers

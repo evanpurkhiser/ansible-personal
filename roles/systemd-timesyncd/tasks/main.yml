@@ -1,2 +1,0 @@
-- name: Ensure systemd-timesyncd enbaled and started
-  service: name=systemd-timesyncd state=started enabled=yes

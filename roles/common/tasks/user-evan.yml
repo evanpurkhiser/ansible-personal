@@ -1,23 +1,25 @@
----
 - name: Install sudo
-  package: name=sudo
+  community.general.pacman:
+    name: sudo
 
 - name: Add group sudo
-  group: name=sudo
+  ansible.builtin.group:
+    name: sudo
 
 - name: Ensure sudo group may use sudo
-  lineinfile: dest=/etc/sudoers
-    regexp=^%(wheel|sudo)
-    line="%sudo ALL=(ALL) ALL"
+  ansible.builtin.lineinfile:
+    dest: /etc/sudoers
+    regexp: ^%(wheel|sudo)
+    line: "%sudo ALL=(ALL) ALL"
 
 - name: Add user evan
-  user: name=evan
-    group=users
-    groups=sudo
-    password=$6$DHaOCz9qtpA6ed5c$PEpj3xv8BQU9YrZx0djfgupmEUMgFx1kPmBc9AX3WdAcvj8TY8PXzWW3loI5VG8ENswqAt3fHN/07y.Jey8Zy0
+  ansible.builtin.user:
+    name: evan
+    group: users
+    groups: sudo
+    password: "$6$DHaOCz9qtpA6ed5c$PEpj3xv8BQU9YrZx0djfgupmEUMgFx1kPmBc9AX3WdAcvj8TY8PXzWW3loI5VG8ENswqAt3fHN/07y.Jey8Zy0"
 
 - name: Add authorized public ssh-key for "evan"
-  authorized_key:
+  ansible.posix.authorized_key:
     user: evan
-    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILBw6fKi5PEZfZqtel74uxVLOvDGalv3\
-      VXcaRNCKwVSo evan@macbook.home.evanpurkhiser.com"
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILBw6fKi5PEZfZqtel74uxVLOvDGalv3VXcaRNCKwVSo evan@macbook.home.evanpurkhiser.com"

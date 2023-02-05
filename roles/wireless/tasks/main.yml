@@ -1,6 +1,10 @@
----
 - name: Install wireless network config
-  template: src=purkhiser dest=/etc/netctl mode=0600
+  ansible.builtin.template:
+    src: purkhiser
+    dest: /etc/netctl
+    mode: 0600
 
 - name: Enable wireless network config
-  command: netctl enable purkhiser creates=/etc/systemd/system/multi-user.target.wants/netctl@purkhiser.service
+  ansible.builtin.command:
+    cmd: netctl enable purkhiser
+    creates: /etc/systemd/system/multi-user.target.wants/netctl@purkhiser.service

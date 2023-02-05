@@ -1,27 +1,36 @@
----
 - name: Install dotfile required packages
-  pacman:
+  community.general.pacman:
     name: [git, python]
 
 - name: Install dotfiles for evan
-  git: repo=https://github.com/evanpurkhiser/dots-personal.git
-    dest=/home/evan/.local/etc
-    update=no
-    accept_hostkey=yes
+  # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/evanpurkhiser/dots-personal.git
+    dest: /home/evan/.local/etc
+    update: false
+    accept_hostkey: true
 
 - name: Install dotfile manager for evan
-  git: repo=https://github.com/evanpurkhiser/dots.git
-    dest=/home/evan/.local/lib/dots
-    update=no
-    accept_hostkey=yes
+  # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/evanpurkhiser/dots.git
+    dest: /home/evan/.local/lib/dots
+    update: false
+    accept_hostkey: true
 
 - name: Set installed dotfile permissions
-  file: path=/home/evan/.local recurse=yes owner=evan group=users
+  ansible.builtin.file:
+    path: /home/evan/.local
+    recurse: true
+    owner: evan
+    group: users
 
 - name: Install dotfiles
   become: true
   become_user: evan
-  shell: source /home/evan/.local/etc/init;
-    /home/evan/.local/bin/dots groups set base;
-    /home/evan/.local/bin/dots install;
-    creates=/home/evan/.local/bin/dots
+  ansible.builtin.shell:
+    creates: /home/evan/.local/bin/dots
+    cmd: >
+      source /home/evan/.local/etc/init;
+      /home/evan/.local/bin/dots groups set base;
+      /home/evan/.local/bin/dots install;

@@ -1,7 +1,12 @@
----
 - name: Install pacsync timer and service
-  copy: src=pacsync.{{item}} dest=/etc/systemd/system/
+  ansible.builtin.copy:
+    src: pacsync.{{ item }}
+    dest: /etc/systemd/system/
+    mode: 0644
   with_items: [timer, service]
 
 - name: Enable pacsync timer service
-  service: name=pacsync.timer enabled=yes state=started
+  ansible.builtin.service:
+    name: pacsync.timer
+    enabled: true
+    state: started

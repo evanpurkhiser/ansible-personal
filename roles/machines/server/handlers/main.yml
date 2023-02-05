@@ -1,51 +1,72 @@
----
-- name: restart systemd-networkd
-  service: name=systemd-networkd state=restarted
+- name: Restart systemd-networkd
+  ansible.builtin.service:
+    name: systemd-networkd
+    state: restarted
 
-- name: restart systemd-resolved
-  service: name=systemd-resolved state=restarted
+- name: Restart systemd-resolved
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: restarted
 
-- name: restart sshd
-  service: name=sshd state=restarted
+- name: Restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
 
-- name: reload nginx
-  service: name=nginx state=reloaded
+- name: Reload nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
 
-- name: reload transmission
-  service: name=transmission state=reloaded
+- name: Reload transmission
+  ansible.builtin.service:
+    name: transmission
+    state: reloaded
 
-- name: reload nfs exports
-  command: exportfs -ra
+- name: Restart dnsmasq
+  ansible.builtin.service:
+    name: dnsmasq
+    state: restarted
 
-- name: restart dnsmasq
-  service: name=dnsmasq state=restarted
+- name: Restart iptables
+  ansible.builtin.service:
+    name: iptables
+    state: restarted
 
-- name: restart iptables
-  service: name=iptables state=restarted
+- name: Restart ip6tables
+  ansible.builtin.service:
+    name: ip6tables
+    state: restarted
 
-- name: restart ip6tables
-  service: name=ip6tables state=restarted
+- name: Restart mosquitto
+  ansible.builtin.service:
+    name: mosquitto
+    state: restarted
 
-- name: restart mosquitto
-  service: name=mosquitto state=restarted
+- name: Reload nfs exports
+  ansible.builtin.command:
+    cmd: exportfs -ra
 
-- name: restart home-assistant
-  docker_container:
+- name: Restart home-assistant
+  community.general.docker_container:
     name: home-assistant
-    restart: yes
+    restart: true
     comparisons: { "*": ignore }
 
-- name: restart appdaemon
-  docker_container:
+- name: Restart appdaemon
+  community.general.docker_container:
     name: appdaemon
-    restart: yes
+    restart: true
     comparisons: { "*": ignore }
 
-- name: sync personal repo database
-  shell: "repo-add --remove --new /srv/pkgs/personal.db.tar.gz /srv/pkgs/*.pkg.tar.xz"
+- name: Sync personal repo database
+  ansible.builtin.shell:
+    cmd: "repo-add --remove --new /srv/pkgs/personal.db.tar.gz /srv/pkgs/*.pkg.tar.xz"
 
-- name: systemd daemon-reload
-  systemd: daemon_reload=yes
+- name: Systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
 
-- name: sync pacman cache
-  pacman: update_cache=yes
+- name: Sync pacman cache
+  community.general.pacman:
+    update_cache: true

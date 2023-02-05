@@ -1,5 +1,11 @@
----
-- import_tasks: secrets.yml
-- import_tasks: root-password.yml
-- import_tasks: user-evan.yml
-- import_tasks: dots-manager.yml
+- name: Import secrets
+  ansible.builtin.import_tasks: secrets.yml
+
+- name: Import root password
+  ansible.builtin.import_tasks: root-password.yml
+
+- name: Import user
+  ansible.builtin.import_tasks: user-evan.yml
+
+- name: Import dots manager
+  ansible.builtin.import_tasks: dots-manager.yml

@@ -1,16 +1,18 @@
+# XXX: Note that some additional configuration has been done in cloudflare
+
 # Github pages website
 - name: evanpurkhiser.com
-  proxied: yes
+  proxied: true
   type: CNAME
   content: evanpurkhiser.github.io
 - name: www
-  proxied: yes
+  proxied: true
   type: CNAME
   content: evanpurkhiser.github.io
 
 # go-meta github page
 - name: go
-  proxied: yes
+  proxied: true
   type: CNAME
   content: evanpurkhiser.github.io
 
@@ -26,37 +28,37 @@
 
 # Services
 - name: packages
-  proxied: yes
+  proxied: true
   type: CNAME
   content: server.home.evanpurkhiser.com
 
 - name: public
-  proxied: yes
+  proxied: true
   type: CNAME
   content: server.home.evanpurkhiser.com
 
 - name: tunnel
-  proxied: yes
+  proxied: true
   type: CNAME
   content: server.home.evanpurkhiser.com
 
 - name: transmission
-  proxied: yes
+  proxied: true
   type: CNAME
   content: server.home.evanpurkhiser.com
 
 - name: music
-  proxied: yes
+  proxied: true
   type: CNAME
   content: server.home.evanpurkhiser.com
 
 - name: hass
-  proxied: yes
+  proxied: true
   type: CNAME
   content: server.home.evanpurkhiser.com
 
 - name: resume
-  proxied: yes
+  proxied: true
   type: CNAME
   content: server.home.evanpurkhiser.com
 

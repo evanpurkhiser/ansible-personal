@@ -84,18 +84,4 @@ fi
 		op item get 'rzki4bpthbcx3dvunjvect545e' --field='gdrive API Token' --format=json | jq -r .value
 	)"\'
 
-	# 2421 16th street Lutron
-	echo lutron:
-	echo "  caseta_crt: |\n$(
-		op document get 'if7jhrbauracxa45xtlybscrja' | sed 's/^/    /'
-	)"
-
-	echo "  caseta_key: |\n$(
-		op document get '5sxyarlqife5hfcmzn5zioit2e' | sed 's/^/    /'
-	)"
-
-	echo "  caseta_bridge_crt: |\n$(
-		op document get 'mi47nw77vrbujg2bp5nnxztyuy' | sed 's/^/    /'
-	)"
-
 ) >"$(dirname "$0")/vars/secrets.yml"

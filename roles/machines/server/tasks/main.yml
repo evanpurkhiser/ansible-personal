@@ -187,18 +187,6 @@
     state: directory
     mode: 0755
 
-- name: Ensure hass Lutron certs
-  tags: [hass]
-  notify: Restart home-assistant
-  with_items:
-    - { key: caseta_crt, path: /var/lib/hass/caseta.crt }
-    - { key: caseta_key, path: /var/lib/hass/caseta.key }
-    - { key: caseta_bridge_crt, path: /var/lib/hass/caseta-bridge.crt }
-  ansible.builtin.copy:
-    content: "{{ lutron[item.key] }}"
-    dest: "{{ item.path }}"
-    mode: 0644
-
 - name: Ensure hass configuration
   tags: [hass]
   notify: Restart home-assistant

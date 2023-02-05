@@ -27,11 +27,6 @@
   content: 136.24.133.70
 
 # Services
-- name: packages
-  proxied: true
-  type: CNAME
-  content: server.home.evanpurkhiser.com
-
 - name: public
   proxied: true
   type: CNAME

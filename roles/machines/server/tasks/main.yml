@@ -7,35 +7,6 @@
 - name: Import systemd-timesyncd
   ansible.builtin.import_role: { name: systemd_timesyncd }
 
-- name: Import personal package repo
-  vars: { server_path: "file:///srv/pkgs" }
-  ansible.builtin.import_role:
-    name: personal_repo
-
-# Bootstrap personal packages repo
-# - name: Ensure personal packages repo directory exists
-#   file: path=/srv/pkgs state=directory
-#
-# - name: Bootstrapping personal packages
-#   shell: |
-#     package="{{ item }}"
-#     cd "$(mktemp -d)"
-#     git clone https://github.com/evanpurkhiser/PKGBUILDs.git .
-#     # TODO: Figure out how to make this happen with rkt
-#     #rkt run -e EXPORT_PKG=1 -v "$PWD/$package":/pkg docker://whynothugo/makepkg
-#     mv "$PWD/$package"/*.pkg.tar.xz /srv/pkgs && cd && rm -r "$OLDPWD"
-#   args:
-#     creates: /srv/pkgs/{{ item }}*.pkg.tar.xz
-#   notify:
-#   - Sync personal repo database
-#   - Sync pacman cache
-#   with_items:
-#   - media-center-automation
-#   - waitress-git
-
-- name: Flush handlers to ensure new personal packages are synced into the database
-  ansible.builtin.meta: flush_handlers
-
 # More secure SSH authentication
 - name: Disable empty password login
   ansible.builtin.lineinfile:

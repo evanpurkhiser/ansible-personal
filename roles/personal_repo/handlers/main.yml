@@ -1,3 +1,0 @@
-- name: Sync pacman cache
-  community.general.pacman:
-    update_cache: true

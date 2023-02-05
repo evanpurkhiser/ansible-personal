@@ -1,5 +1,7 @@
 ## Evan Purkhiser's Ansible Playbooks
 
+[![Build Status](https://github.com/evanpurkhiser/ansible-personal/actions/workflows/lint.yml/badge.svg)](https://github.com/evanpurkhiser/ansible-personal/actions/workflows/lint.yml)
+
 These are my personal playbooks for configurating my machines.
 
 ### Base Image Bootstrapping

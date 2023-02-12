@@ -38,11 +38,6 @@
     name: ip6tables
     state: restarted
 
-- name: Restart mosquitto
-  ansible.builtin.service:
-    name: mosquitto
-    state: restarted
-
 - name: Reload nfs exports
   ansible.builtin.command:
     cmd: exportfs -ra

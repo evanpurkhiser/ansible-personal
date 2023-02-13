@@ -33,3 +33,15 @@ google_assistant:
   report_state: true
   expose_by_default: false
   entity_config: []
+
+climate:
+  - name: Living Room
+    unique_id: livingroom_thermostat
+    platform: generic_thermostat
+    heater: switch.livingroom_heater
+    target_sensor: sensor.livingroom_temperature
+  - name: Bedroom
+    unique_id: bedroom_thermostat
+    platform: generic_thermostat
+    heater: switch.bedroom_heater
+    target_sensor: sensor.bedroom_temperature

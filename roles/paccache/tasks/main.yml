@@ -1,0 +1,10 @@
+- name: Install pacman-contrib
+  community.general.pacman:
+    name:
+      - pacman-contrib
+
+- name: Enable paccache timer service
+  ansible.builtin.service:
+    name: pacsync.timer
+    enabled: true
+    state: started

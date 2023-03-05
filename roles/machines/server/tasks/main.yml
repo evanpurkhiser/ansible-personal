@@ -4,6 +4,9 @@
 - name: Import pacsync
   ansible.builtin.import_role: { name: pacsync }
 
+- name: Import paccache
+  ansible.builtin.import_role: { name: paccache }
+
 - name: Import systemd-timesyncd
   ansible.builtin.import_role: { name: systemd_timesyncd }
 

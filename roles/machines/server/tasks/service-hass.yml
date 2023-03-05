@@ -2,21 +2,21 @@
   ansible.builtin.file:
     path: /var/lib/hass
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Ensure hass configuration
   notify: Restart home-assistant
   ansible.builtin.copy:
     src: home-assistant.yaml
     dest: /var/lib/hass/configuration.yaml
-    mode: 0644
+    mode: "0644"
 
 - name: Ensure hass secrets
   notify: Restart home-assistant
   ansible.builtin.template:
     src: home-assistant-secrets.yaml
     dest: /var/lib/hass/secrets.yaml
-    mode: 0644
+    mode: "0644"
 
 - name: Ensure hass podman container
   containers.podman.podman_container:
@@ -41,5 +41,5 @@
   ansible.builtin.systemd:
     name: container-home-assistant
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true

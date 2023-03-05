@@ -20,5 +20,5 @@
   ansible.builtin.systemd:
     name: container-waitress
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true

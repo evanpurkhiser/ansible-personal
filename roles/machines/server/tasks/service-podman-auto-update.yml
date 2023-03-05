@@ -3,13 +3,13 @@
   ansible.builtin.file:
     path: /etc/systemd/system/podman-auto-update.timer.d
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Override podman-auto-update timer file
   ansible.builtin.copy:
     src: podman-auto-update-schedule.conf
     dest: /etc/systemd/system/podman-auto-update.timer.d/
-    mode: 0644
+    mode: "0644"
 
 - name: Enable podman-auto-update timer service
   ansible.builtin.service:

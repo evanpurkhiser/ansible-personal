@@ -2,7 +2,7 @@
   ansible.builtin.copy:
     src: pacsync.{{ item }}
     dest: /etc/systemd/system/
-    mode: 0644
+    mode: "0644"
   with_items: [timer, service]
 
 - name: Enable pacsync timer service

@@ -8,13 +8,13 @@
   ansible.builtin.copy:
     src: nginx.conf
     dest: /etc/nginx/
-    mode: 0644
+    mode: "0644"
   notify: Reload nginx
 
 - name: Encrypt transmission proxy basic-auth password
   community.general.htpasswd:
     path: /etc/nginx/htpasswd_transmission
-    mode: 600
+    mode: "0600"
     owner: http
     name: evan
     password: "{{ transmission_rpc_password }}"

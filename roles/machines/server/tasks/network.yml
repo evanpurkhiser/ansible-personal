@@ -20,14 +20,14 @@
   ansible.builtin.copy:
     src: hosts
     dest: /etc/
-    mode: 0644
+    mode: "0644"
 
 - name: Ensure resolved.conf file
   notify: Restart systemd-resolved
   ansible.builtin.copy:
     src: resolved.conf
     dest: /etc/systemd/resolved.conf
-    mode: 0644
+    mode: "0644"
 
 # Copy network configurations
 - name: Set wan0 link name
@@ -40,7 +40,7 @@
   ansible.builtin.copy:
     src: network/{{ item }}
     dest: /etc/systemd/network/
-    mode: 0644
+    mode: "0644"
 
 # Setup iptable rules
 - name: Configure iptables
@@ -48,7 +48,7 @@
   ansible.builtin.copy:
     src: iptables.rules
     dest: /etc/iptables/
-    mode: 0644
+    mode: "0644"
 
 - name: Link iptable rules for v6 rules
   ansible.builtin.file:
@@ -67,7 +67,7 @@
   ansible.builtin.copy:
     src: dnsmasq.conf
     dest: /etc/
-    mode: 0644
+    mode: "0644"
   notify: Restart dnsmasq
 
 - name: Ensure dnsmasq is enabled

@@ -2,19 +2,19 @@
   ansible.builtin.file:
     path: /home/evan/.config/transmission-daemon
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Ensure transmission runs as "evan"
   ansible.builtin.copy:
     src: transmission-user.conf
     dest: /etc/systemd/system/transmission.service.d/
-    mode: 0644
+    mode: "0644"
 
 - name: Ensure transmission configuration
   ansible.builtin.copy:
     src: transmission-settings.json
     dest: /home/evan/.config/transmission-daemon/settings.json
-    mode: 0644
+    mode: "0644"
   notify: Reload transmission
 
 - name: Enable transmission daemon

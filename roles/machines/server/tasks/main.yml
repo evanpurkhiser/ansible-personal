@@ -27,7 +27,7 @@
   ansible.builtin.copy:
     src: archzfs-repo
     dest: /etc/pacman.d
-    mode: 0644
+    mode: "0644"
 
 - name: Include archzfs repo in pacman.conf
   ansible.builtin.lineinfile:

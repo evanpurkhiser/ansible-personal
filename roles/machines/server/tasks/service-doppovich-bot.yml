@@ -2,7 +2,7 @@
   ansible.builtin.file:
     path: /var/lib/doppovich-bot
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Ensure doppovich-bot docker container
   containers.podman.podman_container:
@@ -25,5 +25,5 @@
   ansible.builtin.systemd:
     name: container-doppovich-bot
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true

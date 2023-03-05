@@ -3,7 +3,7 @@
   ansible.builtin.template:
     src: rclone.conf
     dest: /etc/rclone.conf
-    mode: 0600
+    mode: "0600"
 
 - name: Install rclone timer and service
   notify: Systemd daemon-reload
@@ -11,7 +11,7 @@
   ansible.builtin.copy:
     src: systemd/rclone-sync.{{ item }}
     dest: /etc/systemd/system/
-    mode: 0644
+    mode: "0644"
 
 - name: Enable rclone timer service
   ansible.builtin.service:
@@ -25,7 +25,7 @@
   ansible.builtin.copy:
     src: systemd/rclone-cryptcheck.{{ item }}
     dest: /etc/systemd/system/
-    mode: 0644
+    mode: "0644"
 
 - name: Enable rclone cryptcheck timer service
   ansible.builtin.service:
@@ -40,7 +40,7 @@
   ansible.builtin.copy:
     src: systemd/clean-macfiles.{{ item }}
     dest: /etc/systemd/system/
-    mode: 0644
+    mode: "0644"
 
 - name: Enable macOS file cleaner timer service
   ansible.builtin.service:

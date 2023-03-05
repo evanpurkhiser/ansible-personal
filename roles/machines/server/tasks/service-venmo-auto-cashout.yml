@@ -2,13 +2,13 @@
   ansible.builtin.file:
     path: /var/lib/venmo-auto-cashout
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Install venmo-auto-cashout timer and service
   ansible.builtin.copy:
     src: systemd/venmo-auto-cashout.{{ item }}
     dest: /etc/systemd/system/
-    mode: 0644
+    mode: "0644"
   with_items: [timer, service]
   notify: Systemd daemon-reload
 

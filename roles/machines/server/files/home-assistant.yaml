@@ -1,16 +1,17 @@
 homeassistant:
   name: Apartment
   time_zone: America/Los_Angeles
-  unit_system: imperial
+  unit_system: metric
   elevation: 16
   latitude: 37.765389
   longitude: -122.410831
   external_url: https://hass.evanpurkhiser.com
-  allowlist_external_dirs: ["/var/lib/hass-ad"]
 
 http:
   use_x_forwarded_for: true
   trusted_proxies: [127.0.0.1]
+
+automation: !include automations.yaml
 
 config:
 history:

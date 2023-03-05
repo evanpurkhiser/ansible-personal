@@ -297,18 +297,3 @@
     name: venmo-auto-cashout.timer
     enabled: true
     state: started
-
-# Configure DNS entires in cloudflare
-- name: Ensuring DNS entries
-  tags: [dns]
-  with_items: "{{ lookup('file', 'files/dns_records.yml') | from_yaml }}"
-  community.general.cloudflare_dns:
-    account_email: "{{ cloudflare.email }}"
-    account_api_token: "{{ cloudflare.token }}"
-
-    state: present
-    zone: evanpurkhiser.com
-    name: "{{ item.name }}"
-    type: "{{ item.type }}"
-    proxied: "{{ item.proxied | default('no') }}"
-    content: "{{ item.content }}"

@@ -59,16 +59,6 @@ fi
 		op item get 'behtdcxervd35nul5222bcui3y' --field='password'
 	)"\'
 
-	# Cloudflare DNS credentials
-	echo cloudflare:
-	echo '  email:' \'"$(
-		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='username'
-	)"\'
-
-	echo '  token:' \'"$(
-		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='API Key'
-	)"\'
-
 	# Backup solution encryption and access token
 	echo rclone:
 	echo '  backup_key:' \'"$(

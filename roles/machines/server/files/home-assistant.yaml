@@ -25,15 +25,12 @@ frontend:
   themes: !include_dir_merge_named themes
 
 homekit:
-  filter:
-    include_entities: []
 
 google_assistant:
   project_id: home-assistant-19f4f
   service_account: !secret google_assistant_service_account
   report_state: true
-  expose_by_default: false
-  entity_config: []
+  expose_by_default: true
 
 climate:
   - name: Living Room

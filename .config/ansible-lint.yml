@@ -2,3 +2,5 @@ exclude_paths:
   - "${PWD}/.github"
   - "${PWD}/roles/machines/server/files/appdaemon.yaml"
   - "${PWD}/roles/machines/server/files/home-assistant.yaml"
+warn_list:
+  - role-name

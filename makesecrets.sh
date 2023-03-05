@@ -35,10 +35,6 @@ fi
 		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='HACS Github API Key'
 	)"\'
 
-	echo '  darksky_api_key:' \'"$(
-		op item get 'skoxswyzgzh2dgwuc6d47lmnai' --field='API Key'
-	)"\'
-
 	echo '  apartment_bot_token:' \'"$(
 		op item get 'wddknbssdbdpbilpy25olziegm' --field='Apartment Bot Token'
 	)"\'

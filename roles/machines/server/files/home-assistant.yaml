@@ -38,8 +38,12 @@ climate:
     platform: generic_thermostat
     heater: switch.livingroom_heater
     target_sensor: sensor.livingroom_temperature
+    target_temp_step: 0.5
+    cold_tolerance: 1.0
   - name: Bedroom
     unique_id: bedroom_thermostat
     platform: generic_thermostat
     heater: switch.bedroom_heater
     target_sensor: sensor.bedroom_temperature
+    target_temp_step: 0.5
+    cold_tolerance: 1.0

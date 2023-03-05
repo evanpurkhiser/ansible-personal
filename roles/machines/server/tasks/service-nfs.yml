@@ -1,0 +1,17 @@
+- name: Enable nfs-server service
+  ansible.builtin.service:
+    name: nfs-server
+    state: started
+    enabled: true
+
+- name: Enable nfs rpcbind socket activation (nfs v2/3)
+  ansible.builtin.service:
+    name: rpcbind.socket
+    enabled: true
+
+- name: Ensure documents device is exported
+  ansible.builtin.copy:
+    src: exports
+    dest: /etc/exports
+    mode: 0644
+  notify: Reload nfs exports

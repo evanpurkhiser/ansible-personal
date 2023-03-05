@@ -1,0 +1,17 @@
+- name: Ensure podman-auto-update.timer override directory
+  notify: Restart home-assistant
+  ansible.builtin.file:
+    path: /etc/systemd/system/podman-auto-update.timer.d
+    state: directory
+    mode: 0755
+
+- name: Override podman-auto-update timer file
+  ansible.builtin.copy:
+    src: podman-auto-update-schedule.conf
+    dest: /etc/systemd/system/podman-auto-update.timer.d/
+    mode: 0644
+
+- name: Enable podman-auto-update timer service
+  ansible.builtin.service:
+    name: podman-auto-update.timer
+    enabled: true

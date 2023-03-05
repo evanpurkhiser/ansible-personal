@@ -1,0 +1,45 @@
+- name: Ensure hass config directory exists
+  ansible.builtin.file:
+    path: /var/lib/hass
+    state: directory
+    mode: 0755
+
+- name: Ensure hass configuration
+  notify: Restart home-assistant
+  ansible.builtin.copy:
+    src: home-assistant.yaml
+    dest: /var/lib/hass/configuration.yaml
+    mode: 0644
+
+- name: Ensure hass secrets
+  notify: Restart home-assistant
+  ansible.builtin.template:
+    src: home-assistant-secrets.yaml
+    dest: /var/lib/hass/secrets.yaml
+    mode: 0644
+
+- name: Ensure hass podman container
+  containers.podman.podman_container:
+    name: home-assistant
+    image: docker.io/homeassistant/home-assistant:latest
+    state: present
+    network: host
+    volume:
+      - "/var/lib/hass:/config"
+      - "/etc/localtime:/etc/localtime:ro"
+    device:
+      - "/dev/zwave:/dev/zwave"
+      - "/dev/zigbee:/dev/zigbee"
+    label:
+      io.containers.autoupdate: registry
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+
+- name: Ensure hass container is running
+  ansible.builtin.systemd:
+    name: container-home-assistant
+    state: started
+    enabled: yes
+    daemon_reload: yes

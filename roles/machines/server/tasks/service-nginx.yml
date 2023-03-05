@@ -1,0 +1,20 @@
+- name: Enable nginx server
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Ensure nginx server configuration
+  ansible.builtin.copy:
+    src: nginx.conf
+    dest: /etc/nginx/
+    mode: 0644
+  notify: Reload nginx
+
+- name: Encrypt transmission proxy basic-auth password
+  community.general.htpasswd:
+    path: /etc/nginx/htpasswd_transmission
+    mode: 600
+    owner: http
+    name: evan
+    password: "{{ transmission_rpc_password }}"

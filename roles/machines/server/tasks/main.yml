@@ -35,265 +35,65 @@
     line: "Include = /etc/pacman.d/archzfs-repo"
   notify: Sync pacman cache
 
-- name: Install required packages
+- name: Install base packages
   community.general.pacman:
     name:
       - archzfs-linux
       - bash-completion
-      - dnsmasq
       - nfs-utils
       - nginx
       - rclone
       - rsync
       - transmission-cli
-      - wget
       - tailscale
+      - podman
 
       # Required for encrypting the transmission basic auth password
       - python-passlib
 
+# System configuration
 - name: Import network tasks
   ansible.builtin.import_tasks: network.yml
 
 - name: Import rclone tasks
   ansible.builtin.import_tasks: rclone.yml
 
-# Configure udev rules for the zigbee / zwave adapter
-- name: Ensure zigbee / zwave rules
-  ansible.builtin.copy:
-    src: 99-usb-gocontrol.rules
-    dest: /etc/udev/rules.d/
-    mode: 0644
+- name: Import hardware tasks
+  ansible.builtin.import_tasks: hardware.yml
 
-# Configure NFS shares
-- name: Enable nfs-server service
+# Services
+- name: Import nfs tasks
   tags: [nfs]
-  ansible.builtin.service:
-    name: nfs-server
-    state: started
-    enabled: true
+  ansible.builtin.import_tasks: service-nfs.yml
 
-- name: Enable nfs rpcbind socket activation (nfs v2/3)
-  tags: [nfs]
-  ansible.builtin.service:
-    name: rpcbind.socket
-    enabled: true
-
-- name: Ensure documents device is exported
-  tags: [nfs]
-  ansible.builtin.copy:
-    src: exports
-    dest: /etc/exports
-    mode: 0644
-  notify: Reload nfs exports
-
-# Enable tailscale
-- name: Enable tailscaled
+- name: Import tailscale tasks
   tags: [tailscale]
-  ansible.builtin.service:
-    name: tailscaled
-    state: started
-    enabled: true
+  ansible.builtin.import_tasks: service-tailscale.yml
 
-# Configure nginx server
-- name: Enable nginx server
+- name: Import nginx tasks
   tags: [nginx]
-  ansible.builtin.service:
-    name: nginx
-    state: started
-    enabled: true
+  ansible.builtin.import_tasks: service-nginx.yml
 
-- name: Ensure nginx server configuration
-  tags: [nginx]
-  ansible.builtin.copy:
-    src: nginx.conf
-    dest: /etc/nginx/
-    mode: 0644
-  notify: Reload nginx
-
-- name: Encrypt transmission basic-auth password
-  tags: [nginx]
-  community.general.htpasswd:
-    path: /etc/nginx/htpasswd_transmission
-    mode: 600
-    owner: http
-    name: evan
-    password: "{{ transmission_rpc_password }}"
-
-# Configure transmission
-- name: Ensure transmission configuration directory exists
+- name: Import transmission tasks
   tags: [transmission]
-  ansible.builtin.file:
-    path: /home/evan/.config/transmission-daemon
-    state: directory
-    mode: 0755
+  ansible.builtin.import_tasks: service-transmission.yml
 
-- name: Ensure transmission runs as "evan"
-  tags: [transmission]
-  ansible.builtin.copy:
-    src: transmission-user.conf
-    dest: /etc/systemd/system/transmission.service.d/
-    mode: 0644
-
-- name: Ensure transmission configuration
-  tags: [transmission]
-  ansible.builtin.copy:
-    src: transmission-settings.json
-    dest: /home/evan/.config/transmission-daemon/settings.json
-    mode: 0644
-  notify: Reload transmission
-
-- name: Enable transmission daemon
-  tags: [transmission]
-  ansible.builtin.service:
-    name: transmission
-    state: started
-    enabled: true
-
-# Configure docker watchtower
-- name: Ensure watchtower docker serivce
-  tags: [watchtower]
-  community.docker.docker_container:
-    name: watchtower
-    image: containrrr/watchtower
-    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
-    env:
-      WATCHTOWER_CLEANUP: "true"
-      WATCHTOWER_POLL_INTERVAL: "120"
-    restart_policy: unless-stopped
-
-# Configure home-assistant service
-- name: Ensure hass config directory exists
+- name: Import home-assistant tasks
   tags: [hass]
-  ansible.builtin.file:
-    path: /var/lib/hass
-    state: directory
-    mode: 0755
+  ansible.builtin.import_tasks: service-hass.yml
 
-- name: Ensure hass configuration
-  tags: [hass]
-  notify: Restart home-assistant
-  ansible.builtin.copy:
-    src: home-assistant.yaml
-    dest: /var/lib/hass/configuration.yaml
-    mode: 0644
-
-- name: Ensure hass secrets
-  tags: [hass]
-  notify: Restart home-assistant
-  ansible.builtin.template:
-    src: home-assistant-secrets.yaml
-    dest: /var/lib/hass/secrets.yaml
-    mode: 0644
-
-- name: Ensure hass docker container
-  tags: [hass]
-  community.docker.docker_container:
-    name: home-assistant
-    image: homeassistant/home-assistant
-    init: false
-    network_mode: host
-    restart_policy: unless-stopped
-    volumes:
-      - "/var/lib/hass:/config"
-      - "/tmp/hass-ad:/var/lib/hass-ad"
-      - "/etc/localtime:/etc/localtime:ro"
-    devices:
-      - "/dev/zwave:/dev/zwave"
-      - "/dev/zigbee:/dev/zigbee"
-
-# Setup appdaemon service
-- name: Ensure appdaemon config directory exists
-  tags: [appdaemon]
-  ansible.builtin.file:
-    path: /var/lib/appdaemon
-    state: directory
-    mode: 0755
-
-- name: Ensure appdaemon configuration
-  tags: [appdaemon]
-  notify: Restart appdaemon
-  ansible.builtin.copy:
-    src: appdaemon.yaml
-    dest: /var/lib/appdaemon/
-    mode: 0644
-
-- name: Ensure appdaemon secrets
-  tags: [appdaemon]
-  notify: Restart appdaemon
-  ansible.builtin.template:
-    src: appdaemon-secrets.yaml
-    dest: /var/lib/appdaemon/secrets.yaml
-    mode: 0644
-
-- name: Ensure appdaemon apps
-  tags: [appdaemon]
-  ansible.builtin.copy:
-    src: appdaemon/
-    dest: /var/lib/appdaemon/apps/
-    mode: 0644
-
-- name: Ensure appdaemon docker container
-  tags: [appdaemon]
-  community.docker.docker_container:
-    name: appdaemon
-    image: acockburn/appdaemon
-    published_ports: ["5050:5050"]
-    volumes:
-      - "/var/lib/appdaemon:/conf"
-      - "/tmp/hass-ad:/var/lib/hass-ad"
-      - "/etc/localtime:/etc/localtime:ro"
-    restart_policy: unless-stopped
-
-# Setup waitress file server service
-- name: Ensure waitress docker container
+- name: Import waitress tasks
   tags: [waitress]
-  community.docker.docker_container:
-    name: waitress
-    image: evanpurkhiser/waitress
-    published_ports: ["9005:80"]
-    volumes: ["/mnt/documents:/mnt/documents"]
-    env:
-      DATA_PATH: /mnt/documents/public-share
-    restart_policy: unless-stopped
+  ansible.builtin.import_tasks: service-waitress.yml
 
-# Setup doppovich bot
-- name: Ensure doppovich bot directory exists
+- name: Import doppovich-bot tasks
   tags: [doppovich-bot]
-  ansible.builtin.file:
-    path: /var/lib/doppovich-bot
-    state: directory
-    mode: 0755
+  ansible.builtin.import_tasks: service-doppovich-bot.yml
 
-- name: Ensure doppovich-bot docker container
-  tags: [doppovich-bot]
-  community.docker.docker_container:
-    name: doppovich-bot
-    image: evanpurkhiser/doppovich-bot
-    env:
-      TELEGRAM_TOKEN: "{{ doppovich_bot_token }}"
-    volumes:
-      - "/var/lib/doppovich-bot/chats:/app/data"
-      - "/var/lib/doppovich-bot/db:/app/db"
-    restart_policy: unless-stopped
+- name: Import venmo-auto-cashout tasks
+  tags: [venmo-auto-cashout]
+  ansible.builtin.import_tasks: service-venmo-auto-cashout.yml
 
-# Setup venmo-auto-cashout service
-- name: Ensure venmo-auto-cashout database directory exists
-  ansible.builtin.file:
-    path: /var/lib/venmo-auto-cashout
-    state: directory
-    mode: 0755
-
-- name: Install venmo-auto-cashout timer and service
-  ansible.builtin.copy:
-    src: systemd/venmo-auto-cashout.{{ item }}
-    dest: /etc/systemd/system/
-    mode: 0644
-  with_items: [timer, service]
-  notify: Systemd daemon-reload
-
-- name: Enable venmo-auto-cashout timer service
-  ansible.builtin.service:
-    name: venmo-auto-cashout.timer
-    enabled: true
-    state: started
+- name: Import podman-auto-update tasks
+  tags: [podman-auto-update]
+  ansible.builtin.import_tasks: service-podman-auto-update.yml

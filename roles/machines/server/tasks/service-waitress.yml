@@ -1,0 +1,24 @@
+- name: Ensure waitress docker container
+  containers.podman.podman_container:
+    name: waitress
+    image: docker.io/evanpurkhiser/waitress:latest
+    state: present
+    publish:
+      - "9005:80"
+    volume:
+      - "/mnt/documents:/mnt/documents"
+    env:
+      DATA_PATH: /mnt/documents/public-share
+    label:
+      io.containers.autoupdate: registry
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+
+- name: Ensure waitress container is running
+  ansible.builtin.systemd:
+    name: container-waitress
+    state: started
+    enabled: yes
+    daemon_reload: yes

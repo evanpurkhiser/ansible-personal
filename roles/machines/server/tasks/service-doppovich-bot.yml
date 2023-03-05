@@ -1,0 +1,29 @@
+- name: Ensure doppovich bot directory exists
+  ansible.builtin.file:
+    path: /var/lib/doppovich-bot
+    state: directory
+    mode: 0755
+
+- name: Ensure doppovich-bot docker container
+  containers.podman.podman_container:
+    name: doppovich-bot
+    image: docker.io/evanpurkhiser/doppovich-bot:latest
+    state: present
+    env:
+      TELEGRAM_TOKEN: "{{ doppovich_bot_token }}"
+    volume:
+      - "/var/lib/doppovich-bot/chats:/app/data"
+      - "/var/lib/doppovich-bot/db:/app/db"
+    label:
+      io.containers.autoupdate: registry
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+
+- name: Ensure doppovich-bot container is running
+  ansible.builtin.systemd:
+    name: container-doppovich-bot
+    state: started
+    enabled: yes
+    daemon_reload: yes

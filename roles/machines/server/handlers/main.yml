@@ -43,16 +43,9 @@
     cmd: exportfs -ra
 
 - name: Restart home-assistant
-  community.general.docker_container:
+  containers.podman.podman_container:
     name: home-assistant
     restart: true
-    comparisons: { "*": ignore }
-
-- name: Restart appdaemon
-  community.general.docker_container:
-    name: appdaemon
-    restart: true
-    comparisons: { "*": ignore }
 
 - name: Sync personal repo database
   ansible.builtin.shell:

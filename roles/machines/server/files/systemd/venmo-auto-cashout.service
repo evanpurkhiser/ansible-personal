@@ -4,7 +4,8 @@ Description=Cashout current venmo balance
 [Service]
 Type=oneshot
 TimeoutStartSec=30s
-ExecStart=/usr/bin/podman run \
+ExecStart=/usr/local/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
+  /usr/bin/podman run \
   --rm \
   --name=venmo-auto-cashout \
   --env-file=/etc/venmo-auto-cashout.conf \
@@ -13,22 +14,5 @@ ExecStart=/usr/bin/podman run \
   docker.io/evanpurkhiser/venmo-auto-cashout
 
 # Report runs to sentry monitors.
-#
-# The `-` prefix on each command stops systemd from failing the service if
-# the curl commands fail to execute successfully
 Environment=SENTRY_MONITOR_SLUG=venmo-auto-cashout
-Environment=SENTRY_MONITOR_DSN="https://6a82e95290ea41a6855178add346512a@o126623.ingest.sentry.io/6291319"
-
-ExecStartPre=-/usr/bin/curl -X POST \
-  https://sentry.io/api/0/organizations/evan-purkhiser/monitors/${SENTRY_MONITOR_SLUG}/checkins/ \
-  --header 'Authorization: DSN ${SENTRY_MONITOR_DSN}' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{"status": "in_progress"}' \
-  --silent
-
-ExecStopPost=-/usr/bin/curl -X PUT \
-  https://sentry.io/api/0/organizations/evan-purkhiser/monitors/${SENTRY_MONITOR_SLUG}/checkins/latest/ \
-  --header 'Authorization: DSN ${SENTRY_MONITOR_DSN}' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{"status": "ok"}' \
-  --silent
+Environment=SENTRY_DSN="https://6a82e95290ea41a6855178add346512a@o126623.ingest.sentry.io/6291319"

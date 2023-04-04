@@ -4,7 +4,8 @@ After=rclone-sync.service
 
 [Service]
 ReadOnlyPaths=/mnt/documents
-ExecStart=/usr/bin/rclone cryptcheck /mnt/documents documents-encrypted: \
+ExecStart=/usr/local/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
+  /usr/bin/rclone cryptcheck /mnt/documents documents-encrypted: \
   --config /etc/rclone.conf \
   --log-level DEBUG \
   --use-json-log \
@@ -19,22 +20,5 @@ ExecStart=/usr/bin/rclone cryptcheck /mnt/documents documents-encrypted: \
   --filter '- *'
 
 # Report runs to sentry monitors.
-#
-# The `-` prefix on each command stops systemd from failing the service if
-# the curl commands fail to execute successfully
 Environment=SENTRY_MONITOR_SLUG=rclone-cryptcheck
-Environment=SENTRY_MONITOR_DSN="https://d97d5845a18449d5a2966781f37e5bc4@o126623.ingest.sentry.io/4504880681582592"
-
-ExecStartPre=-/usr/bin/curl -X POST \
-  https://sentry.io/api/0/organizations/evan-purkhiser/monitors/${SENTRY_MONITOR_SLUG}/checkins/ \
-  --header 'Authorization: DSN ${SENTRY_MONITOR_DSN}' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{"status": "in_progress"}' \
-  --silent
-
-ExecStopPost=-/usr/bin/curl -X PUT \
-  https://sentry.io/api/0/organizations/evan-purkhiser/monitors/${SENTRY_MONITOR_SLUG}/checkins/latest/ \
-  --header 'Authorization: DSN ${SENTRY_MONITOR_DSN}' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{"status": "ok"}' \
-  --silent
+Environment=SENTRY_DSN="https://d97d5845a18449d5a2966781f37e5bc4@o126623.ingest.sentry.io/4504880681582592"

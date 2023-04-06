@@ -3,6 +3,7 @@ Description=Backup documents to gdrive
 
 [Service]
 ReadOnlyPaths=/mnt/documents
+Environment=XDG_CACHE_HOME=/var/cache/rclone
 ExecStart=/usr/local/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/rclone sync /mnt/documents documents-encrypted: \
   --config /etc/rclone.conf \

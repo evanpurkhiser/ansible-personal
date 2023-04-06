@@ -26,30 +26,24 @@ fi
 		op item get 'wddknbssdbdpbilpy25olziegm' --field='Doppovich Bot Token'
 	)"\'
 
+	echo apartment_bot_token: \'"$(
+		op item get 'wddknbssdbdpbilpy25olziegm' --field='Apartment Bot Token'
+	)"\'
+
+	# Home assistant
 	echo home_assistant:
 	echo '  hass_token:' \'"$(
 		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='Appdaemon Key'
 
 	)"\'
+
 	echo '  hacs_github_api_key:' \'"$(
 		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='HACS Github API Key'
 	)"\'
 
-	echo '  apartment_bot_token:' \'"$(
-		op item get 'wddknbssdbdpbilpy25olziegm' --field='Apartment Bot Token'
-	)"\'
-
-	echo '  ecobee_api_key:' \'"$(
-		op item get 'rr3xuvp23zanvbs4lqqadwt6yi' --field='API Key'
-	)"\'
-
 	echo "  google_assistant_service_account: |\n$(
-		op document get 'xld4lu7ccfby7hjpo4efoulrru' | sed 's/\\n/\\\\n/g;s/^/    /'
+		op document get 'mrlbmrn4ww6d6oneu26qtm467y' | sed 's/\\n/\\\\n/g;s/^/    /'
 	)"
-
-	echo '  octoprint_api_key:' \'"$(
-		op item get 'zwtxalkf65h2fa5inxwtv4h2tu' --field='HASS API Key'
-	)"\'
 
 	echo '  pge_password:' \'"$(
 		op item get 'behtdcxervd35nul5222bcui3y' --field='password'

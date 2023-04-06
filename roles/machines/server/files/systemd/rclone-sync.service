@@ -6,6 +6,7 @@ ReadOnlyPaths=/mnt/documents
 ExecStart=/usr/local/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/rclone sync /mnt/documents documents-encrypted: \
   --config /etc/rclone.conf \
+  --drive-impersonate evan@evanpurkhiser.com \
   --log-level DEBUG \
   --use-json-log \
   --stats 0 \

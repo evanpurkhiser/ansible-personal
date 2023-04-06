@@ -59,9 +59,8 @@ fi
 		op item get 'rzki4bpthbcx3dvunjvect545e' --field='salt'
 	)"\'
 
-	echo '  gdrive_token:' \'"$(
-		# JSON format extration to avoid etra double quotes on the JSON string
-		op item get 'rzki4bpthbcx3dvunjvect545e' --field='gdrive API Token' --format=json | jq -r .value
-	)"\'
+	echo "  gdrive_service_account: |\n$(
+		op document get 'u4l25th5yzagzla7jntqvgqshi' | sed 's/\\n/\\\\n/g;s/^/    /'
+	)"
 
 ) >"$(dirname "$0")/vars/secrets.yml"

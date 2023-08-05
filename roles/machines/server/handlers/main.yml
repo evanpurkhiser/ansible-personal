@@ -39,6 +39,7 @@
     state: restarted
 
 - name: Reload nfs exports
+  changed_when: true
   ansible.builtin.command:
     cmd: exportfs -ra
 
@@ -48,6 +49,7 @@
     restart: true
 
 - name: Sync personal repo database
+  changed_when: true
   ansible.builtin.shell:
     cmd: "repo-add --remove --new /srv/pkgs/personal.db.tar.gz /srv/pkgs/*.pkg.tar.xz"
 

@@ -59,8 +59,12 @@ fi
 		op item get 'rzki4bpthbcx3dvunjvect545e' --field='salt'
 	)"\'
 
-	echo "  gdrive_service_account: |\n$(
-		op document get 'u4l25th5yzagzla7jntqvgqshi' | sed 's/\\n/\\\\n/g;s/^/    /'
-	)"
+	echo '  backup_backblaze_b2_account:' \'"$(
+		op item get 'dgbdryr7swyphfakabjxljwwai' --field='rclone.keyId'
+	)"\'
+
+	echo '  backup_backblaze_b2_key:' \'"$(
+		op item get 'dgbdryr7swyphfakabjxljwwai' --field='rclone.applicationKey'
+	)"\'
 
 ) >"$(dirname "$0")/vars/secrets.yml"

@@ -9,4 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ansible/ansible-lint@main
+      - uses: actions/setup-python@v4
+      - run: pip install ansible ansible-lint
+      - run: ansible-lint

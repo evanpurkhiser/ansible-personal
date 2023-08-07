@@ -45,10 +45,6 @@ fi
 		op document get 'mrlbmrn4ww6d6oneu26qtm467y' | sed 's/\\n/\\\\n/g;s/^/    /'
 	)"
 
-	echo '  pge_password:' \'"$(
-		op item get 'behtdcxervd35nul5222bcui3y' --field='password'
-	)"\'
-
 	# Backup solution encryption and access token
 	echo rclone:
 	echo '  backup_key:' \'"$(

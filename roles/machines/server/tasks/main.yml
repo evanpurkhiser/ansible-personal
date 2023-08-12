@@ -97,6 +97,10 @@
   tags: [venmo-auto-cashout]
   ansible.builtin.import_tasks: service-venmo-auto-cashout.yml
 
+- name: Import atuin tasks
+  tags: [atuin]
+  ansible.builtin.import_tasks: service-atuin.yml
+
 - name: Import podman-auto-update tasks
   tags: [podman-auto-update]
   ansible.builtin.import_tasks: service-podman-auto-update.yml

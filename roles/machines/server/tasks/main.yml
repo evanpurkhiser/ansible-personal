@@ -43,6 +43,7 @@
     name:
       - archzfs-linux
       - bash-completion
+      - atuin
       - nfs-utils
       - nginx
       - rclone

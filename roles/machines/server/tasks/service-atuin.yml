@@ -31,7 +31,7 @@
     state: present
     pod: atuin
     volumes:
-      - "/var/lib/atuin/data:/var/lib/postgres/data"
+      - "/var/lib/atuin/data:/var/lib/postgresql/data"
     env:
       POSTGRES_USER: atuin
       POSTGRES_PASSWORD: atuin

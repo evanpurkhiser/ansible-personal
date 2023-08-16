@@ -7,17 +7,17 @@ Environment=XDG_CACHE_HOME=/var/cache/rclone
 ExecStart=/usr/local/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/rclone sync /mnt/documents documents-encrypted: \
   --config /etc/rclone.conf \
+  --drive-impersonate evan@evanpurkhiser.com \
   --log-level DEBUG \
   --use-json-log \
   --stats 0 \
   --fast-list \
-  --filter '+ /archived/**' \
-  --filter '+ /multimedia/djing/**' \
-  --filter '+ /multimedia/music/**' \
-  --filter '+ /multimedia/photos/**' \
-  --filter '+ /downloads/torrents-seeding/what.cd/**' \
   --filter '- ._*' \
   --filter '- .DS_Store' \
+  --filter '- /multimedia/videos/**' \
+  --filter '+ /archived/**' \
+  --filter '+ /multimedia/**' \
+  --filter '+ /downloads/torrents-seeding/what.cd/**' \
   --filter '- *'
 
 # Report runs to sentry monitors.

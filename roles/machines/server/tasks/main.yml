@@ -59,9 +59,6 @@
 - name: Import network tasks
   ansible.builtin.import_tasks: network.yml
 
-- name: Import rclone tasks
-  ansible.builtin.import_tasks: rclone.yml
-
 - name: Import hardware tasks
   ansible.builtin.import_tasks: hardware.yml
 
@@ -105,3 +102,7 @@
 - name: Import podman-auto-update tasks
   tags: [podman-auto-update]
   ansible.builtin.import_tasks: service-podman-auto-update.yml
+
+- name: Import rclone tasks
+  ansible.builtin.import_tasks: rclone.yml
+  tags: [rclone]

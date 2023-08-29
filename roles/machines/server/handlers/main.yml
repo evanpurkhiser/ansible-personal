@@ -60,3 +60,7 @@
 - name: Sync pacman cache
   community.general.pacman:
     update_cache: true
+
+- name: Reload udev rules
+  ansible.builtin.shell:
+    cmd: udevadm trigger

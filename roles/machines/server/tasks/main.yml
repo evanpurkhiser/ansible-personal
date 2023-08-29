@@ -29,6 +29,7 @@
   community.general.pacman:
     name:
       - bash-completion
+      - lsd
       - atuin
       - nfs-utils
       - nginx

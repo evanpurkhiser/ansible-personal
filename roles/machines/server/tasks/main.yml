@@ -45,9 +45,11 @@
 # System configuration
 - name: Import network tasks
   ansible.builtin.import_tasks: network.yml
+  tags: [network]
 
 - name: Import hardware tasks
   ansible.builtin.import_tasks: hardware.yml
+  tags: [hardware]
 
 # Services
 - name: Import nfs tasks

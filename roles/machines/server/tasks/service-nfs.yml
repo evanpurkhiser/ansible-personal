@@ -1,3 +1,9 @@
+- name: Ensure documents directory
+  ansible.builtin.file:
+    path: /mnt/documents
+    state: directory
+    mode: "0755"
+
 - name: Enable nfs-server service
   ansible.builtin.service:
     name: nfs-server

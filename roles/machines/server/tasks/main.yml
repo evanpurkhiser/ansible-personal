@@ -28,10 +28,18 @@
 - name: Install base packages
   community.general.pacman:
     name:
-      - bash-completion
-      - lsd
-      - atuin
+      - man-db
+      - man-pages
       - nfs-utils
+
+      # Common tools
+      - bash-completion
+      - speedtest-cli
+      - lsd
+      - htop
+      - atuin
+
+      # Services
       - nginx
       - rclone
       - rsync

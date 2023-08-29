@@ -25,23 +25,9 @@
     line: "PasswordAuthentication no"
   notify: Restart sshd
 
-# Setup ZFS repo
-- name: Add arch ZFS repo
-  ansible.builtin.copy:
-    src: archzfs-repo
-    dest: /etc/pacman.d
-    mode: "0644"
-
-- name: Include archzfs repo in pacman.conf
-  ansible.builtin.lineinfile:
-    dest: /etc/pacman.conf
-    line: "Include = /etc/pacman.d/archzfs-repo"
-  notify: Sync pacman cache
-
 - name: Install base packages
   community.general.pacman:
     name:
-      - archzfs-linux
       - bash-completion
       - atuin
       - nfs-utils

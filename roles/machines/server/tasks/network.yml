@@ -22,6 +22,12 @@
     dest: /etc/
     mode: "0644"
 
+- name: Ensure systemd-resolved is enabled
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: started
+    enabled: true
+
 - name: Ensure resolved.conf file
   notify: Restart systemd-resolved
   ansible.builtin.copy:
@@ -54,6 +60,7 @@
   ansible.builtin.file:
     path: /etc/iptables/ip6tables.rules
     state: link
+    force: true
     src: /etc/iptables/iptables.rules
 
 - name: Ensure iptables is enabled
@@ -61,6 +68,11 @@
     name: iptables
     state: started
     enabled: true
+
+# Restart services before configuring dnsmasq. systemd-resolved may have had a
+# dns stub listener started.
+- name: Flush handlers
+  meta: flush_handlers
 
 # Setup and configure DNS server
 - name: Configure dnsmasq

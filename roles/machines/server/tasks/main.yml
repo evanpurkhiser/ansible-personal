@@ -87,10 +87,6 @@
   tags: [waitress]
   ansible.builtin.import_tasks: service-waitress.yml
 
-- name: Import doppovich-bot tasks
-  tags: [doppovich-bot]
-  ansible.builtin.import_tasks: service-doppovich-bot.yml
-
 - name: Import venmo-auto-cashout tasks
   tags: [venmo-auto-cashout]
   ansible.builtin.import_tasks: service-venmo-auto-cashout.yml

@@ -10,14 +10,6 @@
     update: false
     accept_hostkey: true
 
-- name: Install dotfile manager for evan
-  # noqa: latest
-  ansible.builtin.git:
-    repo: https://github.com/evanpurkhiser/dots.git
-    dest: /home/evan/.local/lib/dots
-    update: false
-    accept_hostkey: true
-
 - name: Set installed dotfile permissions
   ansible.builtin.file:
     path: /home/evan/.local

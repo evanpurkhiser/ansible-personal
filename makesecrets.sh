@@ -11,8 +11,8 @@ if ! op vault list >/dev/null; then
 	exit 1
 fi
 
-# Access point credentials
 (
+	# Access point credentials
 	echo wifi_password: \'"$(
 		op item get 'hnysllbhcfa4rmsmtko2x3naeq' --field='wireless network password'
 	)"\'

@@ -17,6 +17,11 @@ fi
 		op item get 'hnysllbhcfa4rmsmtko2x3naeq' --field='wireless network password'
 	)"\'
 
+	# Public SSH Key
+	echo public_ssh_key: \'"$(
+		op item get 'szzjm25e6a4sgemptdt3qy5bvu' --field='public key'
+	)"\'
+
 	# Transmission RPC API HTTP password
 	echo transmission_rpc_password: \'"$(
 		op item get 'er47ejg7jjcgxh3ztyvzlsrlzy' --field='password'

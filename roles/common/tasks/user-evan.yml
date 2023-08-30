@@ -22,4 +22,5 @@
 - name: Add authorized public ssh-key for "evan"
   ansible.posix.authorized_key:
     user: evan
-    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILBw6fKi5PEZfZqtel74uxVLOvDGalv3VXcaRNCKwVSo evan@macbook.home.evanpurkhiser.com"
+    key: "{{ public_ssh_key }}"
+    comment: personal

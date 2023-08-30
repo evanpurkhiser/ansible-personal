@@ -32,10 +32,6 @@ fi
 
 	# Home assistant
 	echo home_assistant:
-	echo '  hass_token:' \'"$(
-		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='Appdaemon Key'
-
-	)"\'
 
 	echo '  hacs_github_api_key:' \'"$(
 		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='HACS Github API Key'

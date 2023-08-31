@@ -35,6 +35,13 @@
     dest: /etc/systemd/resolved.conf
     mode: "0644"
 
+- name: Ensure resolv.conf is linked to systemd-resolved stub
+  ansible.builtin.file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: true
+
 # Copy network configurations
 - name: Set wan0 link name
   notify: Restart systemd-networkd
@@ -69,8 +76,6 @@
     state: started
     enabled: true
 
-# Restart services before configuring dnsmasq. systemd-resolved may have had a
-# dns stub listener started.
 - name: Flush handlers
   meta: flush_handlers
 

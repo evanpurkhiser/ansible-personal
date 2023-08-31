@@ -1,22 +1,8 @@
-- name: Install sudo
-  community.general.pacman:
-    name: sudo
-
-- name: Add group sudo
-  ansible.builtin.group:
-    name: sudo
-
-- name: Ensure sudo group may use sudo
-  ansible.builtin.lineinfile:
-    dest: /etc/sudoers
-    regexp: ^%(wheel|sudo)
-    line: "%sudo ALL=(ALL) ALL"
-
 - name: Add user evan
   ansible.builtin.user:
     name: evan
     group: users
-    groups: sudo
+    groups: wheel
     password: "$6$DHaOCz9qtpA6ed5c$PEpj3xv8BQU9YrZx0djfgupmEUMgFx1kPmBc9AX3WdAcvj8TY8PXzWW3loI5VG8ENswqAt3fHN/07y.Jey8Zy0"
 
 - name: Add authorized public ssh-key for "evan"

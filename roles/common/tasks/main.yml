@@ -4,7 +4,10 @@
 - name: Import root password
   ansible.builtin.import_tasks: root-password.yml
 
-- name: Import user
+- name: Import sudo
+  ansible.builtin.import_tasks: sudo.yml
+
+- name: Import user evan
   ansible.builtin.import_tasks: user-evan.yml
 
 - name: Import dots manager

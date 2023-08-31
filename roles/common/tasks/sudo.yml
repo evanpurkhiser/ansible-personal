@@ -1,0 +1,11 @@
+- name: Install sudo
+  community.general.pacman:
+    name: sudo
+
+- name: Ensure wheel group may use sudo
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/00-wheel
+    line: "%wheel ALL=(ALL) ALL"
+    create: yes
+    mode: 0644
+    validate: "visudo -cf %s"

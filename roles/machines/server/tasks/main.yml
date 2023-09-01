@@ -13,6 +13,7 @@
 - name: Install base packages
   community.general.pacman:
     name:
+      - base-devel
       - man-db
       - man-pages
       - nfs-utils
@@ -35,6 +36,11 @@
 
       # Required for encrypting the transmission basic auth password
       - python-passlib
+
+# Install yay package manager
+- name: Install yay
+  ansible.builtin.import_tasks: tool-yay.yml
+  tags: [yay]
 
 # System configuration
 - name: Import sshd tasks

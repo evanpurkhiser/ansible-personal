@@ -4,6 +4,14 @@
 
 These are my personal playbooks for configurating my machines.
 
+### Installing Galaxy roles
+
+There are some additional non-core roles that need installed
+
+```
+ansible-galaxy install -r requirements.yml
+```
+
 ### Base Image Bootstrapping
 
 - All machines must be bootstrapped with python 3.x **before** being

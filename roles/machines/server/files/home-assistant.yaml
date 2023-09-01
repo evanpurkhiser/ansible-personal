@@ -26,12 +26,6 @@ frontend:
 
 homekit:
 
-google_assistant:
-  project_id: home-assistant-19f4f
-  service_account: !secret google_assistant_service_account
-  report_state: true
-  expose_by_default: true
-
 climate:
   - name: Living Room
     unique_id: livingroom_thermostat

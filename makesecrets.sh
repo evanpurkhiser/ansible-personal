@@ -42,10 +42,6 @@ fi
 		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='HACS Github API Key'
 	)"\'
 
-	echo "  google_assistant_service_account: |\n$(
-		op document get 'mrlbmrn4ww6d6oneu26qtm467y' | sed 's/\\n/\\\\n/g;s/^/    /'
-	)"
-
 	# Backup solution encryption and access token
 	echo rclone:
 	echo '  backup_key:' \'"$(

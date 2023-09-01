@@ -40,6 +40,12 @@
       # Required for encrypting the transmission basic auth password
       - python-passlib
 
+- name: Install AUR packages
+  become: true
+  become_user: aur-builder
+  kewlfft.aur.aur:
+    name:
+      - sentry-cli
 
 # System configuration
 - name: Import sshd tasks

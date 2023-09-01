@@ -62,5 +62,6 @@
     update_cache: true
 
 - name: Reload udev rules
-  ansible.builtin.shell:
+  changed_when: true
+  ansible.builtin.command:
     cmd: udevadm trigger

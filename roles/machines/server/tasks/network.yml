@@ -72,7 +72,7 @@
     enabled: true
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 # Setup and configure DNS server
 - name: Configure dnsmasq

@@ -35,6 +35,13 @@ fi
 		op item get 'wddknbssdbdpbilpy25olziegm' --field='Apartment Bot Token'
 	)"\'
 
+	# Venmo auto cashout
+	echo venmo_auto_cashout:
+
+	echo '  api_token:' \'"$(
+		op item get '3pab6f5j6zg5bpw762hq5swe4u' --field="API Token"
+	)"\'
+
 	# Home assistant
 	echo home_assistant:
 

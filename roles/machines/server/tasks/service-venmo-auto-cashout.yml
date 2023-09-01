@@ -4,6 +4,13 @@
     state: directory
     mode: "0755"
 
+- name: Install venmo-auto-cashout config
+  ansible.builtin.copy:
+    dest: /etc/venmo-auto-cashout.conf
+    mode: "0600"
+    content: |
+      VENMO_API_TOKEN={{ venmo_auto_cashout.api_token }}
+
 - name: Install venmo-auto-cashout timer and service
   ansible.builtin.copy:
     src: systemd/venmo-auto-cashout.{{ item }}

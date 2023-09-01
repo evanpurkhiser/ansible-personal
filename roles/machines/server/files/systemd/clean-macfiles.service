@@ -2,7 +2,7 @@
 Description=Remove macOS dot files
 
 [Service]
-ExecStart=/usr/local/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
+ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/find /mnt/documents/ \
   -type f ( -name ._* -or -name .DS_Store ) \
   -print \

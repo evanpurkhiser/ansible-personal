@@ -1,8 +1,3 @@
-- name: Install network packages
-  community.general.pacman:
-    name:
-      - dnsmasq
-
 # Configure network
 - name: Disable default network configuration
   ansible.builtin.file:

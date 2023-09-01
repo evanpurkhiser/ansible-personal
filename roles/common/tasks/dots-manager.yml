@@ -1,6 +1,6 @@
 - name: Install dotfile required packages
   community.general.pacman:
-    name: [git, python]
+    name: git
 
 - name: Install dotfiles for evan
   # noqa: latest

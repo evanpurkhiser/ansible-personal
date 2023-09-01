@@ -24,6 +24,7 @@
       - bash-completion
       - speedtest-cli
       - lsd
+      - fzf
       - htop
       - atuin
 

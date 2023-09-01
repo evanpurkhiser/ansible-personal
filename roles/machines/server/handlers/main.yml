@@ -38,6 +38,11 @@
     name: ip6tables
     state: restarted
 
+- name: Reload udev rules
+  ansible.builtin.service:
+    name: systemd-udev-trigger
+    state: restarted
+
 - name: Reload nfs exports
   changed_when: true
   ansible.builtin.command:
@@ -61,7 +66,3 @@
   community.general.pacman:
     update_cache: true
 
-- name: Reload udev rules
-  changed_when: true
-  ansible.builtin.command:
-    cmd: udevadm trigger

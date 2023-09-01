@@ -1,3 +1,7 @@
+- name: Ensure base-devel is installed for compiling
+  community.general.pacman:
+    name: base-devel
+
 - name: Create the `aur-builder` user
   ansible.builtin.user:
     name: aur-builder
@@ -9,12 +13,12 @@
   ansible.builtin.lineinfile:
     path: /etc/sudoers.d/00-aur-builder
     line: "aur-builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
-    create: yes
-    mode: 0644
+    create: true
+    mode: "0644"
     validate: "visudo -cf %s"
 
 - name: Install yay
-  become: yes
+  become: true
   become_user: aur-builder
   kewlfft.aur.aur:
     name: yay-bin

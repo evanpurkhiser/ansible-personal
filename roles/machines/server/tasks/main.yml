@@ -13,6 +13,9 @@
 - name: Import aur
   ansible.builtin.import_role: { name: aur }
 
+- name: Import ZFS
+  ansible.builtin.import_role: { name: zfs }
+
 - name: Install base packages
   community.general.pacman:
     name:

@@ -10,6 +10,8 @@
     mode: "0600"
     content: |
       VENMO_API_TOKEN={{ venmo_auto_cashout.api_token }}
+      LUNCHMONEY_TOKEN={{ venmo_auto_cashout.lunchmoney_token }}
+      LUNCHMONEY_CATEGORY=z-venmo
 
 - name: Install venmo-auto-cashout timer and service
   ansible.builtin.copy:

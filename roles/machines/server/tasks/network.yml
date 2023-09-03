@@ -37,12 +37,22 @@
     state: link
     force: true
 
-# Copy network configurations
-- name: Set wan0 link name
-  notify: Restart systemd-networkd
+- name: Set interface names
+  notify: Reload udev rules
   with_items:
     - 00-lan0.link
     - 00-wan0.link
+  ansible.builtin.copy:
+    src: network/{{ item }}
+    dest: /etc/systemd/network/
+    mode: "0644"
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Reconfigure network
+  notify: Require network intervention
+  with_items:
     - 01-internal.network
     - 01-external.network
   ansible.builtin.copy:
@@ -70,9 +80,6 @@
     name: iptables
     state: started
     enabled: true
-
-- name: Flush handlers
-  ansible.builtin.meta: flush_handlers
 
 # Setup and configure DNS server
 - name: Configure dnsmasq
@@ -102,3 +109,6 @@
     name: dnsmasq
     state: started
     enabled: true
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

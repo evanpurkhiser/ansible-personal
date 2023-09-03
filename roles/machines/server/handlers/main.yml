@@ -66,3 +66,5 @@
   community.general.pacman:
     update_cache: true
 
+- name: Require network intervention
+  ansible.builtin.include_tasks: network-require-intervention.yml

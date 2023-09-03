@@ -1,0 +1,6 @@
+- name: Stopping
+  ansible.builtin.debug:
+    msg: "Network fully reconfigured. Intervention required."
+
+- name: Stopping
+  ansible.builtin.meta: end_play

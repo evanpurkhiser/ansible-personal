@@ -82,6 +82,21 @@
     mode: "0644"
   notify: Restart dnsmasq
 
+- name: Create dnsmasq.service.d override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/dnsmasq.service.d
+    state: directory
+    mode: "0755"
+
+- name: Override dnsmasq.service
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/dnsmasq.service.d/override
+    content: |
+      [Service]
+      # Small delay to ensure the lan0 device was correctly triggere dby udev
+      ExecStartPre=/bin/sleep 1
+    mode: "0644"
+
 - name: Ensure dnsmasq is enabled
   ansible.builtin.service:
     name: dnsmasq

@@ -38,7 +38,7 @@ fi
 	# Venmo auto cashout
 	echo venmo_auto_cashout:
 
-	echo '  api_token:' \'"$(
+	echo '  venmo_token:' \'"$(
 		op item get '3pab6f5j6zg5bpw762hq5swe4u' --field="API Token"
 	)"\'
 	echo '  lunchmoney_token:' \'"$(

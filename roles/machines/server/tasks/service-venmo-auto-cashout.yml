@@ -9,7 +9,7 @@
     dest: /etc/venmo-auto-cashout.conf
     mode: "0600"
     content: |
-      SENTRY_DSN="https://9c1b2b9bceefabcc689881da4a3b2de1@o126623.ingest.sentry.io/4505870714404864"
+      SENTRY_DSN=https://9c1b2b9bceefabcc689881da4a3b2de1@o126623.ingest.sentry.io/4505870714404864
       VENMO_API_TOKEN={{ venmo_auto_cashout.venmo_token }}
       LUNCHMONEY_TOKEN={{ venmo_auto_cashout.lunchmoney_token }}
       LUNCHMONEY_CATEGORY=z-venmo

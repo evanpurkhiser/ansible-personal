@@ -1,0 +1,17 @@
+[Unit]
+Description=Automatic venmo Reconciliation in lunchmoney
+
+[Service]
+Type=oneshot
+TimeoutStartSec=30s
+ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
+  /usr/bin/podman run \
+  --rm \
+  --env-file=/etc/venmo-lunchmoney-ai.conf \
+  --env STATE_FILE=/var/lib/data/state.json \
+  --volume /var/lib/venmo-lunchmoney-ai:/var/lib/data \
+  docker.io/evanpurkhiser/venmo-lunchmoney-ai
+
+# Report runs to sentry monitors.
+Environment=SENTRY_MONITOR_SLUG=venmo-lunchmoney-ai
+Environment=SENTRY_DSN="https://9c1b2b9bceefabcc689881da4a3b2de1@o126623.ingest.sentry.io/4505870714404864"

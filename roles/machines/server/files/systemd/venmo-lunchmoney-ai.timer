@@ -1,0 +1,8 @@
+[Unit]
+Description=Automatic venmo Reconciliation in lunchmoney
+
+[Timer]
+OnCalendar=*-*-* *:00,30:00
+
+[Install]
+WantedBy=timers.target

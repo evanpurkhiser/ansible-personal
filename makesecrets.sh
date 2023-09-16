@@ -45,6 +45,19 @@ fi
 		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --field='Venmo Auto Cashout API Key'
 	)"\'
 
+	# Venmo Lunchmoney AI
+	echo venmo_lunchmoney_ai:
+
+	echo '  lunchmoney_token:' \'"$(
+		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --field='Venmo Lunchmoney AI API Key'
+	)"\'
+	echo '  openai_token:' \'"$(
+		op item get 'fc4edctkopi57hlm476o6r46oq' --field='Venmo Lunchmoney AI API Key'
+	)"\'
+	echo '  telegram_token:' \'"$(
+		op item get 'wddknbssdbdpbilpy25olziegm' --field='Purkhiser Bot'
+	)"\'
+
 	# Home assistant
 	echo home_assistant:
 

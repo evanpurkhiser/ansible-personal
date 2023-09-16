@@ -90,6 +90,10 @@
   tags: [venmo-auto-cashout]
   ansible.builtin.import_tasks: service-venmo-auto-cashout.yml
 
+- name: Import venmo-lunchmoney-ai tasks
+  tags: [venmo-lunchmoney-ai]
+  ansible.builtin.import_tasks: service-venmo-lunchmoney-ai.yml
+
 - name: Import atuin tasks
   tags: [atuin]
   ansible.builtin.import_tasks: service-atuin.yml

@@ -1,0 +1,33 @@
+- name: Ensure venmo-lunchmoney-ai data directory exists
+  ansible.builtin.file:
+    path: /var/lib/venmo-lunchmoney-ai
+    state: directory
+    mode: "0755"
+
+- name: Install venmo-lunchmoney-ai config
+  ansible.builtin.copy:
+    dest: /etc/venmo-lunchmoney-ai.conf
+    mode: "0600"
+    content: |
+      SENTRY_DSN=https://9c1b2b9bceefabcc689881da4a3b2de1@o126623.ingest.sentry.io/4505870714404864
+      LUNCHMONEY_TOKEN={{ venmo_lunchmoney_ai.lunchmoney_token }}
+      OPENAI_TOKEN={{ venmo_lunchmoney_ai.openai_token }}
+      TELEGRAM_TOKEN={{ venmo_lunchmoney_ai.telegram_token }}
+      TELEGRAM_CHANNEL=-722956237
+      VENMO_CATEGORY=z-venmo
+      REIMBURSEMENT_TAG=Pending Venmo
+      REIMBURSED_CATEGORY=Payment, Transfer
+
+- name: Install venmo-lunchmoney-ai timer and service
+  ansible.builtin.copy:
+    src: systemd/venmo-lunchmoney-ai.{{ item }}
+    dest: /etc/systemd/system/
+    mode: "0644"
+  with_items: [timer, service]
+  notify: Systemd daemon-reload
+
+- name: Enable venmo-lunchmoney-ai timer service
+  ansible.builtin.service:
+    name: venmo-lunchmoney-ai.timer
+    enabled: true
+    state: started

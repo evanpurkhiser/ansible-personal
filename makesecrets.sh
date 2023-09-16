@@ -32,7 +32,7 @@ fi
 	)"\'
 
 	echo apartment_bot_token: \'"$(
-		op item get 'wddknbssdbdpbilpy25olziegm' --field='Apartment Bot Token'
+		op item get 'wddknbssdbdpbilpy25olziegm' --field='Purkhiser Bot'
 	)"\'
 
 	# Venmo auto cashout

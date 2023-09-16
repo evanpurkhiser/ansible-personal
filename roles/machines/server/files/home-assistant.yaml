@@ -24,8 +24,6 @@ my:
 frontend:
   themes: !include_dir_merge_named themes
 
-homekit:
-
 climate:
   - name: Living Room
     unique_id: livingroom_thermostat

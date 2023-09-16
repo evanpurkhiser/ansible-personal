@@ -42,7 +42,7 @@ fi
 		op item get '3pab6f5j6zg5bpw762hq5swe4u' --field="API Token"
 	)"\'
 	echo '  lunchmoney_token:' \'"$(
-		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --field="Venmo Auto Cashout API Key"
+		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --field='Venmo Auto Cashout API Key'
 	)"\'
 
 	# Home assistant

@@ -11,6 +11,14 @@
     dest: /var/lib/hass/configuration.yaml
     mode: "0644"
 
+- name: Ensure automations file
+  ansible.builtin.file:
+    path: /var/lib/hass/automations.yaml
+    state: touch
+    mode: "0644"
+    modification_time: preserve
+    access_time: preserve
+
 - name: Ensure hass secrets
   notify: Restart home-assistant
   ansible.builtin.template:

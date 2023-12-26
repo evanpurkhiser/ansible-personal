@@ -12,7 +12,7 @@
 
 - name: Set installed dotfile permissions
   ansible.builtin.file:
-    path: /home/evan/.local
+    path: /home/evan/.local/etc
     recurse: true
     owner: evan
     group: users

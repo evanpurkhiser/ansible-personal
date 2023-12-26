@@ -2,6 +2,8 @@
   ansible.builtin.file:
     path: /home/evan/.config/transmission-daemon
     state: directory
+    owner: evan
+    group: users
     mode: "0755"
 
 - name: Ensure transmission runs as "evan"

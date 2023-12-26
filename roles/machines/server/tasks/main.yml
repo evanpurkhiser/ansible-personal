@@ -30,6 +30,9 @@
       - fzf
       - htop
       - atuin
+      - tree
+      - fd
+      - ripgrep
 
       # Services
       - nginx

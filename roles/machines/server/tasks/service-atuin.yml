@@ -44,7 +44,7 @@
 - name: Ensure atuin server container
   containers.podman.podman_container:
     name: atuin-server
-    image: ghcr.io/ellie/atuin:main
+    image: ghcr.io/atuinsh/atuin:18.0.0
     state: present
     pod: atuin
     command: server start

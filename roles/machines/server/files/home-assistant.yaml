@@ -1,10 +1,10 @@
 homeassistant:
   name: Apartment
-  time_zone: America/Los_Angeles
+  time_zone: America/New_York
   unit_system: metric
-  elevation: 16
-  latitude: 37.765389
-  longitude: -122.410831
+  elevation: 13
+  latitude: 40.721690
+  longitude: -73.979350
   external_url: https://hass.evanpurkhiser.com
 
 http:
@@ -24,18 +24,3 @@ my:
 frontend:
   themes: !include_dir_merge_named themes
 
-climate:
-  - name: Living Room
-    unique_id: livingroom_thermostat
-    platform: generic_thermostat
-    heater: switch.livingroom_heater
-    target_sensor: sensor.livingroom_temperature
-    target_temp_step: 0.5
-    cold_tolerance: 1.0
-  - name: Bedroom
-    unique_id: bedroom_thermostat
-    platform: generic_thermostat
-    heater: switch.bedroom_heater
-    target_sensor: sensor.bedroom_temperature
-    target_temp_step: 0.5
-    cold_tolerance: 1.0

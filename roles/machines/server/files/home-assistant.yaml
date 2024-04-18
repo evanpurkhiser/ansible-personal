@@ -24,3 +24,9 @@ my:
 frontend:
   themes: !include_dir_merge_named themes
 
+rest_command:
+  virtual_doorman_unlock:
+    url: "https://op-portal.virtualdoorman.com/g6compatressvcs/door-unlock/1400"
+    headers:
+      vdmauthtoken: !secret virtual_doorman_token
+      user-agent: VirtualDoorman/2.5 (com.vdm.welcomeapp; build:10; iOS 17.4.1) Alamofire/5.8.0

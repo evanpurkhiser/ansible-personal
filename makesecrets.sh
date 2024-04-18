@@ -64,6 +64,9 @@ fi
 	echo '  hacs_github_api_key:' \'"$(
 		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='HACS Github API Key'
 	)"\'
+	echo '  virtual_doorman_token:' \'"$(
+		op item get 'esnab34bolitnnm5o4jpjlckhy' --field="vdmauthtoken"
+	)"\'
 
 	# Backup solution encryption and access token
 	echo rclone:

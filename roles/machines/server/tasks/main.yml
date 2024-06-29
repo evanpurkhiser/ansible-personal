@@ -47,6 +47,12 @@
       # Required for encrypting the transmission basic auth password
       - python-passlib
 
+      # Languages
+      - node
+      - npm
+      - go
+      - rust
+
 # System configuration
 - name: Import sshd tasks
   ansible.builtin.import_tasks: sshd.yml

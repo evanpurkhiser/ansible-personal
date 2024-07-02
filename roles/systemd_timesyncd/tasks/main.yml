@@ -1,4 +1,4 @@
-- name: Ensure systemd-timesyncd enbaled and started
+- name: Ensure systemd-timesyncd enabled and started
   ansible.builtin.service:
     name: systemd-timesyncd
     state: started

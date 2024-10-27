@@ -21,6 +21,6 @@
   become: true
   become_user: aur-builder
   kewlfft.aur.aur:
-    name: yay-bin
+    name: yay
     use: makepkg
     state: present

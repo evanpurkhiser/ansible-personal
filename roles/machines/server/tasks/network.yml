@@ -50,6 +50,13 @@
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
+- name: Configure networkd.conf
+  notify: Require network intervention
+  ansible.builtin.copy:
+    src: network/networkd.conf
+    dest: /etc/systemd/
+    mode: "0644"
+
 - name: Reconfigure network
   notify: Require network intervention
   with_items:

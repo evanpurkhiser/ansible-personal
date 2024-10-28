@@ -20,11 +20,25 @@
   community.general.pacman:
     name: archzfs-linux
 
+- name: Create zfs-list.cache directory
+  ansible.builtin.file:
+    path: /etc/zfs/zfs-list.cache
+    state: directory
+    mode: "0755"
+
 - name: Enable ZFS services
   with_items:
+    - zfs.target
+    - zfs-import.target
     - zfs-import-cache.service
-    - zfs-mount.service
+    - zfs-zed.service
   ansible.builtin.service:
     name: "{{ item }}"
     state: started
     enabled: true
+
+- name: Create zfs-list.cache/documents
+  ansible.builtin.file:
+    path: /etc/zfs/zfs-list.cache/documents
+    state: touch
+    mode: "0755"

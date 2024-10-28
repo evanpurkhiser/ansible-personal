@@ -15,6 +15,7 @@
       path: /etc/systemd/system/
       restart_policy: always
       new: true
+      after: mnt-documents.mount
 
 - name: Ensure waitress container is running
   ansible.builtin.systemd:

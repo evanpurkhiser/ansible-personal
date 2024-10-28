@@ -48,7 +48,7 @@
       - python-passlib
 
       # Languages
-      - node
+      - nodejs
       - npm
       - go
       - rust

@@ -3,7 +3,7 @@
     name: evan
     group: users
     groups: wheel
-    password: "$6$DHaOCz9qtpA6ed5c$PEpj3xv8BQU9YrZx0djfgupmEUMgFx1kPmBc9AX3WdAcvj8TY8PXzWW3loI5VG8ENswqAt3fHN/07y.Jey8Zy0"
+    password: "$y$j9T$8gPAevjj5J6oH8FHcF.7W/$LNXTBA3OZun.4VC4clxiEoKFW7hjtB9UiLqIIrDShr/"
 
 - name: Add authorized public ssh-key for "evan"
   ansible.posix.authorized_key:

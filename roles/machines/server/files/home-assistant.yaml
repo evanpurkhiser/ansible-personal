@@ -7,6 +7,12 @@ homeassistant:
   longitude: -73.979350
   external_url: https://hass.evanpurkhiser.com
 
+  customize:
+    light.donut_light:
+      supported_color_modes:
+        - brightness
+      color_mode: brightness
+
 http:
   use_x_forwarded_for: true
   trusted_proxies: [127.0.0.1]

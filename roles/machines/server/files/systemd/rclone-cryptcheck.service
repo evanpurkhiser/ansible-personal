@@ -8,7 +8,7 @@ ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/rclone cryptcheck /mnt/documents documents-encrypted: \
   --config /etc/rclone.conf \
   --drive-impersonate evan@evanpurkhiser.com \
-  --log-level DEBUG \
+  --log-level NOTICE \
   --use-json-log \
   --stats 0 \
   --fast-list \

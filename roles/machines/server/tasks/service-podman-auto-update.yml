@@ -11,9 +11,9 @@
     dest: /etc/systemd/system/podman-auto-update.timer.d/
     mode: "0644"
 
-- name: Override podman-auto-update service for sentry monitors
+- name: Override podman-auto-update service
   ansible.builtin.copy:
-    src: podman-auto-update-sentry.conf
+    src: podman-auto-update-overrides.conf
     dest: /etc/systemd/system/podman-auto-update.service.d/
     mode: "0644"
 

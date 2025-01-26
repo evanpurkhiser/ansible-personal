@@ -1,0 +1,8 @@
+[Unit]
+Description=Weekly file history record
+
+[Timer]
+OnCalendar=Mon *-*-* 00:00:00
+
+[Install]
+WantedBy=timers.target

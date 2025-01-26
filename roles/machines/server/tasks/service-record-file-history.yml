@@ -1,0 +1,19 @@
+- name: Install record-file-history.sh
+  ansible.builtin.copy:
+    src: record-file-history.sh
+    dest: /usr/local/bin/record-file-history.sh
+    mode: "0644"
+
+- name: Install record-file-history timer and service
+  notify: Systemd daemon-reload
+  with_items: [timer, service]
+  ansible.builtin.copy:
+    src: systemd/record-file-history.{{ item }}
+    dest: /etc/systemd/system/
+    mode: "0644"
+
+- name: Enable record-file-history timer service
+  ansible.builtin.service:
+    name: record-file-history.timer
+    state: started
+    enabled: true

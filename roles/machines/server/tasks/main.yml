@@ -116,3 +116,7 @@
 - name: Import rclone tasks
   ansible.builtin.import_tasks: service-rclone.yml
   tags: [rclone]
+
+- name: Import record-file-history tasks
+  ansible.builtin.import_tasks: service-record-file-history.yml
+  tags: [record-file-history]

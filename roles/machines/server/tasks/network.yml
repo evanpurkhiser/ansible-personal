@@ -68,6 +68,12 @@
     mode: "0644"
 
 # Configure firewall
+- name: Ensure ufw is enabled
+  ansible.builtin.service:
+    name: ufw
+    state: started
+    enabled: true
+
 - name: UFW deny everything
   community.general.ufw:
     state: enabled

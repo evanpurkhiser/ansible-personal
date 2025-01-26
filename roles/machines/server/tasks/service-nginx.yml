@@ -17,4 +17,16 @@
     mode: "0600"
     owner: http
     name: evan
-    password: "{{ transmission_rpc_password }}"
+    password: "{{ nginx.transmission_rpc_password }}"
+
+- name: Ensure Cloudflare origin cert
+  ansible.builtin.copy:
+    dest: /etc/ssl/cloudflare_origin.crt
+    mode: "0600"
+    content: "{{ nginx.cloudflare_cert }}"
+
+- name: Ensure Cloudflare origin key
+  ansible.builtin.copy:
+    dest: /etc/ssl/cloudflare_origin.key
+    mode: "0600"
+    content: "{{ nginx.cloudflare_key }}"

@@ -22,11 +22,6 @@ fi
 		op item get 'szzjm25e6a4sgemptdt3qy5bvu' --reveal --field='public key'
 	)"\'
 
-	# Transmission RPC API HTTP password
-	echo transmission_rpc_password: \'"$(
-		op item get 'er47ejg7jjcgxh3ztyvzlsrlzy' --reveal --field='password'
-	)"\'
-
 	echo doppovich_bot_token: \'"$(
 		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Doppovich Bot Token'
 	)"\'
@@ -34,6 +29,22 @@ fi
 	echo apartment_bot_token: \'"$(
 		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Purkhiser Bot'
 	)"\'
+
+	# nginx config
+	echo nginx:
+
+	# Transmission RPC API HTTP password
+	echo '  transmission_rpc_password:' \'"$(
+		op item get 'er47ejg7jjcgxh3ztyvzlsrlzy' --reveal --field='password'
+	)"\'
+
+	echo "  cloudflare_cert: |\n$(
+		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='Origin Certificate' | tr -d '"' | sed 's/\\n/\\\\n/g;s/^/    /'
+	)"
+
+	echo "  cloudflare_key: |\n$(
+		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='Origin Private Key' | tr -d '"' | sed 's/\\n/\\\\n/g;s/^/    /'
+	)"
 
 	# Venmo auto cashout
 	echo venmo_auto_cashout:
@@ -70,6 +81,7 @@ fi
 
 	# Backup solution encryption and access token
 	echo rclone:
+
 	echo '  backup_key:' \'"$(
 		op item get 'rzki4bpthbcx3dvunjvect545e' --reveal --field='password'
 	)"\'

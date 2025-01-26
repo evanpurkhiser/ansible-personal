@@ -14,68 +14,68 @@ fi
 (
 	# Access point credentials
 	echo wifi_password: \'"$(
-		op item get 'hnysllbhcfa4rmsmtko2x3naeq' --field='wireless network password'
+		op item get 'hnysllbhcfa4rmsmtko2x3naeq' --reveal --field='wireless network password'
 	)"\'
 
 	# Public SSH Key
 	echo public_ssh_key: \'"$(
-		op item get 'szzjm25e6a4sgemptdt3qy5bvu' --field='public key'
+		op item get 'szzjm25e6a4sgemptdt3qy5bvu' --reveal --field='public key'
 	)"\'
 
 	# Transmission RPC API HTTP password
 	echo transmission_rpc_password: \'"$(
-		op item get 'er47ejg7jjcgxh3ztyvzlsrlzy' --field='password'
+		op item get 'er47ejg7jjcgxh3ztyvzlsrlzy' --reveal --field='password'
 	)"\'
 
 	echo doppovich_bot_token: \'"$(
-		op item get 'wddknbssdbdpbilpy25olziegm' --field='Doppovich Bot Token'
+		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Doppovich Bot Token'
 	)"\'
 
 	echo apartment_bot_token: \'"$(
-		op item get 'wddknbssdbdpbilpy25olziegm' --field='Purkhiser Bot'
+		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Purkhiser Bot'
 	)"\'
 
 	# Venmo auto cashout
 	echo venmo_auto_cashout:
 
 	echo '  venmo_token:' \'"$(
-		op item get '3pab6f5j6zg5bpw762hq5swe4u' --field="API Token"
+		op item get '3pab6f5j6zg5bpw762hq5swe4u' --reveal --field="API Token"
 	)"\'
 	echo '  lunchmoney_token:' \'"$(
-		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --field='Venmo Auto Cashout API Key'
+		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --reveal --field='Venmo Auto Cashout API Key'
 	)"\'
 
 	# Venmo Lunchmoney AI
 	echo venmo_lunchmoney_ai:
 
 	echo '  lunchmoney_token:' \'"$(
-		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --field='Venmo Lunchmoney AI API Key'
+		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --reveal --field='Venmo Lunchmoney AI API Key'
 	)"\'
 	echo '  openai_token:' \'"$(
-		op item get 'fc4edctkopi57hlm476o6r46oq' --field='Venmo Lunchmoney AI API Key'
+		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Venmo Lunchmoney AI API Key'
 	)"\'
 	echo '  telegram_token:' \'"$(
-		op item get 'wddknbssdbdpbilpy25olziegm' --field='Purkhiser Bot'
+		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Purkhiser Bot'
 	)"\'
 
 	# Home assistant
 	echo home_assistant:
 
 	echo '  hacs_github_api_key:' \'"$(
-		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --field='HACS Github API Key'
+		op item get 'mfv2dujsrfa4bl6hdexjwqwdoq' --reveal --field='HACS Github API Key'
 	)"\'
 	echo '  virtual_doorman_token:' \'"$(
-		op item get 'esnab34bolitnnm5o4jpjlckhy' --field="vdmauthtoken"
+		op item get 'esnab34bolitnnm5o4jpjlckhy' --reveal --field="vdmauthtoken"
 	)"\'
 
 	# Backup solution encryption and access token
 	echo rclone:
 	echo '  backup_key:' \'"$(
-		op item get 'rzki4bpthbcx3dvunjvect545e' --field='password'
+		op item get 'rzki4bpthbcx3dvunjvect545e' --reveal --field='password'
 	)"\'
 
 	echo '  backup_salt:' \'"$(
-		op item get 'rzki4bpthbcx3dvunjvect545e' --field='salt'
+		op item get 'rzki4bpthbcx3dvunjvect545e' --reveal --field='salt'
 	)"\'
 
 	echo "  gdrive_service_account: |\n$(

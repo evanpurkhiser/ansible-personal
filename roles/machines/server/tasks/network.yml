@@ -67,26 +67,30 @@
     dest: /etc/systemd/network/
     mode: "0644"
 
-# Setup iptable rules
-- name: Configure iptables
-  notify: [Restart iptables, Restart ip6tables]
-  ansible.builtin.copy:
-    src: iptables.rules
-    dest: /etc/iptables/
-    mode: "0644"
+# Configure firewall
+- name: UFW deny everything
+  community.general.ufw:
+    state: enabled
+    policy: deny
+    interface_in: wan0
 
-- name: Link iptable rules for v6 rules
-  ansible.builtin.file:
-    path: /etc/iptables/ip6tables.rules
-    state: link
-    force: true
-    src: /etc/iptables/iptables.rules
+- name: UFW limit SSH
+  community.general.ufw:
+    rule: limit
+    port: 22
+    interface_in: wan0
 
-- name: Ensure iptables is enabled
-  ansible.builtin.service:
-    name: iptables
-    state: started
-    enabled: true
+- name: UFW allow HTTP
+  community.general.ufw:
+    rule: allow
+    port: 80
+    interface_in: wan0
+
+- name: UFW allow transmission
+  community.general.ufw:
+    rule: allow
+    port: 51413
+    interface_in: wan0
 
 # Setup and configure DNS server
 - name: Configure dnsmasq

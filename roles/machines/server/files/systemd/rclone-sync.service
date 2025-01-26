@@ -9,7 +9,7 @@ ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   --config /etc/rclone.conf \
   --drive-impersonate evan@evanpurkhiser.com \
   --drive-use-trash=false \
-  --log-level DEBUG \
+  --log-level NOTICE \
   --use-json-log \
   --stats 0 \
   --fast-list \

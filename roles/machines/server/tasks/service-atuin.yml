@@ -37,6 +37,7 @@
       POSTGRES_PASSWORD: atuin
       POSTGRES_DB: atuin
     generate_systemd:
+      after: pod-atuin
       path: /etc/systemd/system/
       restart_policy: always
       new: true
@@ -56,6 +57,7 @@
       ATUIN_OPEN_REGISTRATION: false
       ATUIN_DB_URI: "postgres://atuin:atuin@localhost/atuin"
     generate_systemd:
+      after: pod-atuin
       path: /etc/systemd/system/
       restart_policy: always
       new: true

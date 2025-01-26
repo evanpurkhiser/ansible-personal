@@ -72,7 +72,11 @@
   community.general.ufw:
     state: enabled
     policy: deny
-    interface_in: wan0
+
+- name: UFW allow local networking
+  community.general.ufw:
+    rule: allow
+    from_ip: 10.0.0.0/24
 
 - name: UFW limit SSH
   community.general.ufw:

@@ -42,3 +42,5 @@
     path: /etc/zfs/zfs-list.cache/documents
     state: touch
     mode: "0755"
+    modification_time: preserve
+    access_time: preserve

@@ -12,7 +12,7 @@
       SENTRY_DSN=https://9c1b2b9bceefabcc689881da4a3b2de1@o126623.ingest.sentry.io/4505870714404864
       LUNCHMONEY_TOKEN={{ venmo_lunchmoney_ai.lunchmoney_token }}
       OPENAI_TOKEN={{ venmo_lunchmoney_ai.openai_token }}
-      TELEGRAM_TOKEN={{ venmo_lunchmoney_ai.telegram_token }}
+      TELEGRAM_TOKEN={{ purkhiser_bot_token }}
       TELEGRAM_CHANNEL=-722956237
       VENMO_CATEGORY=z-venmo
       REIMBURSEMENT_TAG=Pending Venmo

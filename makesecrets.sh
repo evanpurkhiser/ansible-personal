@@ -22,6 +22,10 @@ fi
 		op item get 'szzjm25e6a4sgemptdt3qy5bvu' --reveal --field='public key'
 	)"\'
 
+	echo 'purkhiser_bot_token:' \'"$(
+		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Purkhiser Bot'
+	)"\'
+
 	echo doppovich_bot_token: \'"$(
 		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Doppovich Bot Token'
 	)"\'
@@ -64,9 +68,6 @@ fi
 	)"\'
 	echo '  openai_token:' \'"$(
 		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Venmo Lunchmoney AI API Key'
-	)"\'
-	echo '  telegram_token:' \'"$(
-		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Purkhiser Bot'
 	)"\'
 
 	# Home assistant

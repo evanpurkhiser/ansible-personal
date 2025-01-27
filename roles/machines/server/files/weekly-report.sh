@@ -72,7 +72,7 @@ echo ""
 
 echo "🐳 *Podman containers*"
 podman_ps="$(podman ps --format=json | jq -r '.[] | "\(.Names[0])\t\(.Status)"' | column -s$'\t' -t)"
-echo -ne '```contaienrs\n'"${podman_ps}" '```\n'
+echo -ne '```containers\n'"${podman_ps}" '```\n'
 echo ""
 
 # rclone sync last run

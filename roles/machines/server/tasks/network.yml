@@ -74,15 +74,22 @@
     state: started
     enabled: true
 
-- name: UFW deny everything
+- name: UFW deny everything by default
   community.general.ufw:
     state: enabled
     policy: deny
 
-- name: UFW allow local networking
+- name: UFW allow local networking (in)
   community.general.ufw:
     rule: allow
-    from_ip: 10.0.0.0/24
+    direction: in
+    interface: lan0
+
+- name: UFW allow local networking (out)
+  community.general.ufw:
+    rule: allow
+    direction: out
+    interface: lan0
 
 - name: UFW limit SSH
   community.general.ufw:

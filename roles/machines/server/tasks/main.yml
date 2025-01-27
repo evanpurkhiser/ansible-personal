@@ -49,6 +49,9 @@
       # Required for encrypting the transmission basic auth password
       - python-passlib
 
+      # Required for system status script
+      - lm_sensors
+
       # Languages
       - nodejs
       - npm
@@ -120,3 +123,11 @@
 - name: Import record-file-history tasks
   ansible.builtin.import_tasks: service-record-file-history.yml
   tags: [record-file-history]
+
+- name: Import purkhiser bot tasks
+  ansible.builtin.import_tasks: service-purkhiser-bot.yml
+  tags: [purkhiser-bot]
+
+- name: Import weekly-report tasks
+  ansible.builtin.import_tasks: service-weekly-report.yml
+  tags: [weekly-report]

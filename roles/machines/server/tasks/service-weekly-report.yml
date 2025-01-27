@@ -1,0 +1,19 @@
+- name: Install weekly-report.sh script
+  ansible.builtin.copy:
+    src: weekly-report.sh
+    dest: /usr/local/bin/
+    mode: "0755"
+
+- name: Install weekly-report timer and service
+  notify: Systemd daemon-reload
+  with_items: [timer, service]
+  ansible.builtin.copy:
+    src: systemd/weekly-report.{{ item }}
+    dest: /etc/systemd/system/
+    mode: "0644"
+
+- name: Enable weekly-report timer service
+  ansible.builtin.service:
+    name: weekly-report.timer
+    state: started
+    enabled: true

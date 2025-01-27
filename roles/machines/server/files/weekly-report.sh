@@ -27,7 +27,7 @@ echo "📦 *$(pacman -Qu | wc -l)* outdated packages"
 
 # Disk usages
 function usage() {
-  df $1 -h --output=used,avail,pcent | tail -n +2 | awk '{printf "*used;* %s / *avail:* %s (%s)", $1,$2,$3}'
+  df $1 -h --output=used,avail,pcent | tail -n +2 | awk '{printf "*used:* %s / *avail:* %s (%s)", $1,$2,$3}'
 }
 echo "💾 $(usage /dev/nvme0n1p2)"
 echo "🗂️ $(usage /mnt/documents)"

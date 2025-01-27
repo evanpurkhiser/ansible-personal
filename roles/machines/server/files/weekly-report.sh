@@ -8,14 +8,9 @@ echo ""
 # Uptime
 echo "⏳ $(uptime -p)"
 
-# IP Address
-addr_v4="$(ip -4 addr show wan0 | grep -oP '(?<=inet\s)[\d.]+')"
-addr_v6="$(ip -6 addr show wan0 | grep -oP '(?<=inet6\s)(?!fe80)[\da-f:]+')"
-echo "🌐 "'`'"${addr_v4}"'`'" / "'`'"${addr_v6}"'`'
-
 # Load average
 load_avg="$(cat /proc/loadavg | awk '{ print $1, $2, $3 }')"
-echo '⚡ *load average*: `'"$load_avg"'` (1m, 5m, 15m)'
+echo '📊 *load average*: `'"$load_avg"'` (1m, 5m, 15m)'
 
 # memory usage
 memory="$(free -h --si | awk '/^Mem:/ {print "*used*: " $3 " / *free*: " $4 " (" $2 ")"}')"
@@ -37,6 +32,19 @@ function usage() {
 echo "💾 $(usage /dev/nvme0n1p2)"
 echo "🗂️ $(usage /mnt/documents)"
 
+# IP Address
+addr_v4="$(ip -4 addr show wan0 | grep -oP '(?<=inet\s)[\d.]+')"
+addr_v6="$(ip -6 addr show wan0 | grep -oP '(?<=inet6\s)(?!fe80)[\da-f:]+')"
+echo "🌐 "'`'"${addr_v4}"'`'" / "'`'"${addr_v6}"'`'
+
+# Speed test
+# speedtest-monitor runs twice daily, so take the last 14 runs for the past weeks average
+speed_down="$(tail -14 /var/local/speedtest-monitor.json | jq .download | awk '{sum+=$1/1048576; count++} END {printf "%.2f Mbps\n", sum/count}')"
+speed_up="$(tail -14 /var/local/speedtest-monitor.json | jq .upload | awk '{sum+=$1/1048576; count++} END {printf "%.2f Mbps\n", sum/count}')"
+
+echo "⚡ ${speed_down} down / ${speed_up} up"
+echo ""
+
 # zpool status
 zpool_status="$(zpool status -x)"
 if [[ "$zpool_status" != "all pools are healthy" ]]; then
@@ -44,7 +52,6 @@ if [[ "$zpool_status" != "all pools are healthy" ]]; then
 else
   echo "🌊 \[zpool] ${zpool_status}"
 fi
-echo ""
 
 # Systemd service status
 services="$(systemctl list-units --type=service --output=json |

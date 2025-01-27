@@ -1,0 +1,13 @@
+- name: Install speedtest-monitor timer and service
+  notify: Systemd daemon-reload
+  with_items: [timer, service]
+  ansible.builtin.copy:
+    src: systemd/speedtest-monitor.{{ item }}
+    dest: /etc/systemd/system/
+    mode: "0644"
+
+- name: Enable speedtest-monitor timer service
+  ansible.builtin.service:
+    name: speedtest-monitor.timer
+    state: started
+    enabled: true

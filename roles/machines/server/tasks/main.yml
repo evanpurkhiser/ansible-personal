@@ -36,6 +36,10 @@
       - fd
       - ripgrep
 
+      # Other tools
+      - lm_sensors
+      - speedtest-cli
+
       # Services
       - nginx
       - dnsmasq
@@ -48,9 +52,6 @@
 
       # Required for encrypting the transmission basic auth password
       - python-passlib
-
-      # Required for system status script
-      - lm_sensors
 
       # Languages
       - nodejs
@@ -131,3 +132,7 @@
 - name: Import weekly-report tasks
   ansible.builtin.import_tasks: service-weekly-report.yml
   tags: [weekly-report]
+
+- name: Import speedtest-monitor tasks
+  ansible.builtin.import_tasks: service-speedtest-monitor.yml
+  tags: [speedtest-monitor]

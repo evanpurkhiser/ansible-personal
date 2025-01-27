@@ -1,0 +1,8 @@
+[Unit]
+Description=Twice daily speedtest
+
+[Timer]
+OnCalendar=*-*-* 8,22:00:00
+
+[Install]
+WantedBy=timers.target

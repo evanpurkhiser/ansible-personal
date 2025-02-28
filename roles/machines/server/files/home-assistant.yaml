@@ -12,7 +12,11 @@ homeassistant:
       supported_color_modes:
         - brightness
       color_mode: brightness
-
+    light.closet_hanger:
+      supported_color_modes:
+        - brightness
+        - color_temp
+      color_mode: brightness
 http:
   use_x_forwarded_for: true
   trusted_proxies: [127.0.0.1]

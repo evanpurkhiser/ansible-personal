@@ -2,7 +2,10 @@
 Description=Twice daily speedtest
 
 [Timer]
-OnCalendar=*-*-* 8,22:00:00
+# We add a random delay and run this off-hour to avoid the service being # overloaded.
+# See https://askubuntu.com/questions/1322451/speedtest-cli-does-not-execute-when-scheduled-cron
+OnCalendar=*-*-* 8,22:05:00
+RandomizedDelaySec=3600
 
 [Install]
 WantedBy=timers.target

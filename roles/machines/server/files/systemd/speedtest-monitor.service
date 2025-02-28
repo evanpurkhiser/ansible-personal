@@ -3,11 +3,8 @@ Description=Record spedtest to speedtest-monitor.json
 
 [Service]
 ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
-  /usr/bin/sh -c "speedtest --server $SPEEDTEST_SERVER --json >> /var/local/speedtest-monitor.json"
+  /usr/bin/sh -c "speedtest --secure --json >> /var/local/speedtest-monitor.json"
 
 # Report runs to sentry monitors.
 Environment=SENTRY_MONITOR_SLUG=speedtest-monitor
 Environment=SENTRY_DSN="https://d97d5845a18449d5a2966781f37e5bc4@o126623.ingest.sentry.io/4504880681582592"
-
-# 13098 Pilot Fiber (New York, NY, United States) [2.53 km]
-Environment=SPEEDTEST_SERVER=13098

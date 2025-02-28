@@ -19,6 +19,14 @@
     modification_time: preserve
     access_time: preserve
 
+- name: Ensure scripts folder
+  ansible.builtin.file:
+    path: /var/lib/hass/scripts.yaml
+    state: touch
+    mode: "0644"
+    modification_time: preserve
+    access_time: preserve
+
 - name: Ensure hass secrets
   notify: Restart home-assistant
   ansible.builtin.template:

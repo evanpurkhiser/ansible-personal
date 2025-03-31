@@ -3,7 +3,8 @@ Description=Monthly backup encryption verification
 After=rclone-sync.service
 
 [Timer]
-OnCalendar=*-*-01 05:00:00
+# Cryptcheck is 1 hour after rclone sync on the first sunday of the month
+OnCalendar=Sun *-*-01..07 06:00:00
 
 [Install]
 WantedBy=timers.target

@@ -70,6 +70,13 @@ fi
 		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Venmo Lunchmoney AI API Key'
 	)"\'
 
+	# Meal Log
+	echo meal_log:
+
+	echo '  openai_token:' \'"$(
+		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Meal Log API Key'
+	)"\'
+
 	# Home assistant
 	echo home_assistant:
 

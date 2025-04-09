@@ -1,0 +1,38 @@
+- name: Ensure meal-log data directory exists
+  ansible.builtin.file:
+    path: /var/lib/meal-log
+    state: directory
+    mode: "0755"
+
+- name: Install meal-log config
+  ansible.builtin.copy:
+    dest: /etc/meal-log.conf
+    mode: "0600"
+    content: |
+      OPENAI_TOKEN={{ meal_log.openai_token }}
+      PHOTOS_PATH=/data/photos/
+
+- name: Ensure meal-log docker container
+  containers.podman.podman_container:
+    name: meal-log
+    image: docker.io/evanpurkhiser/meal-log:latest
+    state: present
+    publish:
+      - "9006:8888"
+    volume:
+      - "/var/lib/meal-log:/data"
+    env_file:
+      - "/etc/meal-log.conf"
+    label:
+      io.containers.autoupdate: registry
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+
+- name: Ensure meal-log container is running
+  ansible.builtin.systemd:
+    name: container-meal-log
+    state: started
+    enabled: true
+    daemon_reload: true

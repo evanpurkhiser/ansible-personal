@@ -73,6 +73,9 @@ fi
 	# Meal Log
 	echo meal_log:
 
+	echo '  record_token:' \'"$(
+		op item get 'l7fle3v7rksnryvm3i2cax4eqe' --reveal --field 'Record Token'
+	)"\'
 	echo '  openai_token:' \'"$(
 		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Meal Log API Key'
 	)"\'

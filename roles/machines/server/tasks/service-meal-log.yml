@@ -11,6 +11,7 @@
     content: |
       OPENAI_TOKEN={{ meal_log.openai_token }}
       PHOTOS_PATH=/data/photos/
+      RECORD_TOKEN={{ meal_log.record_token }}
 
 - name: Ensure meal-log docker container
   containers.podman.podman_container:

@@ -140,3 +140,7 @@
 - name: Import speedtest-monitor tasks
   ansible.builtin.import_tasks: service-speedtest-monitor.yml
   tags: [speedtest-monitor]
+
+- name: Import bambulab-lights-off tasks
+  ansible.builtin.import_tasks: service-bambulab-lights-off.yml
+  tags: [bambulab-lights-off]

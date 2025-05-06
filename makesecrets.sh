@@ -80,6 +80,15 @@ fi
 		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Meal Log API Key'
 	)"\'
 
+	# Bambu Lab P1S
+	echo bambulab_printer:
+
+	echo '  serial:' \'"$(
+		op item get 'rkrwve7w33m5x7xo7bhk3ppd4y' --reveal --field='Printer Serial'
+	)"\'
+	echo '  access_code:' \'"$(
+		op item get 'rkrwve7w33m5x7xo7bhk3ppd4y' --reveal --field='Printer Access Code'
+	)"\'
 	# Home assistant
 	echo home_assistant:
 

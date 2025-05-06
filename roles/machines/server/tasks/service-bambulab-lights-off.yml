@@ -1,0 +1,22 @@
+- name: Install bambulab-lights-off config
+  ansible.builtin.copy:
+    dest: /etc/bambulab-lights-off.conf
+    mode: "0600"
+    content: |
+      PRINTER_IP=10.0.0.40
+      PRINTER_SERIAL={{ bambulab_printer.serial }}
+      PRINTER_ACCESS_CODE={{ bambulab_printer.access_code }}
+
+- name: Install bambulab-lights-off timer and service
+  ansible.builtin.copy:
+    src: systemd/bambulab-lights-off.{{ item }}
+    dest: /etc/systemd/system/
+    mode: "0644"
+  with_items: [timer, service]
+  notify: Systemd daemon-reload
+
+- name: Enable bambulab-lights-off timer service
+  ansible.builtin.service:
+    name: bambulab-lights-off.timer
+    enabled: true
+    state: started

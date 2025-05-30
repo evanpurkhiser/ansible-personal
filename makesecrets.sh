@@ -27,7 +27,7 @@ fi
 	)"\'
 
 	echo doppovich_bot_token: \'"$(
-		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Doppovich Bot Token'
+		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Doppovich Bot'
 	)"\'
 
 	echo apartment_bot_token: \'"$(

@@ -105,6 +105,10 @@
   tags: [meal-log]
   ansible.builtin.import_tasks: service-meal-log.yml
 
+- name: Import instagram-saver tasks
+  tags: [instagram-saver]
+  ansible.builtin.import_tasks: service-instagram-saver.yml
+
 - name: Import venmo-auto-cashout tasks
   tags: [venmo-auto-cashout]
   ansible.builtin.import_tasks: service-venmo-auto-cashout.yml

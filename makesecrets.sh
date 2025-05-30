@@ -80,6 +80,16 @@ fi
 		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Meal Log API Key'
 	)"\'
 
+	# Instagram Saver
+	echo instagram_saver:
+
+	echo '  google_places_api_key:' \'"$(
+		op item get 'ss4qbfjbpbep7ph5prrdxxmena' --reveal --field='Google Map Places API Key'
+	)"\'
+	echo '  openai_token:' \'"$(
+		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Instagram Saver API Key'
+	)"\'
+
 	# Bambu Lab P1S
 	echo bambulab_printer:
 

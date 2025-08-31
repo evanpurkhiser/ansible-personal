@@ -79,6 +79,15 @@ fi
 	echo '  openai_token:' \'"$(
 		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Meal Log API Key'
 	)"\'
+	echo '  r2_account_id:' \'"$(
+		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --reveal --field='Account ID'
+	)"\'
+	echo '  r2_access_key_id:' \'"$(
+		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --reveal --field='Access Key ID'
+	)"\'
+	echo '  r2_secret_access_key:' \'"$(
+		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --reveal --field='Secret Access Key'
+	)"\'
 
 	# Instagram Saver
 	echo instagram_saver:

@@ -1,7 +1,7 @@
 - name: Add archzfs repo key
   community.general.pacman_key:
-    id: DDF7DB817396A49B2A2723F7403BD972F75D9D76
-    url: https://archzfs.com/archzfs.gpg
+    id: 3A9917BF0DED5C13F69AC68FABEC0A1208037BE9
+    keyserver: keyserver.ubuntu.com
     state: present
 
 - name: Add arch ZFS repo
@@ -16,9 +16,9 @@
     dest: /etc/pacman.conf
     line: "Include = /etc/pacman.d/archzfs-repo"
 
-- name: Install archzfs-linux
+- name: Install archzfs-linux-lts
   community.general.pacman:
-    name: archzfs-linux
+    name: archzfs-linux-lts
 
 - name: Create zfs-list.cache directory
   ansible.builtin.file:

@@ -1,2 +1,3 @@
 [archzfs]
-Server = http://archzfs.com/$repo/x86_64
+SigLevel = Required
+Server = https://github.com/archzfs/archzfs/releases/download/experimental

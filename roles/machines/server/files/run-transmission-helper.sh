@@ -21,4 +21,4 @@ podman run -d \
   -e TV_SERIES_DIR="/mnt/documents/multimedia/videos/series" \
   -e MOVE_COMPLETE_DIR="/mnt/documents/downloads/torrents-seeding/other" \
   -e SENTRY_DSN="https://254c85b83a782bab95ddca042bff1625@o126623.ingest.us.sentry.io/4509976585437184" \
-  docker.io/evanpurkhiser/transmission-helper
+  docker.io/evanpurkhiser/transmission-helper:latest

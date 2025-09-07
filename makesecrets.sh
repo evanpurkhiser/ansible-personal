@@ -108,6 +108,17 @@ fi
 	echo '  access_code:' \'"$(
 		op item get 'rkrwve7w33m5x7xo7bhk3ppd4y' --reveal --field='Printer Access Code'
 	)"\'
+
+	# Transmission Helper
+	echo transmission_helper:
+
+	echo '  openai_api_key:' \'"$(
+		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Transmission Helper API Key'
+	)"\'
+	echo '  telegram_token:' \'"$(
+		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Purkhiser Bot'
+	)"\'
+
 	# Home assistant
 	echo home_assistant:
 

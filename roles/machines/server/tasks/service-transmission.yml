@@ -24,3 +24,17 @@
     name: transmission
     state: started
     enabled: true
+
+- name: Install transmission-helper config
+  ansible.builtin.copy:
+    dest: /etc/transmission-helper.conf
+    mode: "0666"
+    content: |
+      OPENAI_API_KEY={{ transmission_helper.openai_api_key }}
+      TELEGRAM_TOKEN={{ transmission_helper.telegram_token }}
+
+- name: Install transmission-helper script
+  ansible.builtin.copy:
+    src: run-transmission-helper.sh
+    dest: /usr/local/bin/run-transmission-helper.sh
+    mode: "0777"

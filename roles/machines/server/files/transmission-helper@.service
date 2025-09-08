@@ -1,0 +1,8 @@
+[Unit]
+Description=Transmission Helper for torrent completion
+
+[Service]
+Type=oneshot
+StandardInput=socket
+EnvironmentFile=/etc/transmission-helper.conf
+ExecStart=/usr/local/bin/transmission-helper-handler.sh

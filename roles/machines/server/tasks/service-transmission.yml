@@ -24,17 +24,43 @@
     name: transmission
     state: started
     enabled: true
+    daemon_reload: true
 
 - name: Install transmission-helper config
   ansible.builtin.copy:
     dest: /etc/transmission-helper.conf
-    mode: "0666"
+    mode: "0600"
     content: |
       OPENAI_API_KEY={{ transmission_helper.openai_api_key }}
       TELEGRAM_TOKEN={{ transmission_helper.telegram_token }}
 
-- name: Install transmission-helper script
+- name: Install transmission-helper systemd service
   ansible.builtin.copy:
-    src: run-transmission-helper.sh
-    dest: /usr/local/bin/run-transmission-helper.sh
+    src: transmission-helper@.service
+    dest: /etc/systemd/system/transmission-helper@.service
+    mode: "0644"
+
+- name: Install transmission-helper systemd socket activation
+  ansible.builtin.copy:
+    src: transmission-helper.socket
+    dest: /etc/systemd/system/transmission-helper.socket
+    mode: "0644"
+
+- name: Enable transmission helper socket activatiojn
+  ansible.builtin.service:
+    name: transmission-helper.socket
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Install transmission-helper trigger script
+  ansible.builtin.copy:
+    src: transmission-helper-trigger.sh
+    dest: /usr/local/bin/transmission-helper-trigger.sh
     mode: "0777"
+
+- name: Install transmission-helper handler script
+  ansible.builtin.copy:
+    src: transmission-helper-handler.sh
+    dest: /usr/local/bin/transmission-helper-handler.sh
+    mode: "0766"

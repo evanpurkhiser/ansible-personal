@@ -1,0 +1,13 @@
+[Unit]
+Description=Socket activation for transmission-helper
+
+[Socket]
+Accept=yes
+ListenStream=/run/transmission-helper/helper.sock
+
+SocketMode=0660
+SocketUser=root
+SocketGroup=users
+
+[Install]
+WantedBy=sockets.target

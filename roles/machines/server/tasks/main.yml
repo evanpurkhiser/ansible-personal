@@ -18,7 +18,7 @@
   ansible.builtin.import_role: { name: zfs }
 
 - name: Install base packages
-  tags: [pacakges]
+  tags: [packages]
   community.general.pacman:
     name:
       - man-db

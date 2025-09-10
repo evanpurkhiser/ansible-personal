@@ -41,3 +41,21 @@ rest_command:
     headers:
       vdmauthtoken: !secret virtual_doorman_token
       user-agent: VirtualDoorman/2.5 (com.vdm.welcomeapp; build:10; iOS 17.4.1) Alamofire/5.8.0
+
+rest:
+  - resource: https://www.googleapis.com/youtube/v3/playlistItems
+    method: GET
+    scan_interval: 1800
+    params:
+      part: snippet
+      maxResults: 50
+      playlistId: PLlUsJxfdNKg2PfRqnd_tolL2wbCstoYWQ
+      key: !secret youtube_data_api_key
+    headers:
+      Accept: application/json
+    sensor:
+      - name: "Morning YouTube Playlist"
+        unique_id: youtube_paylist.morning
+        value_template: "{{ value_json.pageInfo.totalResults if value_json is defined else 0 }}"
+        json_attributes:
+          - items

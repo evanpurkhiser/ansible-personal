@@ -128,6 +128,9 @@ fi
 	echo '  virtual_doorman_token:' \'"$(
 		op item get 'esnab34bolitnnm5o4jpjlckhy' --reveal --field="vdmauthtoken"
 	)"\'
+	echo '  youtube_data_api_key:' \'"$(
+		op item get 'ss4qbfjbpbep7ph5prrdxxmena' --reveal --field='YouTube Data API Key'
+	)"\'
 
 	# Backup solution encryption and access token
 	echo rclone:

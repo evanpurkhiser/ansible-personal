@@ -1,7 +1,7 @@
 - name: Ensure waitress docker container
   containers.podman.podman_container:
     name: waitress
-    image: docker.io/evanpurkhiser/waitress:latest
+    image: ghcr.io/evanpurkhiser/waitress:latest
     state: present
     publish:
       - "9005:80"

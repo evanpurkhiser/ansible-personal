@@ -10,7 +10,7 @@ ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   --env-file=/etc/venmo-auto-cashout.conf \
   --env TRANSACTION_DB=/var/lib/db/transactions.db \
   --volume /var/lib/venmo-auto-cashout:/var/lib/db \
-  docker.io/evanpurkhiser/venmo-auto-cashout
+  ghcr.io/evanpurkhiser/venmo-auto-cashout
 
 # Report runs to sentry monitors.
 Environment=SENTRY_MONITOR_SLUG=venmo-auto-cashout

@@ -19,7 +19,7 @@
 - name: Ensure meal-log docker container
   containers.podman.podman_container:
     name: meal-log
-    image: docker.io/evanpurkhiser/meal-log:latest
+    image: ghcr.io/evanpurkhiser/meal-log:latest
     state: present
     publish:
       - "9006:8888"

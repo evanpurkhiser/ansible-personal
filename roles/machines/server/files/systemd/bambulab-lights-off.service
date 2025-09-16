@@ -8,7 +8,7 @@ ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/podman run \
   --rm \
   --env-file=/etc/bambulab-lights-off.conf \
-  docker.io/evanpurkhiser/bambulab-lights-off
+  ghcr.io/evanpurkhiser/bambulab-lights-off
 
 # Report runs to sentry monitors.
 Environment=SENTRY_MONITOR_SLUG=bambulab-lights-off

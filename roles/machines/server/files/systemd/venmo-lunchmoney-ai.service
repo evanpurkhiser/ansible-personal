@@ -10,7 +10,7 @@ ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   --env-file=/etc/venmo-lunchmoney-ai.conf \
   --env STATE_FILE=/var/lib/data/state.json \
   --volume /var/lib/venmo-lunchmoney-ai:/var/lib/data \
-  docker.io/evanpurkhiser/venmo-lunchmoney-ai
+  ghcr.io/evanpurkhiser/venmo-lunchmoney-ai
 
 # Report runs to sentry monitors.
 Environment=SENTRY_MONITOR_SLUG=venmo-lunchmoney-ai

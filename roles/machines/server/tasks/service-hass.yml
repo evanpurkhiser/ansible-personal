@@ -37,7 +37,7 @@
 - name: Ensure hass podman container
   containers.podman.podman_container:
     name: home-assistant
-    image: docker.io/homeassistant/home-assistant:latest
+    image: ghcr.io/home-assistant/home-assistant:latest
     state: present
     network: host
     volume:

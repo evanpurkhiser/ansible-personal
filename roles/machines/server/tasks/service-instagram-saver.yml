@@ -9,7 +9,7 @@
 - name: Ensure instagram-saver docker container
   containers.podman.podman_container:
     name: instagram-saver
-    image: docker.io/evanpurkhiser/instagram-saver:latest
+    image: ghcr.io/evanpurkhiser/instagram-saver:latest
     state: present
     publish:
       - "9007:8888"

@@ -59,3 +59,54 @@ rest:
         value_template: "{{ value_json.pageInfo.totalResults if value_json is defined else 0 }}"
         json_attributes:
           - items
+
+  - resource: https://www.googleapis.com/youtube/v3/playlistItems
+    method: GET
+    scan_interval: 1800
+    params:
+      part: snippet
+      maxResults: 50
+      playlistId: PLlUsJxfdNKg0fKtSk7BRlSzwWbQp0HeEA
+      key: !secret youtube_data_api_key
+    headers:
+      Accept: application/json
+    sensor:
+      - name: "Evening Chillout YouTube Playlist"
+        unique_id: youtube_paylist.evening_chillout
+        value_template: "{{ value_json.pageInfo.totalResults if value_json is defined else 0 }}"
+        json_attributes:
+          - items
+
+  - resource: https://www.googleapis.com/youtube/v3/playlistItems
+    method: GET
+    scan_interval: 1800
+    params:
+      part: snippet
+      maxResults: 50
+      playlistId: PLlUsJxfdNKg0vPTrigsPOvkBADXQlKw-o
+      key: !secret youtube_data_api_key
+    headers:
+      Accept: application/json
+    sensor:
+      - name: "Nighttime Sleep YouTube Playlist"
+        unique_id: youtube_paylist.nightime_sleep
+        value_template: "{{ value_json.pageInfo.totalResults if value_json is defined else 0 }}"
+        json_attributes:
+          - items
+
+  - resource: https://www.googleapis.com/youtube/v3/playlistItems
+    method: GET
+    scan_interval: 1800
+    params:
+      part: snippet
+      maxResults: 50
+      playlistId: PLlUsJxfdNKg3ulS-KtNQh1EYLsiy8XcHl
+      key: !secret youtube_data_api_key
+    headers:
+      Accept: application/json
+    sensor:
+      - name: "Energized YouTube Playlist"
+        unique_id: youtube_paylist.energized
+        value_template: "{{ value_json.pageInfo.totalResults if value_json is defined else 0 }}"
+        json_attributes:
+          - items

@@ -91,12 +91,6 @@
     direction: out
     interface: lan0
 
-- name: UFW limit SSH
-  community.general.ufw:
-    rule: limit
-    port: 22
-    interface_in: wan0
-
 - name: UFW allow HTTPS
   community.general.ufw:
     rule: allow

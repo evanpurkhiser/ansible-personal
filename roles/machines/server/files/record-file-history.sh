@@ -11,5 +11,4 @@ FILE_NAME="$(date +'%Y-%m-%d_%H-%M').txt"
 
 mkdir -p "${LOCATION}"
 
-fd . /mnt/documents | sort | gzip >"${LOCATION}/${FILE_NAME}"
-gzip "${LOCATION}/${FILE_NAME}"
+fd . /mnt/documents | sort | gzip >"${LOCATION}/${FILE_NAME}.gz"

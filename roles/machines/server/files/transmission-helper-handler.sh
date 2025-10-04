@@ -7,7 +7,7 @@ read -r torrent_hash
 
 echo "Processing torrent hash: ${torrent_hash}"
 
-/usr/bin/podman run --rm \
+exec /usr/bin/podman run --rm \
   --network=host \
   --uidmap 0:$(id -u evan):1 \
   --gidmap 0:$(id -g evan):1 \

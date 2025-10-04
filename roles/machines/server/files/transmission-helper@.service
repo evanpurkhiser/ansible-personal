@@ -3,6 +3,17 @@ Description=Transmission Helper for torrent completion
 
 [Service]
 Type=oneshot
+
+# Torrent hash comes from the socket
 StandardInput=socket
+
+# Force logs to journald so we never write back to the socket (prevents SIGPIPE)
+StandardOutput=journal
+StandardError=journal
+
+# Give the transmission-helper a while to execute
+TimeoutStopSec=360s
+KillMode=control-group
+
 EnvironmentFile=/etc/transmission-helper.conf
 ExecStart=/usr/local/bin/transmission-helper-handler.sh

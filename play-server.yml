@@ -8,5 +8,5 @@
 # - Serve a small public-share directory
 
 - name: Server
-  hosts: server.home.evanpurkhiser.com
+  hosts: server
   roles: [machines/server]

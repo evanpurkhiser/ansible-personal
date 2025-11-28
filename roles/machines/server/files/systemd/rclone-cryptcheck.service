@@ -13,9 +13,9 @@ ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   --stats 0 \
   --fast-list \
   --one-way \
+  --exclude-if-present .nobackup \
   --filter '- ._*' \
   --filter '- .DS_Store' \
-  --filter '- /multimedia/videos/**' \
   --filter '+ /archived/**' \
   --filter '+ /multimedia/**' \
   --filter '+ /downloads/torrents-seeding/what.cd/**' \

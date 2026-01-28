@@ -76,8 +76,8 @@
   tags: [hardware]
 
 - name: Import pam-ssh-agent-auth tasks
-  ansible.builtin.import_tasks: pam-ssh-agent-auth.yml
-  tags: [pam-ssh-agent-auth]
+  ansible.builtin.import_tasks: pam-ssh-agent.yml
+  tags: [pam-ssh-agent]
 
 # Services
 - name: Import nfs tasks

@@ -1,8 +1,8 @@
-- name: Install pam_ssh_agent_auth
+- name: Install pam-ssh-agent
   become: true
   become_user: aur-builder
   kewlfft.aur.aur:
-    name: pam_ssh_agent_auth
+    name: pam-ssh-agent
 
 - name: Configure pam.d/sudo
   ansible.builtin.copy:

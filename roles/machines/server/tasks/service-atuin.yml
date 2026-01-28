@@ -19,6 +19,7 @@
     infra_name: atuin-infra
     ports:
       - 7070:8888
+      - 7071:8000
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always
@@ -62,8 +63,26 @@
       restart_policy: always
       new: true
 
+- name: Ensure atuin-abacus container
+  containers.podman.podman_container:
+    name: atuin-abacus
+    image: ghcr.io/evanpurkhiser/atuin-abacus:latest
+    state: present
+    pod: atuin
+    env:
+      DATABASE_URL: "postgresql://atuin:atuin@localhost:5432/atuin"
+      PORT: 8000
+      CACHE_TTL_SECONDS: "300"
+    label:
+      io.containers.autoupdate: registry
+    generate_systemd:
+      after: pod-atuin
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+
 - name: Ensure atuin containers are running
-  with_items: [atuin-postgres, atuin-server]
+  with_items: [atuin-postgres, atuin-server, atuin-abacus]
   ansible.builtin.systemd:
     name: container-{{ item }}
     state: started

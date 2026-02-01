@@ -119,6 +119,13 @@ fi
 		op item get 'wddknbssdbdpbilpy25olziegm' --reveal --field='Purkhiser Bot'
 	)"\'
 
+	# Auto System Update
+	echo auto_system_update:
+
+	echo '  openai_api_key:' \'"$(
+		op item get 'fc4edctkopi57hlm476o6r46oq' --reveal --field='Auto System Update API Key'
+	)"\'
+
 	# Home assistant
 	echo home_assistant:
 

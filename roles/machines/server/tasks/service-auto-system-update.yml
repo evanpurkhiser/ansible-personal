@@ -1,0 +1,26 @@
+- name: Install auto-system-update config
+  ansible.builtin.copy:
+    dest: /etc/auto-system-update.conf
+    mode: "0600"
+    content: |
+      OPENAI_API_KEY={{ auto_system_update.openai_api_key }}
+
+- name: Install auto-system-update.sh script
+  ansible.builtin.copy:
+    src: auto-system-update.sh
+    dest: /usr/local/bin/
+    mode: "0755"
+
+- name: Install auto-system-update timer and service
+  ansible.builtin.copy:
+    src: systemd/auto-system-update.{{ item }}
+    dest: /etc/systemd/system/
+    mode: "0644"
+  with_items: [timer, service]
+  notify: Systemd daemon-reload
+
+- name: Enable auto-system-update timer service
+  ansible.builtin.service:
+    name: auto-system-update.timer
+    enabled: true
+    state: started

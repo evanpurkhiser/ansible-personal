@@ -148,6 +148,10 @@
   ansible.builtin.import_tasks: service-speedtest-monitor.yml
   tags: [speedtest-monitor]
 
+- name: Import auto-system-update tasks
+  ansible.builtin.import_tasks: service-auto-system-update.yml
+  tags: [auto-system-update]
+
 - name: Import bambulab-lights-off tasks
   ansible.builtin.import_tasks: service-bambulab-lights-off.yml
   tags: [bambulab-lights-off]

@@ -8,7 +8,7 @@ Type=oneshot
 TimeoutStartSec=600s
 EnvironmentFile=/etc/auto-system-update.conf
 ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
-  /usr/bin/sh -c "/usr/local/bin/auto-system-update.sh | /usr/local/bin/purkhiser-bot.sh"
+  /usr/local/bin/auto-system-update.sh
 
 # Report runs to sentry monitors
 Environment=SENTRY_MONITOR_SLUG=auto-system-update

@@ -4,7 +4,13 @@ set -euo pipefail
 
 source /etc/auto-system-update.conf
 
+# Output to stderr so it bypasses sentry-cli and goes to systemd journal
+exec 1>&2
+
 update_output=$(sudo -u aur-builder yay -Syu --noconfirm 2>&1 || true)
+
+# Output full update logs (now goes to stderr/journal)
+echo "${update_output}"
 
 system_prompt="You are analyzing the output of an Arch Linux system update performed with 'yay -Syu --noconfirm'. Your task is to:
 1. Summarize what packages were updated
@@ -29,8 +35,13 @@ ai_summary=$(curl -s https://api.openai.com/v1/chat/completions \
         {"role": "user", "content": $user_content}
       ],
       "temperature": 0.3
-    }')" | jq -r '.choices[0].message.content')
+    }')" 2>/dev/null | jq -r '.choices[0].message.content')
 
-echo "*🔄 System Update Report*"
-echo ""
-echo "${ai_summary}"
+# Send telegram notification with AI summary and invocation ID
+/usr/local/bin/purkhiser-bot.sh <<EOF
+*🔄 System Update Report*
+
+${ai_summary}
+
+Invocation \`${INVOCATION_ID}\`
+EOF

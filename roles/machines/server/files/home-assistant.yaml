@@ -42,7 +42,24 @@ rest_command:
       vdmauthtoken: !secret virtual_doorman_token
       user-agent: VirtualDoorman/2.5 (com.vdm.welcomeapp; build:10; iOS 17.4.1) Alamofire/5.8.0
 
+media_source:
+
 rest:
+  - resource: https://dev.lunchmoney.app/v1/transactions
+    method: GET
+    scan_interval: 300
+    params:
+      status: "uncleared"
+    headers:
+      Authorization: !secret lunchmoney_token
+      Content-Type: application/json
+    sensor:
+      - name: "Lunch Money Unreviewed Transactions"
+        unique_id: lunchmoney_unreviewed_transactions
+        value_template: "{{ value_json.transactions | length if value_json.transactions is defined else 0 }}"
+        json_attributes:
+          - transactions
+
   - resource: https://www.googleapis.com/youtube/v3/playlistItems
     method: GET
     scan_interval: 1800

@@ -138,6 +138,9 @@ fi
 	echo '  youtube_data_api_key:' \'"$(
 		op item get 'ss4qbfjbpbep7ph5prrdxxmena' --reveal --field='YouTube Data API Key'
 	)"\'
+	echo '  lunchmoney_token:' \'"$(
+		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --reveal --field='Home Assistant API Key'
+	)"\'
 
 	# Backup solution encryption and access token
 	echo rclone:

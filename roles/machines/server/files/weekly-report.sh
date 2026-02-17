@@ -22,9 +22,6 @@ temp_mem="$(sensors jc42-i2c-1-1a -j | jq '."jc42-i2c-1-1a".temp1.temp1_input | 
 temp_ssd="$(sensors nvme-pci-0500 -j | jq '."nvme-pci-0500".Composite.temp1_input | (. * 10 | round / 10)')"
 echo "❄️ *cpu:* ${temp_cpu}° / *mem:* ${temp_mem}° / *ssd:* ${temp_ssd}"
 
-# Outdated packages
-echo "📦 *$(pacman -Qu | wc -l)* outdated packages"
-
 # Disk usages
 function usage() {
   df $1 -h --output=used,avail,pcent | tail -n +2 | awk '{printf "*used:* %s / *avail:* %s (%s)", $1,$2,$3}'

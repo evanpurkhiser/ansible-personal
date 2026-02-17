@@ -2,7 +2,7 @@
 Description=Weekly automatic system update
 
 [Timer]
-OnCalendar=Sun *-*-* 10:00:00
+OnCalendar=Sat *-*-* 09:00:00
 Persistent=true
 
 [Install]

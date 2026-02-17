@@ -50,6 +50,47 @@ else
   echo "🌊 \[zpool] ${zpool_status}"
 fi
 
+# ZFS snapshots
+latest_snapshot_ts=$(zfs list -t snapshot -r documents -o creation -H -p -s creation | tail -1)
+age_hours=$(( ($(date +%s) - latest_snapshot_ts) / 3600 ))
+if [ $age_hours -lt 24 ]; then
+  snapshot_age="${age_hours} hours ago"
+else
+  age_days=$(( age_hours / 24 ))
+  snapshot_age="${age_days} days ago"
+fi
+
+# Get the size difference between last two snapshots
+snapshot_sizes=$(zfs list -t snapshot -r documents -o used -H -p -s creation | tail -2)
+if [ $(echo "$snapshot_sizes" | wc -l) -eq 2 ]; then
+  prev_size=$(echo "$snapshot_sizes" | head -1)
+  curr_size=$(echo "$snapshot_sizes" | tail -1)
+  size_diff=$((curr_size - prev_size))
+
+  # Convert to human readable
+  if [ $size_diff -lt 0 ]; then
+    abs_diff=$((-size_diff))
+    sign="-"
+  else
+    abs_diff=$size_diff
+    sign="+"
+  fi
+
+  if [ $abs_diff -ge 1099511627776 ]; then
+    size_human=$(awk "BEGIN {printf \"%.1f TB\", $abs_diff/1099511627776}")
+  elif [ $abs_diff -ge 1073741824 ]; then
+    size_human=$(awk "BEGIN {printf \"%.1f GB\", $abs_diff/1073741824}")
+  elif [ $abs_diff -ge 1048576 ]; then
+    size_human=$(awk "BEGIN {printf \"%.1f MB\", $abs_diff/1048576}")
+  else
+    size_human=$(awk "BEGIN {printf \"%.1f KB\", $abs_diff/1024}")
+  fi
+
+  echo "📸 \[zrepl] Last snapshot ${snapshot_age} (${sign}${size_human})"
+else
+  echo "📸 \[zrepl] Last snapshot ${snapshot_age}"
+fi
+
 # Systemd service status
 services="$(systemctl list-units --type=service --output=json |
   jq '{

@@ -1,0 +1,23 @@
+global:
+  logging:
+    - type: syslog
+      level: info
+      format: human
+
+jobs:
+  # Snapshot job: daily snapshots with 14 days retention
+  - name: documents_snapshots
+    type: snap
+    filesystems:
+      "documents": true
+    snapshotting:
+      type: periodic
+      prefix: zrepl_
+      interval: 1d
+      hooks: []
+    pruning:
+      keep:
+        # Local retention: 14 days of daily snapshots
+        - type: grid
+          grid: 1x1d(keep=all) | 13x1d
+          regex: "^zrepl_.*"

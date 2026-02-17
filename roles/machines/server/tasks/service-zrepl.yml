@@ -1,0 +1,24 @@
+- name: Install zrepl from AUR
+  become: true
+  become_user: aur-builder
+  kewlfft.aur.aur:
+    name: zrepl
+
+- name: Ensure zrepl configuration directory
+  ansible.builtin.file:
+    path: /etc/zrepl
+    state: directory
+    mode: "0755"
+
+- name: Install zrepl configuration
+  ansible.builtin.copy:
+    src: zrepl.yml
+    dest: /etc/zrepl/zrepl.yml
+    mode: "0644"
+  notify: Restart zrepl
+
+- name: Enable and start zrepl service
+  ansible.builtin.service:
+    name: zrepl.service
+    state: started
+    enabled: true

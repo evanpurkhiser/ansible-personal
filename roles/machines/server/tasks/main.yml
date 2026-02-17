@@ -132,6 +132,10 @@
   ansible.builtin.import_tasks: service-rclone.yml
   tags: [rclone]
 
+- name: Import zrepl tasks
+  ansible.builtin.import_tasks: service-zrepl.yml
+  tags: [zrepl]
+
 - name: Import record-file-history tasks
   ansible.builtin.import_tasks: service-record-file-history.yml
   tags: [record-file-history]

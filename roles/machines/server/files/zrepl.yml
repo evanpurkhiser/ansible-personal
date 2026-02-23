@@ -13,9 +13,10 @@ jobs:
     filesystems:
       "documents": true
     snapshotting:
-      type: periodic
+      type: cron
       prefix: zrepl_
-      interval: 1h
+      cron: "0 * * * *"  # On the hour, every hour
+      timestamp_format: human
     pruning:
       keep_sender:
         # Never prune a snapshot before it has been replicated offsite

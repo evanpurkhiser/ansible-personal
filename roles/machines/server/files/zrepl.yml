@@ -5,19 +5,35 @@ global:
       format: human
 
 jobs:
-  # Snapshot job: daily snapshots with 14 days retention
-  - name: documents_snapshots
-    type: snap
+  - name: push_documents_offsite
+    type: push
+    connect:
+      type: tcp
+      address: "100.85.21.38:29491"
     filesystems:
       "documents": true
     snapshotting:
       type: periodic
       prefix: zrepl_
-      interval: 1d
-      hooks: []
+      interval: 1h
     pruning:
-      keep:
-        # Local retention: 14 days of daily snapshots
+      keep_sender:
+        # Never prune a snapshot before it has been replicated offsite
+        - type: not_replicated
+        # Keep all hourlies for 1 day, then 1 per day for 13 more days (2 weeks total)
         - type: grid
           grid: 1x1d(keep=all) | 13x1d
+          regex: "^zrepl_.*"
+        # Never touch snapshots we didn't create (e.g. @initial, @synced)
+        - type: regex
+          negate: true
+          regex: "^zrepl_.*"
+      keep_receiver:
+        # 2 weeks daily, 8 weeks weekly, 6 months monthly
+        - type: grid
+          grid: 14x1d | 8x1w | 6x30d
+          regex: "^zrepl_.*"
+        # Never touch snapshots we didn't create (e.g. @initial, @synced)
+        - type: regex
+          negate: true
           regex: "^zrepl_.*"

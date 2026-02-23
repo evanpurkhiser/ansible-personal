@@ -1,7 +1,7 @@
 - name: Add Purkhiser Bot token as conf
   ansible.builtin.copy:
     dest: /etc/purkhiser-bot.conf
-    mode: "0600"
+    mode: "0666"
     content: |
       TELEGRAM_TOKEN={{ purkhiser_bot_token }}
       TELEGRAM_CHANNEL=-722956237
@@ -10,4 +10,4 @@
   ansible.builtin.copy:
     src: purkhiser-bot.sh
     dest: /usr/local/bin/
-    mode: "0755"
+    mode: "0777"

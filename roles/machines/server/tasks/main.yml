@@ -43,7 +43,6 @@
       # Services
       - nginx
       - dnsmasq
-      - rclone
       - rsync
       - transmission-cli
       - sentry-cli
@@ -127,10 +126,6 @@
 - name: Import podman-auto-update tasks
   tags: [podman-auto-update]
   ansible.builtin.import_tasks: service-podman-auto-update.yml
-
-- name: Import rclone tasks
-  ansible.builtin.import_tasks: service-rclone.yml
-  tags: [rclone]
 
 - name: Import zrepl tasks
   ansible.builtin.import_tasks: service-zrepl.yml

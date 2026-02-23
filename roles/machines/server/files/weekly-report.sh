@@ -113,13 +113,3 @@ podman_ps="$(podman ps --format=json | jq -r '.[] | "\(.Names[0])\t\(.Status)"' 
 echo -ne '```containers\n'"${podman_ps}" '```\n'
 echo ""
 
-# rclone sync last run
-rclone_last_invocation="$(journalctl -u rclone-sync --output=json -r -n 1 | jq -r .INVOCATION_ID)"
-rclone_last_ts="$(
-  journalctl INVOCATION_ID=$rclone_last_invocation --output=json -n 1 |
-    jq -r .__REALTIME_TIMESTAMP |
-    while read ts; do date -d "@$((ts / 1000000))" +"%Y-%m-%d %H:%M:%S"; done
-)"
-rclone_last_run="$(journalctl INVOCATION_ID=$rclone_last_invocation --output=json | jq -r .MESSAGE)"
-echo "🔄 *rclone last run* ($rclone_last_ts)"
-echo -ne '```journalctl\n'"${rclone_last_run}" '```\n'

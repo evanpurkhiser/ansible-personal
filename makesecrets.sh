@@ -142,19 +142,4 @@ fi
 		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --reveal --field='Home Assistant API Key'
 	)"\'
 
-	# Backup solution encryption and access token
-	echo rclone:
-
-	echo '  backup_key:' \'"$(
-		op item get 'rzki4bpthbcx3dvunjvect545e' --reveal --field='password'
-	)"\'
-
-	echo '  backup_salt:' \'"$(
-		op item get 'rzki4bpthbcx3dvunjvect545e' --reveal --field='salt'
-	)"\'
-
-	echo "  gdrive_service_account: |\n$(
-		op document get 'u4l25th5yzagzla7jntqvgqshi' | sed 's/\\n/\\\\n/g;s/^/    /'
-	)"
-
 ) >"$(dirname "$0")/vars/secrets.yml"

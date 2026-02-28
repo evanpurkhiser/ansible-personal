@@ -49,9 +49,6 @@
       - tailscale
       - podman
 
-      # Required for encrypting the transmission basic auth password
-      - python-passlib
-
       # Required for triggering systemd sockets (transmission-helper)
       - socat
 

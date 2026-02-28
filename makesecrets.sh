@@ -37,11 +37,6 @@ fi
 	# nginx config
 	echo nginx:
 
-	# Transmission RPC API HTTP password
-	echo '  transmission_rpc_password:' \'"$(
-		op item get 'er47ejg7jjcgxh3ztyvzlsrlzy' --reveal --field='password'
-	)"\'
-
 	echo "  cloudflare_cert: |\n$(
 		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='Origin Certificate' | tr -d '"' | sed 's/\\n/\\\\n/g;s/^/    /'
 	)"

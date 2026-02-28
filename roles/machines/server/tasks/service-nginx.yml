@@ -11,14 +11,6 @@
     state: started
     enabled: true
 
-- name: Encrypt transmission proxy basic-auth password
-  community.general.htpasswd:
-    path: /etc/nginx/htpasswd_transmission
-    mode: "0600"
-    owner: http
-    name: evan
-    password: "{{ nginx.transmission_rpc_password }}"
-
 - name: Ensure Cloudflare origin cert
   ansible.builtin.copy:
     dest: /etc/ssl/cloudflare_origin.crt

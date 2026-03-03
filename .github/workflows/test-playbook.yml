@@ -110,6 +110,18 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
 
+      - name: Debug nginx if playbook failed
+        if: always()
+        run: |
+          echo "=== Nginx config test ==="
+          docker exec ansible-test-server nginx -t || true
+          echo ""
+          echo "=== Nginx service status ==="
+          docker exec ansible-test-server systemctl status nginx || true
+          echo ""
+          echo "=== Nginx logs ==="
+          docker exec ansible-test-server journalctl -xeu nginx.service --no-pager || true
+
       - name: Show container logs on failure
         if: failure()
         run: |

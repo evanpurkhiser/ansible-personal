@@ -3,4 +3,5 @@
     msg: "Network fully reconfigured. Intervention required."
 
 - name: Stopping
+  when: not (test_mode | default(false))
   ansible.builtin.meta: end_play

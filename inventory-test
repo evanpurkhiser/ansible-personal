@@ -1,0 +1,6 @@
+[server]
+server ansible_host=127.0.0.1 ansible_port=2222 ansible_user=root ansible_ssh_pass=root
+
+[server:vars]
+# Tell Ansible this is a test environment
+test_mode=true

@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  server:
+    image: archlinux:latest
+    container_name: ansible-test-server
+    hostname: server
+    privileged: true
+    # Required for systemd to work properly
+    stop_signal: SIGRTMIN+3
+
+    # Network configuration - two interfaces with your actual MAC addresses
+    networks:
+      lan:
+        # This will become lan0 via systemd-networkd
+        mac_address: d0:50:99:c2:9f:07
+      wan:
+        # This will become wan0 via systemd-networkd
+        mac_address: d0:50:99:c2:9f:08
+
+    volumes:
+      # Systemd needs these
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /sys/fs/fuse:/sys/fs/fuse:rw
+      - /lib/modules:/lib/modules:ro
+
+      # For ZFS support - mount host's zfs if available
+      - /dev:/dev:rw
+
+      # Mount the ansible playbook for easy access
+      - .:/ansible:ro
+
+      # Persistent storage for testing (simulates your actual disk)
+      - server-data:/var/lib
+      - server-zpool:/zpool-backing
+
+    tmpfs:
+      # Systemd requires these tmpfs mounts
+      - /run
+      - /run/lock
+      - /tmp
+
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
+      - SYS_MODULE
+      - SYS_RAWIO
+
+    # Keep container running with systemd as init
+    command: /usr/sbin/init
+
+    # Expose ports for services (optional, for testing access)
+    ports:
+      - "2222:22"    # SSH
+      - "8443:443"   # HTTPS (nginx)
+      - "8123:8123"  # Home Assistant
+
+networks:
+  # LAN network - simulates your 10.0.0.0/24 network
+  lan:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
+          gateway: 10.0.0.1
+
+  # WAN network - simulates external connectivity
+  wan:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
+
+volumes:
+  # Persistent storage for the test server
+  server-data:
+  server-zpool:

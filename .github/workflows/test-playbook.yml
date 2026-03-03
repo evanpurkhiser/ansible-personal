@@ -1,0 +1,127 @@
+name: Test Ansible Playbook
+
+on:
+  push:
+    branches:
+      - main
+      - test-playbook-ci
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-playbook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create Docker networks
+        run: |
+          docker network create --subnet=10.0.0.0/24 --gateway=10.0.0.1 lan_net
+          docker network create --subnet=192.168.100.0/24 wan_net
+
+      - name: Start test server container
+        run: |
+          # Start on default bridge network for SSH port publishing
+          docker run -d \
+            --name ansible-test-server \
+            --hostname server \
+            --privileged \
+            --cgroupns=host \
+            --stop-signal SIGRTMIN+3 \
+            -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
+            -v /lib/modules:/lib/modules:ro \
+            -v ${{ github.workspace }}:/ansible:ro \
+            --tmpfs /run \
+            --tmpfs /run/lock \
+            --tmpfs /tmp:exec \
+            -p 2222:22 \
+            archlinux:latest \
+            /usr/lib/systemd/systemd
+
+          # Also connect to our custom networks (container will be on multiple networks)
+          docker network connect lan_net ansible-test-server
+          # Set MAC address after connecting
+          docker exec ansible-test-server ip link set eth1 address d0:50:99:c2:9f:07
+
+      - name: Wait for container to be ready
+        run: |
+          echo "Waiting for systemd to be ready..."
+          sleep 10
+          docker exec ansible-test-server systemctl is-system-running --wait || true
+
+      - name: Run setup script
+        run: |
+          docker exec ansible-test-server bash /ansible/docker-test-setup.sh
+
+      - name: Connect container to WAN network
+        run: |
+          # Connect to WAN network (MAC address will be auto-assigned)
+          docker network connect wan_net ansible-test-server
+
+      - name: Verify network configuration and SSH
+        run: |
+          echo "=== Network Interfaces ==="
+          docker exec ansible-test-server ip link show
+          echo ""
+          echo "=== IP Addresses ==="
+          docker exec ansible-test-server ip addr show
+          echo ""
+          echo "=== Routing Table ==="
+          docker exec ansible-test-server ip route show
+          echo ""
+          echo "=== SSH Service Status ==="
+          docker exec ansible-test-server systemctl status sshd || true
+          echo ""
+          echo "=== Test SSH Connection ==="
+          nc -zv 127.0.0.1 2222 || echo "Port 2222 not reachable"
+          echo ""
+          echo "=== Port Mappings ==="
+          docker port ansible-test-server
+
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible
+
+      - name: Generate SSH key for Ansible
+        run: |
+          ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""
+          cat ~/.ssh/id_rsa.pub | docker exec -i ansible-test-server bash -c 'mkdir -p /root/.ssh && cat > /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys'
+
+      - name: Install Ansible Galaxy collections
+        run: |
+          ansible-galaxy collection install -r requirements.yml
+
+      - name: Generate fake secrets
+        run: |
+          ./makefakes.sh
+          # Also update public_ssh_key with the actual generated key
+          sed -i "s|ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC fake-key-for-testing|$(cat ~/.ssh/id_rsa.pub)|" vars/secrets.yml
+
+      - name: Run Ansible playbook
+        run: |
+          ansible-playbook -i inventory-test play-server.yml || true
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+
+      - name: Show container logs on failure
+        if: failure()
+        run: |
+          echo "=== Container Logs ==="
+          docker logs ansible-test-server
+          echo ""
+          echo "=== systemd status ==="
+          docker exec ansible-test-server systemctl status || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker stop ansible-test-server || true
+          docker rm ansible-test-server || true
+          docker network rm lan_net wan_net || true

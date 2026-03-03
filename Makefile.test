@@ -1,0 +1,84 @@
+.PHONY: help up setup down clean test-playbook ssh logs check-zfs
+
+help: ## Show this help message
+	@echo "Docker Test Environment for ansible-personal"
+	@echo ""
+	@echo "Usage: make -f Makefile.test [target]"
+	@echo ""
+	@echo "Targets:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
+
+up: ## Start the test server container
+	@echo "Starting test server container..."
+	docker-compose -f docker-compose.test.yml up -d
+	@echo ""
+	@echo "Waiting for container to be ready..."
+	@sleep 5
+	@echo ""
+	@echo "Container started! Run 'make -f Makefile.test setup' to initialize it."
+
+setup: ## Initialize the container (run setup script)
+	@echo "Running setup script inside container..."
+	docker exec -it ansible-test-server bash /ansible/docker-test-setup.sh
+	@echo ""
+	@echo "Setup complete!"
+	@echo ""
+	@echo "Next step: make -f Makefile.test copy-ssh-key"
+
+copy-ssh-key: ## Copy your SSH key to the container (for ansible)
+	@echo "Copying SSH public key to container..."
+	@if [ ! -f ~/.ssh/id_rsa.pub ]; then \
+		echo "Error: ~/.ssh/id_rsa.pub not found"; \
+		echo "Please specify your public key location"; \
+		exit 1; \
+	fi
+	@cat ~/.ssh/id_rsa.pub | docker exec -i ansible-test-server bash -c 'mkdir -p /root/.ssh && cat > /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys'
+	@echo "SSH key copied!"
+	@echo ""
+	@echo "You can now run the playbook: make -f Makefile.test test-playbook"
+
+test-playbook: ## Run the ansible playbook against the test container
+	@echo "Running ansible playbook against test server..."
+	@echo ""
+	@echo "Note: This will use your actual playbook but with test inventory"
+	@echo "The playbook will likely pause for 'network intervention' - that's expected!"
+	@echo ""
+	ansible-playbook -i inventory-test play-server.yml
+
+check-zfs: ## Check ZFS pool status in container
+	@echo "Checking ZFS pool status..."
+	docker exec -it ansible-test-server zpool status documents || echo "ZFS pool not available"
+
+ssh: ## SSH into the container
+	@echo "Connecting via SSH (password: root)..."
+	ssh -p 2222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@localhost
+
+ssh-exec: ## Execute commands directly in container
+	docker exec -it ansible-test-server bash
+
+logs: ## Show container logs
+	docker-compose -f docker-compose.test.yml logs -f server
+
+inspect: ## Inspect the container's network configuration
+	@echo "=== Network Interfaces ==="
+	@docker exec ansible-test-server ip link show
+	@echo ""
+	@echo "=== IP Addresses ==="
+	@docker exec ansible-test-server ip addr show
+	@echo ""
+	@echo "=== Routes ==="
+	@docker exec ansible-test-server ip route show
+
+down: ## Stop the test server container
+	docker-compose -f docker-compose.test.yml down
+
+clean: ## Stop and remove all test data (including volumes)
+	docker-compose -f docker-compose.test.yml down -v
+	@echo "All test data removed"
+
+rebuild: clean up setup ## Rebuild everything from scratch
+
+# Quick start command
+quickstart: up setup copy-ssh-key ## Quick start: up + setup + copy-ssh-key
+	@echo ""
+	@echo "Environment ready! Run 'make -f Makefile.test test-playbook' to test the playbook"

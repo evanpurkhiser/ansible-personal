@@ -14,6 +14,7 @@
   ansible.builtin.import_role: { name: aur }
 
 - name: Import ZFS
+  when: not (test_mode | default(false))
   tags: [zfs]
   ansible.builtin.import_role: { name: zfs }
 

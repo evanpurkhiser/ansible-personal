@@ -22,8 +22,8 @@ jobs:
 
       - name: Create Docker networks
         run: |
-          docker network create --subnet=10.0.0.0/24 --gateway=10.0.0.1 lan_net
-          docker network create --subnet=192.168.100.0/24 wan_net
+          docker network create --ipv6 --subnet=10.0.0.0/24 --gateway=10.0.0.1 lan_net
+          docker network create --ipv6 --subnet=192.168.100.0/24 wan_net
 
       - name: Start test server container
         run: |

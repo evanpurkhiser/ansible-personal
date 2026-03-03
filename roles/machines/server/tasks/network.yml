@@ -70,35 +70,41 @@
 
 # Configure firewall
 - name: Ensure ufw is enabled
+  when: not (test_mode | default(false))
   ansible.builtin.service:
     name: ufw
     state: started
     enabled: true
 
 - name: UFW deny everything by default
+  when: not (test_mode | default(false))
   community.general.ufw:
     state: enabled
     policy: deny
 
 - name: UFW allow local networking (in)
+  when: not (test_mode | default(false))
   community.general.ufw:
     rule: allow
     direction: in
     interface: lan0
 
 - name: UFW allow local networking (out)
+  when: not (test_mode | default(false))
   community.general.ufw:
     rule: allow
     direction: out
     interface: lan0
 
 - name: UFW allow HTTPS
+  when: not (test_mode | default(false))
   community.general.ufw:
     rule: allow
     port: 443
     interface_in: wan0
 
 - name: UFW allow transmission
+  when: not (test_mode | default(false))
   community.general.ufw:
     rule: allow
     port: 51413

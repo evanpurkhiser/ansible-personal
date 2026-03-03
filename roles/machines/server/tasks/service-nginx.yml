@@ -6,6 +6,7 @@
   notify: Reload nginx
 
 - name: Enable nginx server
+  when: not (test_mode | default(false))
   ansible.builtin.service:
     name: nginx
     state: started

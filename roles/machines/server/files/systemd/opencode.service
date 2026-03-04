@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenCode server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=evan
+ExecStart=/usr/bin/opencode serve --hostname 0.0.0.0 --port 9995
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

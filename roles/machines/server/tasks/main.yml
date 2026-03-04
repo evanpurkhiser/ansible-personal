@@ -151,3 +151,7 @@
 - name: Import bambulab-lights-off tasks
   ansible.builtin.import_tasks: service-bambulab-lights-off.yml
   tags: [bambulab-lights-off]
+
+- name: Import opencode tasks
+  ansible.builtin.import_tasks: service-opencode.yml
+  tags: [opencode]

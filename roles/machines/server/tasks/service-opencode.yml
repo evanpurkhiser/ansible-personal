@@ -5,6 +5,37 @@
   become: true
   become_user: aur-builder
 
+- name: Install opencode-ssh-agent-proxy script
+  ansible.builtin.copy:
+    src: opencode-ssh-agent-proxy
+    dest: /usr/local/bin/opencode-ssh-agent-proxy
+    mode: "0755"
+
+- name: Install opencode-ssh-agent-proxy systemd units
+  ansible.builtin.copy:
+    src: "systemd/{{ item }}"
+    dest: /etc/systemd/system/
+    mode: "0644"
+  loop:
+    - opencode-ssh-agent-proxy.socket
+    - opencode-ssh-agent-proxy@.service
+  notify: Systemd daemon-reload
+
+- name: Install opencode-ssh-agent-proxy SSH key
+  ansible.builtin.copy:
+    content: "{{ secrets.opencode_ssh_agent_proxy_key }}"
+    dest: /etc/opencode-ssh-agent-proxy-key
+    mode: "0600"
+    owner: root
+    group: root
+
+- name: Enable opencode-ssh-agent-proxy socket
+  ansible.builtin.service:
+    name: opencode-ssh-agent-proxy.socket
+    state: started
+    enabled: true
+    daemon_reload: true
+
 - name: Install opencode systemd service
   ansible.builtin.copy:
     src: systemd/opencode.service

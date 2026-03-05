@@ -1,0 +1,13 @@
+[Unit]
+Description=SSH agent proxy socket (forwards to 1Password on MacBook)
+
+[Socket]
+ListenStream=/run/opencode-ssh-agent-proxy.sock
+SocketMode=0660
+SocketUser=root
+SocketGroup=users
+Accept=yes
+RemoveOnStop=yes
+
+[Install]
+WantedBy=sockets.target

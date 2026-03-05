@@ -9,3 +9,12 @@
     create: true
     mode: "0644"
     validate: "visudo -cf %s"
+
+- name: Configure sudo for SSH agent auth
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/10-ssh-agent
+    content: |
+      Defaults !requiretty
+      Defaults env_keep += "SSH_AUTH_SOCK"
+    mode: "0644"
+    validate: "visudo -cf %s"

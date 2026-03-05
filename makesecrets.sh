@@ -104,6 +104,11 @@ fi
 		op item get 'rkrwve7w33m5x7xo7bhk3ppd4y' --reveal --field='Printer Access Code'
 	)"\'
 
+	# opencode SSH agent proxy key
+	echo opencode_ssh_agent_proxy_key: \'"$(
+		op item get 'c2indiikwssnyfxsdsy7w6ac44' --reveal --field='private key'
+	)"\'
+
 	# Transmission Helper
 	echo transmission_helper:
 

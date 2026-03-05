@@ -1,0 +1,63 @@
+#!/bin/bash
+# Finds the most-active online MacBook via Tailscale and proxies
+# a single SSH agent request through to its 1Password agent socket.
+# Intended to be run as a systemd service instance (Accept=yes),
+# with stdin/stdout connected to the client socket.
+
+set -euo pipefail
+
+AGENT_SOCK="/Users/evan/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+SSH_KEY="/etc/opencode-ssh-agent-proxy-key"
+SSH_USER="evan"
+
+# We need to proxy between the SSH stdio channel and the 1Password Unix agent
+# socket on the Mac. socat could do this (socat STDIO UNIX-CONNECT:...) but
+# it's not installed by default on macOS. Python 3 is, so we embed a small
+# proxy script as base64 and write it to /tmp at runtime — this also avoids
+# consuming stdin, which carries the agent socket data.
+PROXY_B64=$(base64 -w0 <<'PYEOF'
+import socket, sys, os, select
+
+sock_path = sys.argv[1]
+s = socket.socket(socket.AF_UNIX)
+s.connect(sock_path)
+
+stdin_fd = sys.stdin.buffer.fileno()
+stdout_fd = sys.stdout.buffer.fileno()
+sock_fd = s.fileno()
+
+while True:
+    r, _, _ = select.select([stdin_fd, sock_fd], [], [])
+    for fd in r:
+        d = os.read(fd, 4096)
+        if not d:
+            sys.exit(0)
+        os.write(stdout_fd if fd == sock_fd else sock_fd, d)
+PYEOF
+)
+
+# Find the most recently active MacBook on Tailscale. Sort by Active first,
+# then LastHandshake descending (most recent last, take last element).
+HOST=$(tailscale status --json | jq -r '
+  [.Peer[] | select(.DNSName | test("macbook-work|macbook-air"))]
+  | sort_by([
+      (if .Active then 1 else 0 end),
+      (if .LastHandshake == "0001-01-01T00:00:00Z" then "" else .LastHandshake end)
+    ])
+  | last
+  | .TailscaleIPs[0]
+')
+
+if [[ -z "$HOST" || "$HOST" == "null" ]]; then
+  echo "opencode-ssh-agent-proxy: no macbook online" >&2
+  exit 1
+fi
+
+exec ssh \
+  -i "$SSH_KEY" \
+  -l "$SSH_USER" \
+  -o StrictHostKeyChecking=accept-new \
+  -o ConnectTimeout=5 \
+  -o BatchMode=yes \
+  "$HOST" \
+  "echo '$PROXY_B64' | base64 -d > /tmp/opencode-agent-proxy.py && python3 /tmp/opencode-agent-proxy.py '$AGENT_SOCK'"

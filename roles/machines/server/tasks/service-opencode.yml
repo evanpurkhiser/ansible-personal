@@ -1,3 +1,10 @@
+- name: Install opencode
+  kewlfft.aur.aur:
+    name: opencode-bin
+    state: present
+  become: true
+  become_user: aur-builder
+
 - name: Install opencode systemd service
   ansible.builtin.copy:
     src: systemd/opencode.service

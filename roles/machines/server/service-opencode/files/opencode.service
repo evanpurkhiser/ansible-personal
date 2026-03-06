@@ -1,15 +1,14 @@
 [Unit]
 Description=OpenCode server
-After=network-online.target opencode-ssh-agent-proxy.socket
-Wants=network-online.target opencode-ssh-agent-proxy.socket
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
-User=evan
 Environment=SSH_AUTH_SOCK=/run/opencode-ssh-agent-proxy.sock
 ExecStart=/usr/bin/opencode serve --hostname 0.0.0.0 --port 9995
 Restart=on-failure
 RestartSec=5s
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

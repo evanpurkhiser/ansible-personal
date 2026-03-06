@@ -59,6 +59,11 @@
       - rust
 
 # System configuration
+- name: Enable linger for evan
+  ansible.builtin.command: loginctl enable-linger evan
+  args:
+    creates: /var/lib/systemd/linger/evan
+
 - name: Import sshd tasks
   ansible.builtin.import_tasks: sshd.yml
   tags: [sshd]

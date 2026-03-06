@@ -1,3 +1,9 @@
 - name: Systemd daemon-reload
   ansible.builtin.systemd:
     daemon_reload: true
+
+- name: Systemd user daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+    scope: user
+    machine: "evan@"

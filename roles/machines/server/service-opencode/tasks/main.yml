@@ -36,16 +36,17 @@
     enabled: true
     daemon_reload: true
 
-- name: Install opencode systemd service
+- name: Install opencode systemd user service
   ansible.builtin.copy:
     src: opencode.service
-    dest: /etc/systemd/system/
+    dest: /etc/systemd/user/opencode.service
     mode: "0644"
-  notify: Systemd daemon-reload
+  notify: Systemd user daemon-reload
 
-- name: Enable opencode service
-  ansible.builtin.service:
+- name: Enable opencode user service
+  ansible.builtin.systemd:
     name: opencode
     state: started
     enabled: true
-    daemon_reload: true
+    scope: user
+    machine: "evan@"

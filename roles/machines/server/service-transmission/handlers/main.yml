@@ -1,0 +1,4 @@
+- name: Reload transmission
+  ansible.builtin.service:
+    name: transmission
+    state: reloaded

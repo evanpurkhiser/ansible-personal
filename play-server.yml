@@ -9,4 +9,4 @@
 
 - name: Server
   hosts: server
-  roles: [machines/server]
+  roles: [machines/server/main]

@@ -1,0 +1,35 @@
+- name: Restart systemd-networkd
+  ansible.builtin.service:
+    name: systemd-networkd
+    state: restarted
+
+- name: Restart systemd-resolved
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: restarted
+
+- name: Restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+
+- name: Restart dnsmasq
+  ansible.builtin.service:
+    name: dnsmasq
+    state: restarted
+
+- name: Reload udev rules
+  ansible.builtin.service:
+    name: systemd-udev-trigger
+    state: restarted
+
+- name: Systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Sync pacman cache
+  community.general.pacman:
+    update_cache: true
+
+- name: Require network intervention
+  ansible.builtin.include_tasks: network-require-intervention.yml

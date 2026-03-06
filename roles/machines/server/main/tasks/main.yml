@@ -1,0 +1,161 @@
+- name: Import common
+  ansible.builtin.import_role: { name: common }
+
+- name: Import pacsync
+  ansible.builtin.import_role: { name: pacsync }
+
+- name: Import paccache
+  ansible.builtin.import_role: { name: paccache }
+
+- name: Import systemd-timesyncd
+  ansible.builtin.import_role: { name: systemd_timesyncd }
+
+- name: Import aur
+  ansible.builtin.import_role: { name: aur }
+
+- name: Import ZFS
+  tags: [zfs]
+  ansible.builtin.import_role: { name: zfs }
+
+- name: Install base packages
+  tags: [packages]
+  community.general.pacman:
+    name:
+      - man-db
+      - man-pages
+      - nfs-utils
+
+      # Common tools
+      - bash-completion
+      - speedtest-cli
+      - lsd
+      - fzf
+      - htop
+      - atuin
+      - tree
+      - fd
+      - ripgrep
+
+      # Other tools
+      - lm_sensors
+      - speedtest-cli
+
+      # Services
+      - nginx
+      - dnsmasq
+      - rsync
+      - transmission-cli
+      - sentry-cli
+      - tailscale
+      - podman
+
+      # Required for triggering systemd sockets (transmission-helper)
+      - socat
+
+      # Languages
+      - nodejs
+      - npm
+      - go
+      - rust
+
+# System configuration
+- name: Import sshd tasks
+  ansible.builtin.import_tasks: sshd.yml
+  tags: [sshd]
+
+- name: Import network tasks
+  ansible.builtin.import_tasks: network.yml
+  tags: [network]
+
+- name: Import hardware tasks
+  ansible.builtin.import_tasks: hardware.yml
+  tags: [hardware]
+
+- name: Import pam-ssh-agent-auth tasks
+  ansible.builtin.import_tasks: pam-ssh-agent.yml
+  tags: [pam-ssh-agent]
+
+# Services
+- name: Import nfs role
+  tags: [nfs]
+  ansible.builtin.import_role: { name: machines/server/service-nfs }
+
+- name: Import tailscale role
+  tags: [tailscale]
+  ansible.builtin.import_role: { name: machines/server/service-tailscale }
+
+- name: Import nginx role
+  tags: [nginx]
+  ansible.builtin.import_role: { name: machines/server/service-nginx }
+
+- name: Import transmission role
+  tags: [transmission]
+  ansible.builtin.import_role: { name: machines/server/service-transmission }
+
+- name: Import home-assistant role
+  tags: [hass]
+  ansible.builtin.import_role: { name: machines/server/service-hass }
+
+- name: Import waitress role
+  tags: [waitress]
+  ansible.builtin.import_role: { name: machines/server/service-waitress }
+
+- name: Import meal-log role
+  tags: [meal-log]
+  ansible.builtin.import_role: { name: machines/server/service-meal-log }
+
+- name: Import instagram-saver role
+  tags: [instagram-saver]
+  ansible.builtin.import_role: { name: machines/server/service-instagram-saver }
+
+- name: Import venmo-auto-cashout role
+  tags: [venmo-auto-cashout]
+  ansible.builtin.import_role: { name: machines/server/service-venmo-auto-cashout }
+
+- name: Import venmo-lunchmoney-ai role
+  tags: [venmo-lunchmoney-ai]
+  ansible.builtin.import_role: { name: machines/server/service-venmo-lunchmoney-ai }
+
+- name: Import atuin role
+  tags: [atuin]
+  ansible.builtin.import_role: { name: machines/server/service-atuin }
+
+- name: Import podman-auto-update role
+  tags: [podman-auto-update]
+  ansible.builtin.import_role: { name: machines/server/service-podman-auto-update }
+
+- name: Import zrepl role
+  tags: [zrepl]
+  ansible.builtin.import_role: { name: machines/server/service-zrepl }
+
+- name: Import record-file-history role
+  tags: [record-file-history]
+  ansible.builtin.import_role: { name: machines/server/service-record-file-history }
+
+- name: Import purkhiser-bot role
+  tags: [purkhiser-bot]
+  ansible.builtin.import_role: { name: machines/server/service-purkhiser-bot }
+
+- name: Import weekly-report role
+  tags: [weekly-report]
+  ansible.builtin.import_role: { name: machines/server/service-weekly-report }
+
+- name: Import speedtest-monitor role
+  tags: [speedtest-monitor]
+  ansible.builtin.import_role: { name: machines/server/service-speedtest-monitor }
+
+- name: Import auto-system-update role
+  tags: [auto-system-update]
+  ansible.builtin.import_role: { name: machines/server/service-auto-system-update }
+
+- name: Import bambulab-lights-off role
+  tags: [bambulab-lights-off]
+  ansible.builtin.import_role: { name: machines/server/service-bambulab-lights-off }
+
+- name: Import opencode role
+  tags: [opencode]
+  ansible.builtin.import_role: { name: machines/server/service-opencode }
+
+- name: Import clean-macfiles role
+  tags: [clean-macfiles]
+  ansible.builtin.import_role: { name: machines/server/service-clean-macfiles }

@@ -1,5 +1,4 @@
 - name: Ensure podman-auto-update.timer override directory
-  notify: Restart home-assistant
   ansible.builtin.file:
     path: /etc/systemd/system/podman-auto-update.timer.d
     state: directory

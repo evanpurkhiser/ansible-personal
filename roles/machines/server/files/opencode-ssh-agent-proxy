@@ -39,7 +39,7 @@ PYEOF
 # Find the most recently active MacBook on Tailscale. Sort by Active first,
 # then LastHandshake descending (most recent last, take last element).
 HOST=$(tailscale status --json | jq -r '
-  [.Peer[] | select(.DNSName | test("macbook-work|macbook-air"))]
+  [.Peer[] | select(.DNSName | test("macbook-work|macbook-air")) | select(.Online == true)]
   | sort_by([
       (if .Active then 1 else 0 end),
       (if .LastHandshake == "0001-01-01T00:00:00Z" then "" else .LastHandshake end)

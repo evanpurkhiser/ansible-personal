@@ -38,11 +38,11 @@ fi
 	echo nginx:
 
 	echo "  cloudflare_cert: |\n$(
-		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='Origin Certificate' | tr -d '"' | sed 's/\\n/\\\\n/g;s/^/    /'
+		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='Origin Certificate' --format json | jq -r .value | sed 's/\\n/\\\\n/g;s/^/    /'
 	)"
 
 	echo "  cloudflare_key: |\n$(
-		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='Origin Private Key' | tr -d '"' | sed 's/\\n/\\\\n/g;s/^/    /'
+		op item get 'z7qz2rxy6rb4xphfzmktsnauv4' --field='Origin Private Key' --format json | jq -r .value | sed 's/\\n/\\\\n/g;s/^/    /'
 	)"
 
 	# Venmo auto cashout
@@ -105,9 +105,9 @@ fi
 	)"\'
 
 	# opencode SSH agent proxy key
-	echo opencode_ssh_agent_proxy_key: \'"$(
-		op item get 'c2indiikwssnyfxsdsy7w6ac44' --reveal --field='private key'
-	)"\'
+	echo "opencode_ssh_agent_proxy_key: |\n$(
+		op item get 'c2indiikwssnyfxsdsy7w6ac44' --reveal --field='private key' --format json | jq -r .value | sed 's/\\n/\\\\n/g;s/^/    /'
+	)"
 
 	# Transmission Helper
 	echo transmission_helper:

@@ -1,7 +1,8 @@
 [Unit]
 Description=OpenCode server
-After=network-online.target
+After=network-online.target import-environment.service
 Wants=network-online.target
+Requires=import-environment.service
 
 [Service]
 Type=simple

@@ -36,6 +36,23 @@
     enabled: true
     daemon_reload: true
 
+- name: Install import-environment systemd user service
+  ansible.builtin.copy:
+    src: import-environment.service
+    dest: /etc/systemd/user/import-environment.service
+    mode: "0644"
+  notify: Systemd user daemon-reload
+
+- name: Enable import-environment user service
+  ansible.builtin.systemd:
+    name: import-environment
+    enabled: true
+    scope: user
+  become: true
+  become_user: evan
+  environment:
+    XDG_RUNTIME_DIR: /run/user/1000
+
 - name: Install opencode systemd user service
   ansible.builtin.copy:
     src: opencode.service
@@ -49,5 +66,7 @@
     state: started
     enabled: true
     scope: user
+  become: true
+  become_user: evan
   environment:
     XDG_RUNTIME_DIR: /run/user/1000

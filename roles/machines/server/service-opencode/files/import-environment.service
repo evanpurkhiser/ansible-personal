@@ -1,0 +1,11 @@
+[Unit]
+Description=Import login environment into systemd user session
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -l -c 'systemctl --user import-environment $(env | cut -d= -f1 | tr "\\n" " ")'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

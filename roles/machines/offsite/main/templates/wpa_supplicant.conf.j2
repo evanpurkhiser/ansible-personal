@@ -1,0 +1,7 @@
+{% for network in offsite_wifi_networks %}
+network={
+        ssid="{{ network.ssid }}"
+        psk={{ network.psk }}
+}
+
+{% endfor %}

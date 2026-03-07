@@ -1,0 +1,3 @@
+#!/bin/sh
+# Set fan to off on boot
+echo 0 > /sys/class/hwmon/hwmon2/pwm1

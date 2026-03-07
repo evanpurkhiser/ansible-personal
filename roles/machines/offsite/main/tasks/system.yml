@@ -1,0 +1,73 @@
+- name: Set hostname
+  ansible.builtin.copy:
+    content: "offsite\n"
+    dest: /etc/hostname
+    mode: "0644"
+
+- name: Ensure /etc/hosts
+  ansible.builtin.copy:
+    src: hosts
+    dest: /etc/hosts
+    mode: "0644"
+
+- name: Set timezone to Los Angeles
+  ansible.builtin.file:
+    src: /usr/share/zoneinfo/America/Los_Angeles
+    dest: /etc/localtime
+    state: link
+
+- name: Ensure kernel modules
+  ansible.builtin.copy:
+    content: |
+      af_packet
+      ipv6
+      drivetemp
+    dest: /etc/modules
+    mode: "0644"
+
+- name: Ensure fstab
+  ansible.builtin.copy:
+    src: fstab
+    dest: /etc/fstab
+    mode: "0644"
+
+- name: Ensure lbu configuration
+  ansible.builtin.copy:
+    src: lbu.conf
+    dest: /etc/lbu/lbu.conf
+    mode: "0644"
+
+- name: Ensure lbu protected paths list
+  ansible.builtin.copy:
+    src: apk/lbu.list
+    dest: /etc/apk/protected_paths.d/lbu.list
+    mode: "0644"
+
+# Runlevel services
+- name: Enable boot runlevel services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
+    runlevel: boot
+  loop:
+    - bootmisc
+    - hostname
+    - hwclock
+    - modules
+    - networking
+    - seedrng
+    - sysctl
+    - syslog
+    - wpa_supplicant
+
+- name: Enable default runlevel services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
+    runlevel: default
+  loop:
+    - acpid
+    - crond
+    - local
+    - ntpd
+    - sshd

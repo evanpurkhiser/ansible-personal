@@ -1,0 +1,17 @@
+- name: Ensure network interfaces configuration
+  ansible.builtin.copy:
+    src: network/interfaces
+    dest: /etc/network/interfaces
+    mode: "0644"
+
+- name: Ensure wpa_supplicant configuration
+  ansible.builtin.template:
+    src: wpa_supplicant.conf.j2
+    dest: /etc/wpa_supplicant/wpa_supplicant.conf
+    mode: "0600"
+
+- name: Ensure wpa_supplicant conf.d configuration
+  ansible.builtin.copy:
+    src: wpa_supplicant.conf.d
+    dest: /etc/conf.d/wpa_supplicant
+    mode: "0644"

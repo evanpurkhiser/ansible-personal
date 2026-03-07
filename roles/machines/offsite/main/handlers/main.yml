@@ -1,0 +1,6 @@
+- name: Restart sshd
+  # Use reload (SIGHUP) rather than full restart so existing connections
+  # (including the Ansible connection itself) are not dropped.
+  ansible.builtin.service:
+    name: sshd
+    state: reloaded

@@ -1,0 +1,38 @@
+- name: Ensure apk repositories
+  ansible.builtin.copy:
+    src: apk/repositories
+    dest: /etc/apk/repositories
+    mode: "0644"
+
+- name: Install base packages
+  community.general.apk:
+    name:
+      - alpine-base
+      - bash
+      - bash-completion
+      - busybox-mdev-openrc
+      - curl
+      - e2fsprogs
+      - fd
+      - hdparm
+      - iw
+      - ncurses
+      - neovim
+      - openssh
+      - openssl
+      - pciutils
+      - python3
+      - util-linux
+      - wpa_supplicant
+      - zfs
+    state: present
+    update_cache: true
+
+- name: Install RPi-specific packages
+  # Only available on aarch64 Alpine RPi builds, skipped on x86_64 (e.g. build container)
+  when: ansible_architecture == "aarch64"
+  community.general.apk:
+    name:
+      - raspberrypi-utils-eeptools
+      - raspberrypi-utils-raspinfo
+    state: present

@@ -1,0 +1,29 @@
+- name: Install hddfancontrol packages
+  community.general.apk:
+    name:
+      - hddfancontrol
+      - hddfancontrol-openrc
+    state: present
+
+- name: Ensure hddfancontrol conf.d configuration
+  ansible.builtin.copy:
+    src: hddfancontrol
+    dest: /etc/conf.d/hddfancontrol
+    mode: "0600"
+  notify: Restart hddfancontrol
+
+- name: Ensure fan-off boot script
+  ansible.builtin.copy:
+    src: fan-off.start
+    dest: /etc/local.d/fan-off.start
+    mode: "0755"
+
+- name: Enable hddfancontrol service
+  ansible.builtin.service:
+    name: hddfancontrol
+    enabled: true
+
+- name: Enable local service (runs local.d scripts)
+  ansible.builtin.service:
+    name: local
+    enabled: true

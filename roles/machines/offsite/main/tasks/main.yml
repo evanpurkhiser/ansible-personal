@@ -1,0 +1,38 @@
+- name: Import secrets
+  ansible.builtin.import_tasks: secrets.yml
+
+- name: Install base packages
+  tags: [packages]
+  ansible.builtin.import_tasks: packages.yml
+
+- name: Import users tasks
+  ansible.builtin.import_tasks: users.yml
+
+- name: Import sshd tasks
+  ansible.builtin.import_tasks: sshd.yml
+  tags: [sshd]
+
+- name: Import network tasks
+  ansible.builtin.import_tasks: network.yml
+  tags: [network]
+
+- name: Import system tasks
+  ansible.builtin.import_tasks: system.yml
+  tags: [system]
+
+# Services
+- name: Import zrepl role
+  tags: [zrepl]
+  ansible.builtin.import_role: { name: machines/offsite/service-zrepl }
+
+- name: Import samba role
+  tags: [samba]
+  ansible.builtin.import_role: { name: machines/offsite/service-samba }
+
+- name: Import hddfancontrol role
+  tags: [hddfancontrol]
+  ansible.builtin.import_role: { name: machines/offsite/service-hddfancontrol }
+
+- name: Import tailscale role
+  tags: [tailscale]
+  ansible.builtin.import_role: { name: machines/offsite/service-tailscale }

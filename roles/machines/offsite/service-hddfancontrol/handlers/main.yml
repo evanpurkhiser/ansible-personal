@@ -1,0 +1,4 @@
+- name: Restart hddfancontrol
+  ansible.builtin.service:
+    name: hddfancontrol
+    state: restarted

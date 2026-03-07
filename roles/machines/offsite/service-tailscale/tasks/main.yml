@@ -1,0 +1,9 @@
+- name: Install tailscale package
+  community.general.apk:
+    name: tailscale
+    state: present
+
+- name: Enable tailscale service
+  ansible.builtin.service:
+    name: tailscale
+    enabled: true

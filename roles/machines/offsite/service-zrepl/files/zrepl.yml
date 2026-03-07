@@ -1,0 +1,19 @@
+# zrepl configuration for offsite NAS (sink/receiver)
+
+global:
+  logging:
+    - type: syslog
+      level: info
+      format: human
+
+jobs:
+  # Sink job: receive documents backup from main server
+  - name: receive_documents_backup
+    type: sink
+    serve:
+      type: tcp
+      listen: ":29491"
+      clients:
+        # Allow server (100.124.157.144) to push backups
+        "100.124.157.144": "server"
+    root_fs: "tank/backups"

@@ -1,0 +1,11 @@
+# Manages: Alpine Linux on a Raspberry Pi. This playbook configures the offsite NAS.
+#
+# This server has a few purposes:
+#
+# - Receive ZFS replication from the main server (zrepl sink)
+# - Provide Samba storage share for James
+# - Connect via Tailscale for remote management
+
+- name: Offsite
+  hosts: offsite
+  roles: [machines/offsite/main]

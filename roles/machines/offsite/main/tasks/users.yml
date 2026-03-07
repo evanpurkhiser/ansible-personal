@@ -1,0 +1,33 @@
+- name: Set root password and shell
+  ansible.builtin.user:
+    name: root
+    password: "$6$dEMcexefd54cgW74$Sx0oIgeLTGELNJtQLrdWU.vlyL1EkbOFi6BqzgDMjQPVuY5VZRnCFf0WFn10ys9YCzlLH6pK9lQlhH.wq5JKh0"
+    shell: /bin/bash
+
+- name: Add authorized SSH key for root
+  ansible.posix.authorized_key:
+    user: root
+    key: "{{ public_ssh_key }}"
+    comment: personal
+
+- name: Add user evan
+  ansible.builtin.user:
+    name: evan
+    uid: 1000
+    password: "$6$uZRxLqydJ2aDMAyM$l3uFKJ3hTP1tcPCYKBf6GM821jsjOBXGqbelYVjaKe/fhUW.UvlHQ1t9pC5lbRk9wOGI9ktSNjKWuKe8rEUfF1"
+    shell: /bin/bash
+    create_home: true
+
+- name: Add authorized SSH key for evan
+  ansible.posix.authorized_key:
+    user: evan
+    key: "{{ public_ssh_key }}"
+    comment: personal
+
+- name: Add user james
+  ansible.builtin.user:
+    name: james
+    uid: 1001
+    password: "!"
+    shell: /bin/bash
+    create_home: true

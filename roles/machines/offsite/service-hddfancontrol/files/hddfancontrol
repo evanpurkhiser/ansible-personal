@@ -1,0 +1,17 @@
+#
+# HDD fan control configuration.
+# See 'hddfancontrol daemon -h' for all available daemon arguments.
+#
+
+# Daemon startup arguments (required).
+# Example: HDDFANCONTROL_DAEMON_ARGS="-d /dev/sda -f /sys/class/hwmon/hwmon0/pwm1"
+HDDFANCONTROL_DAEMON_ARGS="
+    --drives /dev/sda /dev/sdb /dev/sdc
+    --pwm /sys/class/hwmon/hwmon2/pwm1:200:0
+    --min-fan-speed-prct 0
+    --drive-temp-range 30 55
+    --interval 1min
+"
+
+# Log level: trace, debug, info, warn, error.
+HDDFANCONTROL_LOG_LEVEL="info"

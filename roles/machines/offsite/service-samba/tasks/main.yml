@@ -1,0 +1,30 @@
+- name: Install samba package
+  community.general.apk:
+    name: samba
+    state: present
+
+- name: Ensure samba configuration directory
+  ansible.builtin.file:
+    path: /etc/samba
+    state: directory
+    mode: "0755"
+
+- name: Install samba configuration
+  ansible.builtin.copy:
+    src: smb.conf
+    dest: /etc/samba/smb.conf
+    mode: "0644"
+  notify: Restart samba
+
+- name: Ensure james storage directory
+  ansible.builtin.file:
+    path: /tank/james-storage
+    state: directory
+    owner: james
+    group: james
+    mode: "0775"
+
+- name: Enable samba service
+  ansible.builtin.service:
+    name: samba
+    enabled: true

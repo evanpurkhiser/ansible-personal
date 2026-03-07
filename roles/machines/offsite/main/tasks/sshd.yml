@@ -1,0 +1,11 @@
+- name: Allow root login with key
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin prohibit-password"
+  notify: Restart sshd
+
+- name: Enable sshd service
+  ansible.builtin.service:
+    name: sshd
+    enabled: true

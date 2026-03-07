@@ -49,4 +49,7 @@
     state: started
     enabled: true
     scope: user
-    machine: "evan@"
+  become: true
+  become_user: evan
+  environment:
+    XDG_RUNTIME_DIR: /run/user/1000

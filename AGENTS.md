@@ -44,14 +44,14 @@ ansible-galaxy install -r requirements.yml
 Apply the full playbook:
 
 ```sh
-ansible-playbook play-server.yml
+ansible-playbook -i inventory play-server.yml
 ```
 
 Apply only a specific service using tags (preferred when changing a single role):
 
 ```sh
-ansible-playbook play-server.yml --tags hass
-ansible-playbook play-server.yml --tags nginx,zrepl
+ansible-playbook -i inventory play-server.yml --tags hass
+ansible-playbook -i inventory play-server.yml --tags nginx,zrepl
 ```
 
 Available tags: `zfs`, `packages`, `sshd`, `network`, `hardware`, `pam-ssh-agent`, `nfs`, `tailscale`, `nginx`, `transmission`, `hass`, `waitress`, `meal-log`, `instagram-saver`, `venmo-auto-cashout`, `venmo-lunchmoney-ai`, `atuin`, `podman-auto-update`, `zrepl`, `record-file-history`, `purkhiser-bot`, `weekly-report`, `speedtest-monitor`, `auto-system-update`, `bambulab-lights-off`, `opencode`, `clean-macfiles`

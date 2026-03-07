@@ -23,7 +23,7 @@
 
 - name: Install opencode-ssh-agent-proxy SSH key
   ansible.builtin.copy:
-    content: "{{ secrets.opencode_ssh_agent_proxy_key }}"
+    content: "{{ opencode_ssh_agent_proxy_key }}"
     dest: /etc/opencode-ssh-agent-proxy-key
     mode: "0600"
     owner: root

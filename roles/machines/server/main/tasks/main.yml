@@ -35,6 +35,7 @@
       - tree
       - fd
       - ripgrep
+      - khard
 
       # Other tools
       - lm_sensors

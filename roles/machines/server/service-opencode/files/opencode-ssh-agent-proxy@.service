@@ -8,4 +8,11 @@ StandardInput=socket
 StandardOutput=socket
 StandardError=journal
 # Each instance handles one agent request then exits
-TimeoutStopSec=20
+TimeoutStartSec=10
+TimeoutStopSec=10
+# Kill the instance if it has been running for more than 30 seconds with no
+# natural exit — prevents stale connections from accumulating as failed units
+RuntimeMaxSec=30
+# Treat SIGTERM (timeout kill) as a clean exit so timed-out instances don't
+# show up as failed in systemctl
+SuccessExitStatus=SIGTERM

@@ -41,6 +41,9 @@
       - lm_sensors
       - speedtest-cli
 
+      # Sandboxing
+      - bubblewrap
+
       # Services
       - nginx
       - dnsmasq

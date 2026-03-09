@@ -7,6 +7,7 @@ Requires=import-environment.service
 [Service]
 Type=simple
 Environment=SSH_AUTH_SOCK=/run/opencode-ssh-agent-proxy.sock
+Environment=OPENCODE_HOST=http://localhost:9995
 ExecStart=/usr/bin/opencode serve --hostname 0.0.0.0 --port 9995
 Restart=on-failure
 RestartSec=5s

@@ -16,7 +16,7 @@ SSH_USER="evan"
 # proxy script as base64 and write it to /tmp at runtime — this also avoids
 # consuming stdin, which carries the agent socket data.
 PROXY_B64=$(base64 -w0 <<'PYEOF'
-import socket, sys, os, select
+import socket, sys, os, select, time
 
 sock_path = sys.argv[1]
 s = socket.socket(socket.AF_UNIX)
@@ -26,13 +26,24 @@ stdin_fd = sys.stdin.buffer.fileno()
 stdout_fd = sys.stdout.buffer.fileno()
 sock_fd = s.fileno()
 
+last_activity = time.time()
+TIMEOUT = 30
+
 while True:
-    r, _, _ = select.select([stdin_fd, sock_fd], [], [])
+    elapsed = time.time() - last_activity
+    remaining = max(0, TIMEOUT - elapsed)
+    
+    r, _, _ = select.select([stdin_fd, sock_fd], [], [], remaining)
+    
+    if not r:  # Timeout occurred
+        sys.exit(0)
+    
     for fd in r:
         d = os.read(fd, 4096)
         if not d:
             sys.exit(0)
         os.write(stdout_fd if fd == sock_fd else sock_fd, d)
+        last_activity = time.time()
 PYEOF
 )
 

@@ -11,10 +11,10 @@
     mode: "0644"
 
 - name: Set timezone to Los Angeles
-  ansible.builtin.file:
-    src: /usr/share/zoneinfo/America/Los_Angeles
-    dest: /etc/localtime
-    state: link
+  ansible.builtin.shell:
+    cmd: setup-timezone -z America/Los_Angeles
+  args:
+    creates: /usr/share/zoneinfo/America/Los_Angeles
 
 - name: Ensure kernel modules
   ansible.builtin.copy:

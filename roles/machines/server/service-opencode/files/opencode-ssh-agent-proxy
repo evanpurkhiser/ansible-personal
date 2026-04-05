@@ -61,7 +61,7 @@ HOST=$(tailscale status --json | jq -r '
 
 if [[ -z "$HOST" || "$HOST" == "null" ]]; then
   echo "opencode-ssh-agent-proxy: no macbook online" >&2
-  exit 1
+  exit 0
 fi
 
 exec ssh \

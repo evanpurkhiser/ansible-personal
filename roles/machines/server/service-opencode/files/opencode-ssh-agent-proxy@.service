@@ -4,6 +4,7 @@ Description=SSH agent proxy connection (1Password via MacBook)
 [Service]
 Type=simple
 ExecStart=/usr/local/bin/opencode-ssh-agent-proxy
+SuccessExitStatus=255
 StandardInput=socket
 StandardOutput=socket
 StandardError=journal

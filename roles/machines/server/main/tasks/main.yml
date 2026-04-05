@@ -168,3 +168,7 @@
 - name: Import clean-macfiles role
   tags: [clean-macfiles]
   ansible.builtin.import_role: { name: machines/server/service-clean-macfiles }
+
+- name: Import iptorrents-keepalive role
+  tags: [iptorrents-keepalive]
+  ansible.builtin.import_role: { name: machines/server/service-iptorrents-keepalive }

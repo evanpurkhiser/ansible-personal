@@ -1,0 +1,8 @@
+- name: Systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart things3-server
+  ansible.builtin.service:
+    name: things3-server.service
+    state: restarted

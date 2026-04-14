@@ -101,6 +101,10 @@
   tags: [transmission]
   ansible.builtin.import_role: { name: machines/server/service-transmission }
 
+- name: Import things3-server role
+  tags: [things3-server]
+  ansible.builtin.import_role: { name: machines/server/service-things3-server }
+
 - name: Import home-assistant role
   tags: [hass]
   ansible.builtin.import_role: { name: machines/server/service-hass }

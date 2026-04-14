@@ -142,6 +142,16 @@ fi
 		op item get 'iyur5zrspndy3j4uxifwa7mj4y' --reveal --field='Home Assistant API Key'
 	)"\'
 
+	# Things3
+	echo things3:
+
+	echo '  email:' \'"$(
+		op item get 'lwymezf6azedfiebtvb2qv2ahi' --reveal --field='username'
+	)"\'
+	echo '  password:' \'"$(
+		op item get 'lwymezf6azedfiebtvb2qv2ahi' --reveal --field='password'
+	)"\'
+
 	# Offsite WiFi networks
 	# PSK values are wpa_passphrase pre-computed hashes stored in 1password
 	echo offsite_wifi_networks:

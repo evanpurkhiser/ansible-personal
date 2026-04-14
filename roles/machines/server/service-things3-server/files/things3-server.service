@@ -1,0 +1,14 @@
+[Unit]
+Description=Things3 webserver
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/things3-auth.conf
+ExecStart=/usr/bin/things3 webserver --host 127.0.0.1 --port 8765
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

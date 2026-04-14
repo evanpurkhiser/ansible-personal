@@ -54,7 +54,7 @@ ansible-playbook -i inventory play-server.yml --tags hass
 ansible-playbook -i inventory play-server.yml --tags nginx,zrepl
 ```
 
-Available tags: `zfs`, `packages`, `sshd`, `network`, `hardware`, `pam-ssh-agent`, `nfs`, `tailscale`, `nginx`, `transmission`, `hass`, `waitress`, `meal-log`, `instagram-saver`, `venmo-auto-cashout`, `venmo-lunchmoney-ai`, `atuin`, `podman-auto-update`, `zrepl`, `record-file-history`, `purkhiser-bot`, `weekly-report`, `speedtest-monitor`, `auto-system-update`, `bambulab-lights-off`, `opencode`, `clean-macfiles`, `iptorrents-keepalive`
+Available tags: `zfs`, `packages`, `sshd`, `network`, `hardware`, `pam-ssh-agent`, `nfs`, `tailscale`, `nginx`, `transmission`, `hass`, `things3-server`, `waitress`, `meal-log`, `instagram-saver`, `venmo-auto-cashout`, `venmo-lunchmoney-ai`, `atuin`, `podman-auto-update`, `zrepl`, `record-file-history`, `purkhiser-bot`, `weekly-report`, `speedtest-monitor`, `auto-system-update`, `bambulab-lights-off`, `opencode`, `clean-macfiles`, `iptorrents-keepalive`
 
 ---
 

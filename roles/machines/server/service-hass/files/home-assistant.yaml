@@ -36,6 +36,16 @@ frontend:
   themes: !include_dir_merge_named themes
 
 rest_command:
+  things3_run:
+    url: "http://127.0.0.1:8765/"
+    method: POST
+    content_type: application/json
+    payload: >-
+      {"args": {{
+        (args if (args is sequence and args is not string) else [args | default("today")])
+        | tojson
+      }} }
+
   virtual_doorman_unlock:
     url: "https://op-portal.virtualdoorman.com/g6compatressvcs/door-unlock/1400"
     headers:

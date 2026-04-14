@@ -1,0 +1,31 @@
+- name: Install things3-cloud from AUR
+  become: true
+  become_user: aur-builder
+  kewlfft.aur.aur:
+    name: things3-cloud
+    state: present
+
+- name: Install Things3 auth environment file
+  notify: Restart things3-server
+  ansible.builtin.template:
+    src: things3-auth.conf.j2
+    dest: /etc/things3-auth.conf
+    mode: "0600"
+    owner: root
+    group: root
+
+- name: Install things3 server systemd service
+  notify:
+    - Systemd daemon-reload
+    - Restart things3-server
+  ansible.builtin.copy:
+    src: things3-server.service
+    dest: /etc/systemd/system/things3-server.service
+    mode: "0644"
+
+- name: Enable things3 server service
+  ansible.builtin.service:
+    name: things3-server.service
+    state: started
+    enabled: true
+    daemon_reload: true

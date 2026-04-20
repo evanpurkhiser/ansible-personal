@@ -60,10 +60,10 @@
       - socat
 
       # Languages
+      - go
       - nodejs
       - npm
-      - go
-      - rust
+      - rustup
 
 # System configuration
 - name: Enable linger for evan

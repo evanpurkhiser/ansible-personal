@@ -144,7 +144,6 @@ fi
 
 	# Things3
 	echo things3:
-
 	echo '  email:' \'"$(
 		op item get 'lwymezf6azedfiebtvb2qv2ahi' --reveal --field='username'
 	)"\'

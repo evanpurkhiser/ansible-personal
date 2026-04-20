@@ -1,0 +1,17 @@
+- name: Add evanpurkhiser package signing key
+  community.general.pacman_key:
+    id: B5849CBB1122C462550F2B72A04148F92E741E20
+    keyserver: keyserver.ubuntu.com
+    state: present
+
+- name: Install evanpurkhiser pacman repo conf
+  ansible.builtin.copy:
+    src: evanpurkhiser
+    dest: /etc/pacman.d/evanpurkhiser
+    mode: "0644"
+
+- name: Include evanpurkhiser repo in pacman.conf
+  notify: Sync pacman cache
+  ansible.builtin.lineinfile:
+    dest: /etc/pacman.conf
+    line: "Include = /etc/pacman.d/evanpurkhiser"

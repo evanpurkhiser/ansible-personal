@@ -1,9 +1,8 @@
-- name: Install things3-cloud from AUR
-  become: true
-  become_user: aur-builder
-  kewlfft.aur.aur:
+- name: Install things3-cloud from evanpurkhiser pacman repo
+  community.general.pacman:
     name: things3-cloud
     state: present
+    update_cache: true
 
 - name: Install Things3 auth environment file
   notify: Restart things3-server

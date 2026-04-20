@@ -1,0 +1,3 @@
+[evanpurkhiser]
+SigLevel = Required
+Server = https://github.com/evanpurkhiser/PKGBUILDs/releases/download/pacman-repo

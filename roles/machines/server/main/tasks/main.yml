@@ -5,7 +5,7 @@
   ansible.builtin.import_role: { name: pacsync }
 
 - name: Import personal arch repo
-  ansible.builtin.import_role: { name: personal-arch-repo }
+  ansible.builtin.import_role: { name: arch_repo_personal }
 
 - name: Import paccache
   ansible.builtin.import_role: { name: paccache }

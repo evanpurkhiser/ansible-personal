@@ -2,6 +2,7 @@
   community.general.pacman_key:
     id: 3A9917BF0DED5C13F69AC68FABEC0A1208037BE9
     keyserver: keyserver.ubuntu.com
+    ensure_trusted: true
     state: present
 
 - name: Add arch ZFS repo

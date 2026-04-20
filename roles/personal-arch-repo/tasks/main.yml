@@ -2,9 +2,10 @@
   community.general.pacman_key:
     id: B5849CBB1122C462550F2B72A04148F92E741E20
     keyserver: keyserver.ubuntu.com
+    ensure_trusted: true
     state: present
 
-- name: Install evanpurkhiser pacman repo conf
+- name: Add evanpurkhiser pacman repo conf
   ansible.builtin.copy:
     src: evanpurkhiser
     dest: /etc/pacman.d/evanpurkhiser

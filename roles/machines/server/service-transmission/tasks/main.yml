@@ -12,9 +12,18 @@
     dest: /etc/systemd/system/transmission.service.d/
     mode: "0644"
 
+- name: Read existing transmission settings
+  ansible.builtin.slurp:
+    src: /home/evan/.config/transmission-daemon/settings.json
+  register: existing_transmission_settings
+  failed_when: false
+
 - name: Ensure transmission configuration
+  vars:
+    existing: "{{ existing_transmission_settings.content | default('e30=') | b64decode | from_json }}"
+    desired: "{{ lookup('file', 'transmission-settings.json') | from_json }}"
   ansible.builtin.copy:
-    src: transmission-settings.json
+    content: "{{ existing | combine(desired) | to_nice_json }}\n"
     dest: /home/evan/.config/transmission-daemon/settings.json
     mode: "0644"
   notify: Reload transmission

@@ -68,16 +68,16 @@
     mode: "0644"
 
 # Configure firewall
+#
+# NOTE: Allow rules MUST come before the default deny policy. The ufw module
+# applies the deny policy atomically when state=enabled, which kills active
+# connections (including the SSH session running Ansible) if allow rules
+# haven't been added yet.
 - name: Ensure ufw is enabled
   ansible.builtin.service:
     name: ufw
     state: started
     enabled: true
-
-- name: UFW deny everything by default
-  community.general.ufw:
-    state: enabled
-    policy: deny
 
 - name: UFW allow local networking (in)
   community.general.ufw:
@@ -91,6 +91,18 @@
     direction: out
     interface: lan0
 
+- name: UFW allow tailscale (in)
+  community.general.ufw:
+    rule: allow
+    direction: in
+    interface: tailscale0
+
+- name: UFW allow tailscale (out)
+  community.general.ufw:
+    rule: allow
+    direction: out
+    interface: tailscale0
+
 - name: UFW allow HTTPS
   community.general.ufw:
     rule: allow
@@ -102,6 +114,11 @@
     rule: allow
     port: 51413
     interface_in: wan0
+
+- name: UFW deny everything by default
+  community.general.ufw:
+    state: enabled
+    policy: deny
 
 # Setup and configure DNS server
 - name: Configure dnsmasq

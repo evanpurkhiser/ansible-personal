@@ -30,33 +30,33 @@ This flow prepares a fresh Arch VM specifically for `ansible-personal` provision
 
 ## Scripts
 
-- Boot VM: `boot-qemu.sh`
-- Run unattended install (inside Arch ISO environment): `install-arch-unattended.sh`
-- One-command flow (host side): `run-qemu-unattended.sh`
+- Boot VM: `qemu/server/boot-qemu.sh`
+- Run unattended install (inside Arch ISO environment): `qemu/server/install-arch-unattended.sh`
+- One-command flow (host side): `qemu/server/run-qemu-unattended.sh`
 
 ## End-to-end usage
 
 ### One command (recommended)
 
 ```bash
-./run-qemu-unattended.sh --timezone America/Los_Angeles
+qemu/server/run-qemu-unattended.sh --timezone America/Los_Angeles
 ```
 
 This command:
 
 1. Boots the VM into Arch ISO (headless).
-2. Runs `install-arch-unattended.sh` from the live environment automatically.
+2. Runs `qemu/server/install-arch-unattended.sh` from the live environment automatically.
 3. Powers the installer environment off.
 4. Reboots the VM from installed disk (without install media).
 
-Dependency note: `run-qemu-unattended.sh` requires `expect` on the host.
+Dependency note: `qemu/server/run-qemu-unattended.sh` requires `expect` on the host.
 
 ### Manual staged flow
 
 1) Boot installer VM:
 
 ```bash
-./boot-qemu.sh --headless --ssh-port 2223
+qemu/server/boot-qemu.sh --headless --ssh-port 2223
 ```
 
 2) In the VM console (or over live-environment SSH), run:

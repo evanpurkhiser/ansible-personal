@@ -12,8 +12,8 @@ Future work (deferred): return to full unattended install path for install-phase
 
 ## Script
 
-- `boot-qemu-archbox.sh`
-- `run-qemu-server-apply.sh` (full two-phase apply orchestration)
+- `qemu/server/boot-qemu-archbox.sh`
+- `qemu/server/run-qemu-server-apply.sh` (full two-phase apply orchestration)
 
 The script:
 
@@ -36,23 +36,23 @@ If you want a minimal single-NIC mode, add `--compat-nic`.
 ## Usage
 
 ```bash
-./boot-qemu-archbox.sh --headless --phase bootstrap --ssh-port 2222
+qemu/server/boot-qemu-archbox.sh --headless --phase bootstrap --ssh-port 2222
 ```
 
 Run the full two-phase apply end-to-end:
 
 ```bash
-./run-qemu-server-apply.sh
+qemu/server/run-qemu-server-apply.sh
 ```
 
 By default, the phase-2 apply resumes at task `Phase two install`.
 To force a full second pass, use:
 
 ```bash
-./run-qemu-server-apply.sh --no-phase2-resume
+qemu/server/run-qemu-server-apply.sh --no-phase2-resume
 ```
 
-`run-qemu-server-apply.sh` defaults to `--ssh-port 2254` and starts from a clean overlay.
+`qemu/server/run-qemu-server-apply.sh` defaults to `--ssh-port 2254` and starts from a clean overlay.
 
 SSH in once booted:
 
@@ -70,23 +70,23 @@ Default credentials (basic image):
 - Reset to clean base state:
 
 ```bash
-./boot-qemu-archbox.sh --reset-overlay
+qemu/server/boot-qemu-archbox.sh --reset-overlay
 ```
 
 - Change resource sizing:
 
 ```bash
-./boot-qemu-archbox.sh --ram 8192 --cpus 8
+qemu/server/boot-qemu-archbox.sh --ram 8192 --cpus 8
 ```
 
 - Skip fake `/dev/zigbee` and `/dev/zwave` symlinks during orchestration:
 
 ```bash
-./run-qemu-server-apply.sh --no-fake-devices
+qemu/server/run-qemu-server-apply.sh --no-fake-devices
 ```
 
 ## TODO
 
 - Add a pre-provision step to create and persist a realistic `documents` ZFS pool on the 5 SATA lab disks.
 - Match production intent by creating RAIDZ2 in lab before playbook apply, so import/mount behavior mirrors real re-apply scenarios.
-- Keep this as a dedicated lab bootstrap script (run before `run-qemu-server-apply.sh`) rather than modifying server playbook logic.
+- Keep this as a dedicated lab bootstrap script (run before `qemu/server/run-qemu-server-apply.sh`) rather than modifying server playbook logic.

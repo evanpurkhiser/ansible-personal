@@ -203,4 +203,4 @@ if [[ "$BOOTSTRAP_OLD_LTS" -eq 1 ]]; then
   fi
 fi
 
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i "$INVENTORY_FILE" "$PLAYBOOK" "${EXTRA_ARGS[@]}"
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i "$INVENTORY_FILE" --extra-vars "@${TARGET_SECRETS}" "$PLAYBOOK" "${EXTRA_ARGS[@]}"

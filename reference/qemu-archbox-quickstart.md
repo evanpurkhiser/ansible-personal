@@ -45,6 +45,13 @@ Run the full two-phase apply end-to-end:
 ./run-qemu-server-apply.sh
 ```
 
+By default, the phase-2 apply resumes at task `Phase two install`.
+To force a full second pass, use:
+
+```bash
+./run-qemu-server-apply.sh --no-phase2-resume
+```
+
 `run-qemu-server-apply.sh` defaults to `--ssh-port 2254` and starts from a clean overlay.
 
 SSH in once booted:

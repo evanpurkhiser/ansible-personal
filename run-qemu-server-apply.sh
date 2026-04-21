@@ -11,6 +11,7 @@ SSH_KEY="/tmp/ansible-qemu"
 SECRETS_FILE="vars/secrets.fake.yml"
 DATA_DISK_SIZE="20G"
 PREPARE_FAKE_DEVICES=1
+PHASE2_START_AT_TASK="Phase two install"
 
 BOOTSTRAP_SESSION=""
 POST_SESSION=""
@@ -34,6 +35,10 @@ Options:
   --secrets-file <path>     Secrets source file (default: vars/secrets.fake.yml)
   --data-disk-size <size>   QEMU data disk size (default: 20G)
   --no-fake-devices         Skip creating /dev/zigbee and /dev/zwave symlinks
+  --phase2-start-at-task <task>
+                            Resume second apply at this task name
+                            (default: Phase two install)
+  --no-phase2-resume        Run full second apply without --start-at-task
   --bootstrap-session <n>   tmux session for phase 1
   --post-session <n>        tmux session for phase 2
   -h, --help                Show help
@@ -91,6 +96,14 @@ while [[ "$#" -gt 0 ]]; do
       ;;
     --no-fake-devices)
       PREPARE_FAKE_DEVICES=0
+      shift
+      ;;
+    --phase2-start-at-task)
+      PHASE2_START_AT_TASK="$2"
+      shift 2
+      ;;
+    --no-phase2-resume)
+      PHASE2_START_AT_TASK=""
       shift
       ;;
     --bootstrap-session)
@@ -183,6 +196,8 @@ wait_for_key_ssh() {
 }
 
 apply_once() {
+  local phase="$1"
+  local play_extra=()
   local args=(
     "--ssh-host" "$SSH_HOST"
     "--ssh-user" "$SSH_USER"
@@ -192,7 +207,15 @@ apply_once() {
   )
 
   if [[ "${#APPLY_EXTRA_ARGS[@]}" -gt 0 ]]; then
-    args+=(-- "${APPLY_EXTRA_ARGS[@]}")
+    play_extra+=("${APPLY_EXTRA_ARGS[@]}")
+  fi
+
+  if [[ "$phase" = "phase2" && -n "$PHASE2_START_AT_TASK" ]]; then
+    play_extra+=(--start-at-task "$PHASE2_START_AT_TASK")
+  fi
+
+  if [[ "${#play_extra[@]}" -gt 0 ]]; then
+    args+=(-- "${play_extra[@]}")
   fi
 
   ./apply-server-qemu.sh "${args[@]}"
@@ -227,7 +250,7 @@ if ! wait_for_key_ssh 30; then
 fi
 
 echo "==> Phase 1 apply"
-apply_once
+apply_once phase1
 
 echo "==> Prepare fake zigbee/zwave devices"
 prepare_fake_devices
@@ -265,7 +288,7 @@ echo "==> Prepare fake zigbee/zwave devices (post-network)"
 prepare_fake_devices
 
 echo "==> Phase 2 apply"
-apply_once
+apply_once phase2
 
 echo "==> Full two-phase run complete"
 echo "Serial session still available at: tmux attach -t $POST_SESSION"

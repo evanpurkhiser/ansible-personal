@@ -1,6 +1,5 @@
 [Unit]
 Description=Import login environment into systemd user session
-After=default.target
 
 [Service]
 Type=oneshot

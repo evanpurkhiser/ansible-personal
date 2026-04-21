@@ -9,6 +9,7 @@ CPUS=4
 SSH_FORWARD_PORT=2222
 HEADLESS=0
 UEFI=1
+ENABLE_KVM=1
 
 BASE_IMAGE_URL="https://fastly.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-basic.qcow2"
 BASE_IMAGE_SHA256_URL="https://fastly.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-basic.qcow2.SHA256"
@@ -53,6 +54,7 @@ Options:
   --no-tmux                 Run QEMU directly (default is tmux session)
   --tmux-session <name>     tmux session name (default: qemu-<vm-name>)
   --headless                Run without graphical display
+  --no-kvm                  Disable KVM acceleration (useful in CI)
   --bios                    Use legacy BIOS firmware instead of UEFI
   -h, --help                Show this help
 
@@ -143,6 +145,10 @@ while [ "$#" -gt 0 ]; do
       HEADLESS=1
       shift
       ;;
+    --no-kvm)
+      ENABLE_KVM=0
+      shift
+      ;;
     --bios)
       UEFI=0
       shift
@@ -225,7 +231,6 @@ fi
 
 QEMU_ARGS=(
   -name "$NAME"
-  -enable-kvm
   -machine q35
   -cpu host
   -smp "$CPUS"
@@ -235,6 +240,16 @@ QEMU_ARGS=(
   -device nvme,drive=nvme0,serial=232880490001327413C4
   -device ich9-ahci,id=ahci
 )
+
+if [ "$ENABLE_KVM" -eq 1 ]; then
+  QEMU_ARGS+=(
+    -enable-kvm
+  )
+else
+  QEMU_ARGS+=(
+    -accel tcg,thread=multi
+  )
+fi
 
 for i in $(seq 1 "$DATA_DISK_COUNT"); do
   DATA_DISK_PATH="${DISK_DIR}/data-sata${i}.qcow2"
@@ -320,6 +335,11 @@ if [ "$UEFI" -eq 1 ]; then
   echo "  Firmware:    UEFI (OVMF)"
 else
   echo "  Firmware:    BIOS"
+fi
+if [ "$ENABLE_KVM" -eq 1 ]; then
+  echo "  Accel:       kvm"
+else
+  echo "  Accel:       tcg"
 fi
 echo "  SSH:         ssh arch@127.0.0.1 -p ${SSH_FORWARD_PORT}"
 echo "  Credentials: arch / arch"

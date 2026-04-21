@@ -15,6 +15,7 @@ SECRETS_FILE="${REPO_ROOT}/vars/secrets.fake.yml"
 DATA_DISK_SIZE="20G"
 PREPARE_FAKE_DEVICES=1
 PHASE2_START_AT_TASK="Phase two install"
+NO_KVM=0
 
 BOOTSTRAP_SESSION=""
 POST_SESSION=""
@@ -37,6 +38,7 @@ Options:
   --ssh-key <path>          SSH private key path (default: /tmp/ansible-qemu)
   --secrets-file <path>     Secrets source file (default: vars/secrets.fake.yml)
   --data-disk-size <size>   QEMU data disk size (default: 20G)
+  --no-kvm                  Disable KVM acceleration for both VM boots
   --no-fake-devices         Skip creating /dev/zigbee and /dev/zwave symlinks
   --phase2-start-at-task <task>
                             Resume second apply at this task name
@@ -96,6 +98,10 @@ while [[ "$#" -gt 0 ]]; do
     --data-disk-size)
       DATA_DISK_SIZE="$2"
       shift 2
+      ;;
+    --no-kvm)
+      NO_KVM=1
+      shift
       ;;
     --no-fake-devices)
       PREPARE_FAKE_DEVICES=0
@@ -235,16 +241,22 @@ prepare_fake_devices() {
 
 echo "==> Starting bootstrap phase VM"
 tmux kill-session -t "$BOOTSTRAP_SESSION" 2>/dev/null || true
-"${SCRIPT_DIR}/boot-qemu-archbox.sh" \
-  --headless \
-  --name "$NAME" \
-  --vm-dir "$VM_DIR" \
-  --reset-overlay \
-  --phase bootstrap \
-  --ssh-port "$SSH_PORT" \
-  --data-disk-size "$DATA_DISK_SIZE" \
-  --inject-ssh-key "$SSH_PUB_KEY" \
+BOOT_ARGS=(
+  --headless
+  --name "$NAME"
+  --vm-dir "$VM_DIR"
+  --reset-overlay
+  --phase bootstrap
+  --ssh-port "$SSH_PORT"
+  --data-disk-size "$DATA_DISK_SIZE"
+  --inject-ssh-key "$SSH_PUB_KEY"
   --tmux-session "$BOOTSTRAP_SESSION"
+)
+if [[ "$NO_KVM" -eq 1 ]]; then
+  BOOT_ARGS+=(--no-kvm)
+fi
+"${SCRIPT_DIR}/boot-qemu-archbox.sh" \
+  "${BOOT_ARGS[@]}"
 
 if ! wait_for_key_ssh 30; then
   echo "SSH key auth not ready after bootstrap wait." >&2
@@ -272,14 +284,20 @@ tmux kill-session -t "$BOOTSTRAP_SESSION" 2>/dev/null || true
 
 echo "==> Starting post-network phase VM"
 tmux kill-session -t "$POST_SESSION" 2>/dev/null || true
-"${SCRIPT_DIR}/boot-qemu-archbox.sh" \
-  --headless \
-  --name "$NAME" \
-  --vm-dir "$VM_DIR" \
-  --phase post-network \
-  --ssh-port "$SSH_PORT" \
-  --data-disk-size "$DATA_DISK_SIZE" \
+BOOT_ARGS=(
+  --headless
+  --name "$NAME"
+  --vm-dir "$VM_DIR"
+  --phase post-network
+  --ssh-port "$SSH_PORT"
+  --data-disk-size "$DATA_DISK_SIZE"
   --tmux-session "$POST_SESSION"
+)
+if [[ "$NO_KVM" -eq 1 ]]; then
+  BOOT_ARGS+=(--no-kvm)
+fi
+"${SCRIPT_DIR}/boot-qemu-archbox.sh" \
+  "${BOOT_ARGS[@]}"
 
 wait_for_key_ssh 90 || {
   echo "Post-network SSH did not become ready." >&2

@@ -193,10 +193,30 @@ OVMF_VARS_TEMPLATE="/usr/share/edk2/x64/OVMF_VARS.4m.fd"
 OVMF_VARS_LOCAL="${FIRMWARE_DIR}/OVMF_VARS.4m.fd"
 
 if [ "$UEFI" -eq 1 ]; then
-  if [ ! -f "$OVMF_CODE" ] || [ ! -f "$OVMF_VARS_TEMPLATE" ]; then
+  OVMF_PAIRS=(
+    "/usr/share/edk2/x64/OVMF_CODE.4m.fd:/usr/share/edk2/x64/OVMF_VARS.4m.fd"
+    "/usr/share/OVMF/OVMF_CODE_4M.fd:/usr/share/OVMF/OVMF_VARS_4M.fd"
+    "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd"
+  )
+
+  OVMF_CODE=""
+  OVMF_VARS_TEMPLATE=""
+  for pair in "${OVMF_PAIRS[@]}"; do
+    code_path="${pair%%:*}"
+    vars_path="${pair##*:}"
+    if [ -f "$code_path" ] && [ -f "$vars_path" ]; then
+      OVMF_CODE="$code_path"
+      OVMF_VARS_TEMPLATE="$vars_path"
+      break
+    fi
+  done
+
+  if [ -z "$OVMF_CODE" ] || [ -z "$OVMF_VARS_TEMPLATE" ]; then
     echo "UEFI firmware not found. Install edk2-ovmf or use --bios." >&2
     exit 1
   fi
+
+  OVMF_VARS_LOCAL="${FIRMWARE_DIR}/$(basename "$OVMF_VARS_TEMPLATE")"
   mkdir -p "$FIRMWARE_DIR"
   if [ ! -f "$OVMF_VARS_LOCAL" ]; then
     cp "$OVMF_VARS_TEMPLATE" "$OVMF_VARS_LOCAL"

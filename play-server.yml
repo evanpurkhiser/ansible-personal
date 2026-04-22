@@ -9,4 +9,7 @@
 
 - name: Server
   hosts: server
-  roles: [machines/server/main]
+  tasks:
+    - name: Import server role
+      ansible.builtin.import_role:
+        name: machines/server/main

@@ -1,8 +1,6 @@
 # QEMU Arch Box Quickstart
 
-Current approach: use the official Arch `arch-boxes` basic image to get a VM online quickly for Ansible playbook testing.
-
-Future work (deferred): return to full unattended install path for install-phase parity validation.
+Use the official Arch `arch-boxes` basic image to get a VM online quickly for Ansible playbook testing.
 
 ## Why this path
 
@@ -36,7 +34,7 @@ If you want a minimal single-NIC mode, add `--compat-nic`.
 ## Usage
 
 ```bash
-qemu/server/boot-qemu-archbox.sh --headless --phase bootstrap --ssh-port 2222
+qemu/server/boot-qemu-archbox.sh --phase bootstrap --ssh-port 2222
 ```
 
 Run the full two-phase apply end-to-end:

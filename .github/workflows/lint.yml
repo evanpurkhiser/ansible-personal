@@ -72,7 +72,6 @@ jobs:
           fi
 
           qemu/server/boot-qemu-archbox.sh \
-            --headless \
             --no-tmux \
             --no-kvm \
             --name qemu-smoke \

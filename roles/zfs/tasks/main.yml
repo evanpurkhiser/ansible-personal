@@ -17,9 +17,13 @@
     dest: /etc/pacman.conf
     line: "Include = /etc/pacman.d/archzfs-repo"
 
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
 - name: Install archzfs-linux-lts
   community.general.pacman:
-    name: archzfs-linux-lts
+    name:
+      - zfs-linux-lts
 
 - name: Create zfs-list.cache directory
   ansible.builtin.file:

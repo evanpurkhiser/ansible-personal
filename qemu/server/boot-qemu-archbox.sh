@@ -24,6 +24,7 @@ INJECT_SSH_PASSWORD="arch"
 START_IN_TMUX=1
 TMUX_SESSION=""
 LOG_PATH=""
+KERNEL_SERIAL_CMDLINE="console=tty1 console=ttyS0,115200n8"
 
 usage() {
   cat <<'EOF'
@@ -335,6 +336,7 @@ QEMU_ARGS+=(
 QEMU_ARGS+=(
   -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE"
   -drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL"
+  -smbios type=11,value="io.systemd.stub.kernel-cmdline-extra=${KERNEL_SERIAL_CMDLINE}"
   -nographic
   -serial mon:stdio
 )
@@ -348,6 +350,7 @@ if [ "$ENABLE_KVM" -eq 1 ]; then
 else
   echo "  Accel:       tcg"
 fi
+echo "  Cmdline:     ${KERNEL_SERIAL_CMDLINE} (systemd-stub SMBIOS hint)"
 echo "  SSH:         ssh arch@127.0.0.1 -p ${SSH_FORWARD_PORT}"
 echo "  Credentials: arch / arch"
 echo "  Log:         ${LOG_PATH}"

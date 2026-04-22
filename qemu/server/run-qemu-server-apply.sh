@@ -257,7 +257,7 @@ fi
 "${SCRIPT_DIR}/boot-qemu-archbox.sh" \
   "${BOOT_ARGS[@]}"
 
-if ! wait_for_key_ssh 30; then
+if ! wait_for_key_ssh 120; then
   echo "SSH key auth not ready after bootstrap wait." >&2
   echo "Attach serial with: tmux attach -t $BOOTSTRAP_SESSION" >&2
   exit 1

@@ -387,13 +387,25 @@ EOF
       exit 0
     fi
 
-    DISPLAY="${DISPLAY:-qemu-askpass}" SSH_ASKPASS="$ASKPASS_SCRIPT" SSH_ASKPASS_REQUIRE=force \
-      QEMU_INJECT_SSH_PASSWORD="$INJECT_SSH_PASSWORD" \
-      setsid -w ssh -o PubkeyAuthentication=no -o PreferredAuthentications=password \
-      -o StrictHostKeyChecking=no -o UserKnownHostsFile="$KNOWN_HOSTS_PATH" \
-      -o ConnectTimeout=8 -p "$SSH_FORWARD_PORT" "${INJECT_SSH_USER}@127.0.0.1" \
-      'mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && cat >> ~/.ssh/authorized_keys' \
-      < "$INJECT_SSH_KEY_PATH" >"$INJECT_LOG_PATH" 2>&1 || true
+    : >"$INJECT_LOG_PATH"
+    injected=0
+    for _ in $(seq 1 120); do
+      if DISPLAY="${DISPLAY:-qemu-askpass}" SSH_ASKPASS="$ASKPASS_SCRIPT" SSH_ASKPASS_REQUIRE=force \
+        QEMU_INJECT_SSH_PASSWORD="$INJECT_SSH_PASSWORD" \
+        setsid -w ssh -o PubkeyAuthentication=no -o PreferredAuthentications=password \
+        -o StrictHostKeyChecking=no -o UserKnownHostsFile="$KNOWN_HOSTS_PATH" \
+        -o ConnectTimeout=8 -p "$SSH_FORWARD_PORT" "${INJECT_SSH_USER}@127.0.0.1" \
+        'mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && cat >> ~/.ssh/authorized_keys' \
+        < "$INJECT_SSH_KEY_PATH" >>"$INJECT_LOG_PATH" 2>&1; then
+        injected=1
+        break
+      fi
+      sleep 2
+    done
+
+    if [ "$injected" -ne 1 ]; then
+      echo "SSH key injection failed after retries" >>"$INJECT_LOG_PATH"
+    fi
   ) &
   disown >/dev/null 2>&1 || true
 fi

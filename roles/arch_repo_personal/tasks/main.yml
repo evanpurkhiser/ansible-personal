@@ -16,3 +16,6 @@
   ansible.builtin.lineinfile:
     dest: /etc/pacman.conf
     line: "Include = /etc/pacman.d/evanpurkhiser"
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

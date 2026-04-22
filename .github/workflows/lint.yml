@@ -89,14 +89,15 @@ jobs:
           }
           trap cleanup EXIT
 
-          for _ in $(seq 1 180); do
-            if timeout 1 bash -lc '</dev/tcp/127.0.0.1/2222' >/dev/null 2>&1; then
+          BANNER=""
+          for _ in $(seq 1 30); do
+            BANNER="$(timeout 3 bash -lc 'exec 3<>/dev/tcp/127.0.0.1/2222; IFS= read -r -t 2 line <&3; printf "%s" "$line"' || true)"
+            if [[ "$BANNER" == SSH-2.0-* ]]; then
               break
             fi
-            sleep 2
+            sleep 1
           done
 
-          BANNER="$(timeout 5 bash -lc 'exec 3<>/dev/tcp/127.0.0.1/2222; IFS= read -r -t 4 line <&3; printf "%s" "$line"' || true)"
           if [[ "$BANNER" != SSH-2.0-* ]]; then
             echo "Expected SSH banner, got: '$BANNER'"
             echo "--- qemu log ---"

@@ -36,6 +36,18 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+      - name: Resolve arch-box image hash
+        id: archbox-image
+        run: |
+          set -euo pipefail
+          SHA_LINE="$(curl -fsSL https://fastly.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-basic.qcow2.SHA256)"
+          IMAGE_HASH="${SHA_LINE%% *}"
+          echo "hash=${IMAGE_HASH}" >> "$GITHUB_OUTPUT"
+      - name: Restore arch-box image cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/qemu-archbox
+          key: ${{ runner.os }}-qemu-archbox-${{ steps.archbox-image.outputs.hash }}
       - name: Install qemu tools
         run: |
           set -euo pipefail
@@ -46,12 +58,24 @@ jobs:
           set -euo pipefail
           VM_DIR="$RUNNER_TEMP/qemu-smoke"
           LOG_PATH="$RUNNER_TEMP/qemu-smoke.log"
+          CACHE_DIR="$HOME/.cache/qemu-archbox"
+
           mkdir -p "$VM_DIR"
+          mkdir -p "$VM_DIR/images"
+          mkdir -p "$CACHE_DIR"
+
+          if [[ -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2" ]]; then
+            cp -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2" "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2"
+          fi
+          if [[ -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256" ]]; then
+            cp -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256" "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256"
+          fi
 
           qemu/server/boot-qemu-archbox.sh \
             --headless \
             --no-tmux \
             --no-kvm \
+            --bios \
             --name qemu-smoke \
             --vm-dir "$VM_DIR" \
             --ssh-port 2222 \
@@ -82,6 +106,13 @@ jobs:
             exit 1
           fi
 
+          if [[ -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2" ]]; then
+            cp -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2" "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2"
+          fi
+          if [[ -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256" ]]; then
+            cp -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256" "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256"
+          fi
+
           echo "SSH banner: $BANNER"
 
   qemu-full-lab:
@@ -90,6 +121,18 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - name: Resolve arch-box image hash
+        id: archbox-image
+        run: |
+          set -euo pipefail
+          SHA_LINE="$(curl -fsSL https://fastly.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-basic.qcow2.SHA256)"
+          IMAGE_HASH="${SHA_LINE%% *}"
+          echo "hash=${IMAGE_HASH}" >> "$GITHUB_OUTPUT"
+      - name: Restore arch-box image cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/qemu-archbox
+          key: ${{ runner.os }}-qemu-archbox-${{ steps.archbox-image.outputs.hash }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -105,12 +148,33 @@ jobs:
           TMPDIR: ${{ runner.temp }}
         run: |
           set -euo pipefail
+
+          VM_DIR="${{ runner.temp }}/ci-qemu-lab"
+          CACHE_DIR="$HOME/.cache/qemu-archbox"
+          mkdir -p "$VM_DIR/images"
+          mkdir -p "$CACHE_DIR"
+
+          if [[ -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2" ]]; then
+            cp -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2" "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2"
+          fi
+          if [[ -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256" ]]; then
+            cp -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256" "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256"
+          fi
+
           qemu/server/run-qemu-server-apply.sh \
             --name ci-qemu-lab \
-            --vm-dir "${{ runner.temp }}/ci-qemu-lab" \
+            --vm-dir "$VM_DIR" \
             --ssh-port 2222 \
             --data-disk-size 8G \
+            --bios \
             --no-kvm
+
+          if [[ -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2" ]]; then
+            cp -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2" "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2"
+          fi
+          if [[ -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256" ]]; then
+            cp -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256" "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256"
+          fi
       - name: Upload qemu lab artifacts
         if: always()
         uses: actions/upload-artifact@v4

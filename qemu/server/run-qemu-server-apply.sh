@@ -16,6 +16,7 @@ DATA_DISK_SIZE="20G"
 PREPARE_FAKE_DEVICES=1
 PHASE2_START_AT_TASK="Phase two install"
 NO_KVM=0
+USE_BIOS=0
 
 BOOTSTRAP_SESSION=""
 POST_SESSION=""
@@ -39,6 +40,7 @@ Options:
   --secrets-file <path>     Secrets source file (default: vars/secrets.fake.yml)
   --data-disk-size <size>   QEMU data disk size (default: 20G)
   --no-kvm                  Disable KVM acceleration for both VM boots
+  --bios                    Use legacy BIOS firmware for both VM boots
   --no-fake-devices         Skip creating /dev/zigbee and /dev/zwave symlinks
   --phase2-start-at-task <task>
                             Resume second apply at this task name
@@ -101,6 +103,10 @@ while [[ "$#" -gt 0 ]]; do
       ;;
     --no-kvm)
       NO_KVM=1
+      shift
+      ;;
+    --bios)
+      USE_BIOS=1
       shift
       ;;
     --no-fake-devices)
@@ -255,6 +261,9 @@ BOOT_ARGS=(
 if [[ "$NO_KVM" -eq 1 ]]; then
   BOOT_ARGS+=(--no-kvm)
 fi
+if [[ "$USE_BIOS" -eq 1 ]]; then
+  BOOT_ARGS+=(--bios)
+fi
 "${SCRIPT_DIR}/boot-qemu-archbox.sh" \
   "${BOOT_ARGS[@]}"
 
@@ -295,6 +304,9 @@ BOOT_ARGS=(
 )
 if [[ "$NO_KVM" -eq 1 ]]; then
   BOOT_ARGS+=(--no-kvm)
+fi
+if [[ "$USE_BIOS" -eq 1 ]]; then
+  BOOT_ARGS+=(--bios)
 fi
 "${SCRIPT_DIR}/boot-qemu-archbox.sh" \
   "${BOOT_ARGS[@]}"

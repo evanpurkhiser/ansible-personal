@@ -23,6 +23,7 @@ INJECT_SSH_USER="arch"
 INJECT_SSH_PASSWORD="arch"
 START_IN_TMUX=1
 TMUX_SESSION=""
+LOG_PATH=""
 
 usage() {
   cat <<'EOF'
@@ -51,6 +52,7 @@ Options:
   --inject-ssh-password <p> SSH password for key injection (default: arch)
   --no-tmux                 Run QEMU directly (default is tmux session)
   --tmux-session <name>     tmux session name (default: qemu-<vm-name>)
+  --log-path <path>         Log file path for tmux-backed QEMU output
   --no-kvm                  Disable KVM acceleration (useful in CI)
   -h, --help                Show this help
 
@@ -137,6 +139,10 @@ while [ "$#" -gt 0 ]; do
       TMUX_SESSION="$2"
       shift 2
       ;;
+    --log-path)
+      LOG_PATH="$2"
+      shift 2
+      ;;
     --no-kvm)
       ENABLE_KVM=0
       shift
@@ -174,7 +180,16 @@ fi
 IMAGE_DIR="${VM_DIR}/images"
 DISK_DIR="${VM_DIR}/disks"
 FIRMWARE_DIR="${VM_DIR}/firmware"
-mkdir -p "$IMAGE_DIR" "$DISK_DIR"
+LOG_DIR="${VM_DIR}/logs"
+mkdir -p "$IMAGE_DIR" "$DISK_DIR" "$LOG_DIR"
+
+if [ -z "$LOG_PATH" ]; then
+  LOG_PHASE_TAG="$PHASE"
+  if [ "$COMPAT_NIC" -eq 1 ]; then
+    LOG_PHASE_TAG="compat"
+  fi
+  LOG_PATH="${LOG_DIR}/qemu-${NAME}-${LOG_PHASE_TAG}.log"
+fi
 
 OVMF_CODE="/usr/share/edk2/x64/OVMF_CODE.4m.fd"
 OVMF_VARS_TEMPLATE="/usr/share/edk2/x64/OVMF_VARS.4m.fd"
@@ -335,6 +350,7 @@ else
 fi
 echo "  SSH:         ssh arch@127.0.0.1 -p ${SSH_FORWARD_PORT}"
 echo "  Credentials: arch / arch"
+echo "  Log:         ${LOG_PATH}"
 if [ "$COMPAT_NIC" -eq 1 ]; then
   echo "  NIC mode:    compatibility (single virtio-net)"
 else
@@ -396,7 +412,18 @@ if [ "$START_IN_TMUX" -eq 1 ]; then
     QEMU_COMMAND+=" $(printf '%q' "$arg")"
   done
 
-  tmux new-session -d -s "$TMUX_SESSION" "$QEMU_COMMAND"
+  QEMU_LAUNCHER_PATH="${LOG_DIR}/launch-${NAME}.sh"
+  cat > "$QEMU_LAUNCHER_PATH" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+set -o pipefail
+stdbuf -oL -eL ${QEMU_COMMAND} \
+  2>&1 | awk '{ print strftime("[%Y-%m-%d %H:%M:%S]"), \$0; fflush(); }' \
+  | tee -a $(printf '%q' "$LOG_PATH")
+EOF
+  chmod 700 "$QEMU_LAUNCHER_PATH"
+
+  tmux new-session -d -s "$TMUX_SESSION" "$QEMU_LAUNCHER_PATH"
   echo "Started tmux session: $TMUX_SESSION"
   echo "Attach with: tmux attach -t $TMUX_SESSION"
   exit 0

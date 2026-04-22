@@ -92,7 +92,7 @@ jobs:
           fi
 
           BANNER=""
-          for _ in $(seq 1 30); do
+          for _ in $(seq 1 180); do
             if ! tmux has-session -t "$TMUX_SESSION" 2>/dev/null; then
               echo "QEMU tmux session exited before SSH banner was ready"
               echo "--- qemu launcher output ---"

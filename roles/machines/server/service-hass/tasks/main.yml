@@ -51,6 +51,9 @@
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always
+      after:
+        - dev-zwave.device
+        - dev-zigbee.device
       new: true
 
 - name: Ensure hass container is running

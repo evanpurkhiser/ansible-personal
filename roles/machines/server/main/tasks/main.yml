@@ -55,6 +55,7 @@
       - sentry-cli
       - tailscale
       - podman
+      - ufw
 
       # Required for triggering systemd sockets (transmission-helper)
       - socat

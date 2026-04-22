@@ -24,7 +24,7 @@ INJECT_SSH_PASSWORD="arch"
 START_IN_TMUX=1
 TMUX_SESSION=""
 LOG_PATH=""
-KERNEL_SERIAL_CMDLINE="console=tty1 console=ttyS0,115200n8"
+KERNEL_SERIAL_CMDLINE="console=tty1 console=ttyS0"
 
 usage() {
   cat <<'EOF'

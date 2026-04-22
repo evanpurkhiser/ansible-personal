@@ -171,7 +171,6 @@ EOF_EXPECT
 
 expect "$EXPECT_SCRIPT" \
   "${SCRIPT_DIR}/boot-qemu.sh" \
-  --headless \
   --name "$NAME" \
   --vm-dir "$VM_DIR" \
   --ram "$RAM_MB" \
@@ -190,7 +189,6 @@ echo "==> Booting installed system (no install media attached)"
 echo "==> SSH should be available on localhost:${SSH_PORT}"
 
 exec "${SCRIPT_DIR}/boot-qemu.sh" \
-  --headless \
   --no-install-media \
   --name "$NAME" \
   --vm-dir "$VM_DIR" \

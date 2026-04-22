@@ -10,8 +10,6 @@ BOOT_DISK_SIZE="64G"
 DATA_DISK_COUNT=5
 DATA_DISK_SIZE="4T"
 SSH_FORWARD_PORT=2222
-HEADLESS=0
-UEFI=1
 ATTACH_INSTALL_MEDIA=1
 
 ISO_URL="https://geo.mirror.pkgbuild.com/iso/latest/archlinux-x86_64.iso"
@@ -35,16 +33,14 @@ Options:
   --data-disk-count <n>     Number of data disks (default: 5)
   --data-disk-size <size>   Data disk size (default: 4T)
   --ssh-port <port>         Host port forwarded to guest:22 (default: 2222)
-  --bios                    Use legacy BIOS firmware instead of UEFI
   --no-install-media        Do not attach Arch ISO (boot from disk)
-  --headless                Run without graphical display
   -h, --help                Show this help
 
 Notes:
   - Creates missing disks in <vm-dir>/disks.
   - Downloads Arch ISO into <vm-dir>/iso if missing.
   - Emulates two NICs (igb + e1000e) and five SATA data drives by default.
-  - Defaults to UEFI boot when OVMF firmware is available.
+  - Requires UEFI boot with OVMF firmware.
 EOF
 }
 
@@ -97,16 +93,8 @@ while [ "$#" -gt 0 ]; do
       SSH_FORWARD_PORT="$2"
       shift 2
       ;;
-    --bios)
-      UEFI=0
-      shift
-      ;;
     --no-install-media)
       ATTACH_INSTALL_MEDIA=0
-      shift
-      ;;
-    --headless)
-      HEADLESS=1
       shift
       ;;
     -h|--help)
@@ -137,16 +125,14 @@ OVMF_CODE="/usr/share/edk2/x64/OVMF_CODE.4m.fd"
 OVMF_VARS_TEMPLATE="/usr/share/edk2/x64/OVMF_VARS.4m.fd"
 OVMF_VARS_LOCAL="${FIRMWARE_DIR}/OVMF_VARS.4m.fd"
 
-if [ "$UEFI" -eq 1 ]; then
-  if [ ! -f "$OVMF_CODE" ] || [ ! -f "$OVMF_VARS_TEMPLATE" ]; then
-    echo "UEFI firmware not found. Install edk2-ovmf or use --bios." >&2
-    exit 1
-  fi
-  mkdir -p "$FIRMWARE_DIR"
-  if [ ! -f "$OVMF_VARS_LOCAL" ]; then
-    cp "$OVMF_VARS_TEMPLATE" "$OVMF_VARS_LOCAL"
-    chmod u+rw "$OVMF_VARS_LOCAL"
-  fi
+if [ ! -f "$OVMF_CODE" ] || [ ! -f "$OVMF_VARS_TEMPLATE" ]; then
+  echo "UEFI firmware not found. Install edk2-ovmf." >&2
+  exit 1
+fi
+mkdir -p "$FIRMWARE_DIR"
+if [ ! -f "$OVMF_VARS_LOCAL" ]; then
+  cp "$OVMF_VARS_TEMPLATE" "$OVMF_VARS_LOCAL"
+  chmod u+rw "$OVMF_VARS_LOCAL"
 fi
 
 BOOT_DISK_PATH="${DISK_DIR}/boot-nvme.qcow2"
@@ -181,23 +167,12 @@ QEMU_ARGS+=(
   -rtc base=utc
 )
 
-if [ "$UEFI" -eq 1 ]; then
-  QEMU_ARGS+=(
-    -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE"
-    -drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL"
-  )
-fi
-
-if [ "$HEADLESS" -eq 1 ]; then
-  QEMU_ARGS+=(
-    -nographic
-    -serial mon:stdio
-  )
-else
-  QEMU_ARGS+=(
-    -display gtk,gl=on
-  )
-fi
+QEMU_ARGS+=(
+  -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE"
+  -drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL"
+  -nographic
+  -serial mon:stdio
+)
 
 QEMU_ARGS+=(
   -drive if=none,file="$BOOT_DISK_PATH",id=nvme0,format=qcow2
@@ -238,11 +213,7 @@ if [ "$ATTACH_INSTALL_MEDIA" -eq 1 ]; then
 else
   echo "  Arch ISO:    (not attached)"
 fi
-if [ "$UEFI" -eq 1 ]; then
-  echo "  Firmware:    UEFI (OVMF)"
-else
-  echo "  Firmware:    BIOS"
-fi
+echo "  Firmware:    UEFI (OVMF)"
 echo "  SSH forward: localhost:${SSH_FORWARD_PORT} -> guest:22"
 
 exec qemu-system-x86_64 "${QEMU_ARGS[@]}"

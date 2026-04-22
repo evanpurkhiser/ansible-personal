@@ -7,8 +7,6 @@ VM_DIR="${HOME}/vms/${NAME}"
 RAM_MB=4096
 CPUS=4
 SSH_FORWARD_PORT=2222
-HEADLESS=0
-UEFI=1
 ENABLE_KVM=1
 
 BASE_IMAGE_URL="https://fastly.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-basic.qcow2"
@@ -53,15 +51,13 @@ Options:
   --inject-ssh-password <p> SSH password for key injection (default: arch)
   --no-tmux                 Run QEMU directly (default is tmux session)
   --tmux-session <name>     tmux session name (default: qemu-<vm-name>)
-  --headless                Run without graphical display
   --no-kvm                  Disable KVM acceleration (useful in CI)
-  --bios                    Use legacy BIOS firmware instead of UEFI
   -h, --help                Show this help
 
 Notes:
   - Downloads Arch basic qcow2 image on first run.
   - Creates a writable overlay so the downloaded base image stays untouched.
-  - Defaults to UEFI boot when OVMF firmware is available.
+  - Requires UEFI boot with OVMF firmware.
   - Arch basic image defaults: user 'arch', password 'arch', sshd enabled.
   - Default network shape uses two NICs with real-server MACs for lan0/wan0 rules.
   - Key injection waits for SSH, then appends key to ~/.ssh/authorized_keys.
@@ -141,16 +137,8 @@ while [ "$#" -gt 0 ]; do
       TMUX_SESSION="$2"
       shift 2
       ;;
-    --headless)
-      HEADLESS=1
-      shift
-      ;;
     --no-kvm)
       ENABLE_KVM=0
-      shift
-      ;;
-    --bios)
-      UEFI=0
       shift
       ;;
     -h|--help)
@@ -192,36 +180,34 @@ OVMF_CODE="/usr/share/edk2/x64/OVMF_CODE.4m.fd"
 OVMF_VARS_TEMPLATE="/usr/share/edk2/x64/OVMF_VARS.4m.fd"
 OVMF_VARS_LOCAL="${FIRMWARE_DIR}/OVMF_VARS.4m.fd"
 
-if [ "$UEFI" -eq 1 ]; then
-  OVMF_PAIRS=(
-    "/usr/share/edk2/x64/OVMF_CODE.4m.fd:/usr/share/edk2/x64/OVMF_VARS.4m.fd"
-    "/usr/share/OVMF/OVMF_CODE_4M.fd:/usr/share/OVMF/OVMF_VARS_4M.fd"
-    "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd"
-  )
+OVMF_PAIRS=(
+  "/usr/share/edk2/x64/OVMF_CODE.4m.fd:/usr/share/edk2/x64/OVMF_VARS.4m.fd"
+  "/usr/share/OVMF/OVMF_CODE_4M.fd:/usr/share/OVMF/OVMF_VARS_4M.fd"
+  "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd"
+)
 
-  OVMF_CODE=""
-  OVMF_VARS_TEMPLATE=""
-  for pair in "${OVMF_PAIRS[@]}"; do
-    code_path="${pair%%:*}"
-    vars_path="${pair##*:}"
-    if [ -f "$code_path" ] && [ -f "$vars_path" ]; then
-      OVMF_CODE="$code_path"
-      OVMF_VARS_TEMPLATE="$vars_path"
-      break
-    fi
-  done
-
-  if [ -z "$OVMF_CODE" ] || [ -z "$OVMF_VARS_TEMPLATE" ]; then
-    echo "UEFI firmware not found. Install edk2-ovmf or use --bios." >&2
-    exit 1
+OVMF_CODE=""
+OVMF_VARS_TEMPLATE=""
+for pair in "${OVMF_PAIRS[@]}"; do
+  code_path="${pair%%:*}"
+  vars_path="${pair##*:}"
+  if [ -f "$code_path" ] && [ -f "$vars_path" ]; then
+    OVMF_CODE="$code_path"
+    OVMF_VARS_TEMPLATE="$vars_path"
+    break
   fi
+done
 
-  OVMF_VARS_LOCAL="${FIRMWARE_DIR}/$(basename "$OVMF_VARS_TEMPLATE")"
-  mkdir -p "$FIRMWARE_DIR"
-  if [ ! -f "$OVMF_VARS_LOCAL" ]; then
-    cp "$OVMF_VARS_TEMPLATE" "$OVMF_VARS_LOCAL"
-    chmod u+rw "$OVMF_VARS_LOCAL"
-  fi
+if [ -z "$OVMF_CODE" ] || [ -z "$OVMF_VARS_TEMPLATE" ]; then
+  echo "UEFI firmware not found. Install edk2-ovmf/ovmf." >&2
+  exit 1
+fi
+
+OVMF_VARS_LOCAL="${FIRMWARE_DIR}/$(basename "$OVMF_VARS_TEMPLATE")"
+mkdir -p "$FIRMWARE_DIR"
+if [ ! -f "$OVMF_VARS_LOCAL" ]; then
+  cp "$OVMF_VARS_TEMPLATE" "$OVMF_VARS_LOCAL"
+  chmod u+rw "$OVMF_VARS_LOCAL"
 fi
 
 BASE_IMAGE_PATH="${IMAGE_DIR}/Arch-Linux-x86_64-basic.qcow2"
@@ -331,32 +317,17 @@ QEMU_ARGS+=(
   -boot order=c,menu=on
 )
 
-if [ "$UEFI" -eq 1 ]; then
-  QEMU_ARGS+=(
-    -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE"
-    -drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL"
-  )
-fi
-
-if [ "$HEADLESS" -eq 1 ]; then
-  QEMU_ARGS+=(
-    -nographic
-    -serial mon:stdio
-  )
-else
-  QEMU_ARGS+=(
-    -display gtk,gl=on
-  )
-fi
+QEMU_ARGS+=(
+  -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE"
+  -drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL"
+  -nographic
+  -serial mon:stdio
+)
 
 echo "Starting VM '$NAME' from arch-boxes image"
 echo "  VM dir:      $VM_DIR"
 echo "  Boot overlay: $OVERLAY_PATH"
-if [ "$UEFI" -eq 1 ]; then
-  echo "  Firmware:    UEFI (OVMF)"
-else
-  echo "  Firmware:    BIOS"
-fi
+echo "  Firmware:    UEFI (OVMF)"
 if [ "$ENABLE_KVM" -eq 1 ]; then
   echo "  Accel:       kvm"
 else

@@ -35,6 +35,7 @@ jobs:
           set -euo pipefail
           VM_DIR="$RUNNER_TEMP/qemu-smoke"
           LOG_PATH="$RUNNER_TEMP/qemu-smoke.log"
+          TMUX_SESSION="qemu-smoke-ci"
           CACHE_DIR="$HOME/.cache/qemu-archbox"
 
           mkdir -p "$VM_DIR"
@@ -49,25 +50,36 @@ jobs:
           fi
 
           qemu/server/boot-qemu-archbox.sh \
-            --no-tmux \
             --no-kvm \
             --name qemu-smoke \
             --vm-dir "$VM_DIR" \
+            --tmux-session "$TMUX_SESSION" \
             --ssh-port 2222 \
             --compat-nic \
             --data-disk-count 1 \
             --data-disk-size 2G \
             >"$LOG_PATH" 2>&1 &
-          VM_PID=$!
+          BOOT_PID=$!
 
           cleanup() {
-            kill "$VM_PID" >/dev/null 2>&1 || true
-            wait "$VM_PID" >/dev/null 2>&1 || true
+            tmux kill-session -t "$TMUX_SESSION" >/dev/null 2>&1 || true
+            kill "$BOOT_PID" >/dev/null 2>&1 || true
+            wait "$BOOT_PID" >/dev/null 2>&1 || true
           }
           trap cleanup EXIT
 
           BANNER=""
           for _ in $(seq 1 30); do
+            if ! tmux has-session -t "$TMUX_SESSION" 2>/dev/null; then
+              echo "QEMU tmux session exited before SSH banner was ready"
+              echo "--- qemu launcher output ---"
+              sed -n '1,240p' "$LOG_PATH"
+              if [[ -f "$VM_DIR/logs/qemu-qemu-smoke-compat.log" ]]; then
+                echo "--- qemu serial log ---"
+                sed -n '1,240p' "$VM_DIR/logs/qemu-qemu-smoke-compat.log"
+              fi
+              exit 1
+            fi
             BANNER="$(timeout 3 bash -lc 'exec 3<>/dev/tcp/127.0.0.1/2222; IFS= read -r -t 2 line <&3; printf "%s" "$line"' || true)"
             if [[ "$BANNER" == SSH-2.0-* ]]; then
               break
@@ -77,8 +89,12 @@ jobs:
 
           if [[ "$BANNER" != SSH-2.0-* ]]; then
             echo "Expected SSH banner, got: '$BANNER'"
-            echo "--- qemu log ---"
+            echo "--- qemu launcher output ---"
             sed -n '1,240p' "$LOG_PATH"
+            if [[ -f "$VM_DIR/logs/qemu-qemu-smoke-compat.log" ]]; then
+              echo "--- qemu serial log ---"
+              sed -n '1,240p' "$VM_DIR/logs/qemu-qemu-smoke-compat.log"
+            fi
             exit 1
           fi
 

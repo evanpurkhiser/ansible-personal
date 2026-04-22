@@ -68,6 +68,29 @@ jobs:
           }
           trap cleanup EXIT
 
+          SESSION_READY=0
+          for _ in $(seq 1 120); do
+            if tmux has-session -t "$TMUX_SESSION" 2>/dev/null; then
+              SESSION_READY=1
+              break
+            fi
+            if ! kill -0 "$BOOT_PID" 2>/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          if [[ "$SESSION_READY" -ne 1 ]]; then
+            echo "QEMU tmux session did not start"
+            echo "--- qemu launcher output ---"
+            sed -n '1,240p' "$LOG_PATH"
+            if [[ -f "$VM_DIR/logs/qemu-qemu-smoke-compat.log" ]]; then
+              echo "--- qemu serial log ---"
+              sed -n '1,240p' "$VM_DIR/logs/qemu-qemu-smoke-compat.log"
+            fi
+            exit 1
+          fi
+
           BANNER=""
           for _ in $(seq 1 30); do
             if ! tmux has-session -t "$TMUX_SESSION" 2>/dev/null; then

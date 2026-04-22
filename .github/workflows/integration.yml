@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf tmux
       - name: Boot VM and wait for SSH banner
         run: |
           set -euo pipefail

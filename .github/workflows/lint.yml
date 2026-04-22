@@ -52,7 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 qemu-utils
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf
       - name: Boot VM and wait for SSH banner
         run: |
           set -euo pipefail
@@ -75,7 +75,6 @@ jobs:
             --headless \
             --no-tmux \
             --no-kvm \
-            --bios \
             --name qemu-smoke \
             --vm-dir "$VM_DIR" \
             --ssh-port 2222 \
@@ -142,7 +141,7 @@ jobs:
           pip install ansible
           ansible-galaxy install -r requirements.yml
           sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 qemu-utils tmux
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf tmux
       - name: Run full two-phase qemu lab
         env:
           TMPDIR: ${{ runner.temp }}
@@ -166,7 +165,6 @@ jobs:
             --vm-dir "$VM_DIR" \
             --ssh-port 2222 \
             --data-disk-size 8G \
-            --bios \
             --no-kvm
 
           if [[ -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2" ]]; then

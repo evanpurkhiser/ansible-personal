@@ -79,6 +79,10 @@
   ansible.builtin.import_tasks: network.yml
   tags: [network]
 
+- name: Phase two install
+  ansible.builtin.debug:
+    msg: Phase two install marker
+
 - name: Import hardware tasks
   ansible.builtin.import_tasks: hardware.yml
   tags: [hardware]

@@ -17,6 +17,14 @@
     owner: evan
     group: users
 
+- name: Ensure /home/evan/.local directory ownership
+  ansible.builtin.file:
+    path: /home/evan/.local
+    state: directory
+    owner: evan
+    group: users
+    mode: "0755"
+
 - name: Install dotfiles
   become: true
   become_user: evan

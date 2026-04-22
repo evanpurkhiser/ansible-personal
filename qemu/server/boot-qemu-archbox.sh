@@ -232,7 +232,6 @@ fi
 QEMU_ARGS=(
   -name "$NAME"
   -machine q35
-  -cpu host
   -smp "$CPUS"
   -m "$RAM_MB"
   -rtc base=utc
@@ -243,10 +242,12 @@ QEMU_ARGS=(
 
 if [ "$ENABLE_KVM" -eq 1 ]; then
   QEMU_ARGS+=(
+    -cpu host
     -enable-kvm
   )
 else
   QEMU_ARGS+=(
+    -cpu max
     -accel tcg,thread=multi
   )
 fi

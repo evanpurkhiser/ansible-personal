@@ -31,14 +31,29 @@
       # Common tools
       - bash-completion
       - speedtest-cli
+      - neovim
       - lsd
       - fzf
       - htop
       - atuin
       - tree
       - fd
+      - jq
       - ripgrep
       - khard
+      - ansible
+      - gogcli
+      - codespell
+      - github-cli
+      - mitmproxy
+      - shfmt
+      - tmux
+      - tree-sitter-cli
+      - unrar
+      - unzip
+      - wget
+      - zip
+      - wrangler
 
       # Other tools
       - lm_sensors
@@ -62,6 +77,7 @@
 
       # Languages
       - go
+      - deno
       - nodejs
       - npm
       - rustup
@@ -131,11 +147,13 @@
 
 - name: Import venmo-auto-cashout role
   tags: [venmo-auto-cashout]
-  ansible.builtin.import_role: { name: machines/server/service-venmo-auto-cashout }
+  ansible.builtin.import_role:
+    { name: machines/server/service-venmo-auto-cashout }
 
 - name: Import venmo-lunchmoney-ai role
   tags: [venmo-lunchmoney-ai]
-  ansible.builtin.import_role: { name: machines/server/service-venmo-lunchmoney-ai }
+  ansible.builtin.import_role:
+    { name: machines/server/service-venmo-lunchmoney-ai }
 
 - name: Import atuin role
   tags: [atuin]
@@ -143,7 +161,8 @@
 
 - name: Import podman-auto-update role
   tags: [podman-auto-update]
-  ansible.builtin.import_role: { name: machines/server/service-podman-auto-update }
+  ansible.builtin.import_role:
+    { name: machines/server/service-podman-auto-update }
 
 - name: Import zrepl role
   tags: [zrepl]
@@ -151,7 +170,8 @@
 
 - name: Import record-file-history role
   tags: [record-file-history]
-  ansible.builtin.import_role: { name: machines/server/service-record-file-history }
+  ansible.builtin.import_role:
+    { name: machines/server/service-record-file-history }
 
 - name: Import purkhiser-bot role
   tags: [purkhiser-bot]
@@ -163,15 +183,18 @@
 
 - name: Import speedtest-monitor role
   tags: [speedtest-monitor]
-  ansible.builtin.import_role: { name: machines/server/service-speedtest-monitor }
+  ansible.builtin.import_role:
+    { name: machines/server/service-speedtest-monitor }
 
 - name: Import auto-system-update role
   tags: [auto-system-update]
-  ansible.builtin.import_role: { name: machines/server/service-auto-system-update }
+  ansible.builtin.import_role:
+    { name: machines/server/service-auto-system-update }
 
 - name: Import bambulab-lights-off role
   tags: [bambulab-lights-off]
-  ansible.builtin.import_role: { name: machines/server/service-bambulab-lights-off }
+  ansible.builtin.import_role:
+    { name: machines/server/service-bambulab-lights-off }
 
 - name: Import opencode role
   tags: [opencode]
@@ -183,4 +206,5 @@
 
 - name: Import iptorrents-keepalive role
   tags: [iptorrents-keepalive]
-  ansible.builtin.import_role: { name: machines/server/service-iptorrents-keepalive }
+  ansible.builtin.import_role:
+    { name: machines/server/service-iptorrents-keepalive }

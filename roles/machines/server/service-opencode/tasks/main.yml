@@ -47,6 +47,7 @@
   ansible.builtin.command: id -u evan
   register: machines_evan_uid
   changed_when: false
+  check_mode: false
 
 - name: Enable import-environment user service
   ansible.builtin.systemd:
@@ -57,6 +58,7 @@
   become_user: evan
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid.stdout }}"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ machines_evan_uid.stdout }}/bus"
 
 - name: Install opencode systemd user service
   ansible.builtin.copy:
@@ -75,3 +77,4 @@
   become_user: evan
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid.stdout }}"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ machines_evan_uid.stdout }}/bus"

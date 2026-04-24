@@ -43,11 +43,15 @@
     mode: "0644"
   notify: Systemd user daemon-reload
 
-- name: Get evan user id
-  ansible.builtin.command: id -u evan
-  register: machines_evan_uid
-  changed_when: false
-  check_mode: false
+- name: Gather evan passwd entry
+  ansible.builtin.getent:
+    database: passwd
+    key: evan
+    split: ":"
+
+- name: Set evan runtime uid
+  ansible.builtin.set_fact:
+    machines_evan_uid: "{{ ansible_facts.getent_passwd.evan[1] }}"
 
 - name: Enable import-environment user service
   ansible.builtin.systemd:
@@ -57,8 +61,8 @@
   become: true
   become_user: evan
   environment:
-    XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid.stdout }}"
-    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ machines_evan_uid.stdout }}/bus"
+    XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid }}"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ machines_evan_uid }}/bus"
 
 - name: Install opencode systemd user service
   ansible.builtin.copy:
@@ -76,5 +80,5 @@
   become: true
   become_user: evan
   environment:
-    XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid.stdout }}"
-    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ machines_evan_uid.stdout }}/bus"
+    XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid }}"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ machines_evan_uid }}/bus"

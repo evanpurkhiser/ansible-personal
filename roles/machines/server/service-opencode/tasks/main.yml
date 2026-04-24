@@ -45,7 +45,7 @@
 
 - name: Get evan user id
   ansible.builtin.command: id -u evan
-  register: evan_uid
+  register: machines_evan_uid
   changed_when: false
 
 - name: Enable import-environment user service
@@ -56,7 +56,7 @@
   become: true
   become_user: evan
   environment:
-    XDG_RUNTIME_DIR: "/run/user/{{ evan_uid.stdout }}"
+    XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid.stdout }}"
 
 - name: Install opencode systemd user service
   ansible.builtin.copy:
@@ -74,4 +74,4 @@
   become: true
   become_user: evan
   environment:
-    XDG_RUNTIME_DIR: "/run/user/{{ evan_uid.stdout }}"
+    XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid.stdout }}"

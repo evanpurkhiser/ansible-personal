@@ -55,11 +55,17 @@ rest_command:
 media_source:
 
 rest:
-  - resource: https://dev.lunchmoney.app/v1/transactions
+  - resource_template: >
+      https://dev.lunchmoney.app/v2/transactions
+      ?status=unreviewed
+      &start_date={{ (now() - timedelta(days=60)).strftime('%Y-%m-%d') }}
+      &end_date={{ now().strftime('%Y-%m-%d') }}
+      &include_pending=false
+      &include_split_parents=false
+      &include_group_children=false
+      &limit=2000
     method: GET
     scan_interval: 300
-    params:
-      status: "uncleared"
     headers:
       Authorization: !secret lunchmoney_token
       Content-Type: application/json

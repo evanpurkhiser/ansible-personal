@@ -7,8 +7,7 @@ VM_DIR="${HOME}/vms/${NAME}"
 RAM_MB=4096
 CPUS=4
 SSH_FORWARD_PORT=2222
-HEADLESS=0
-UEFI=1
+ENABLE_KVM=1
 
 BASE_IMAGE_URL="https://fastly.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-basic.qcow2"
 BASE_IMAGE_SHA256_URL="https://fastly.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-basic.qcow2.SHA256"
@@ -24,6 +23,8 @@ INJECT_SSH_USER="arch"
 INJECT_SSH_PASSWORD="arch"
 START_IN_TMUX=1
 TMUX_SESSION=""
+LOG_PATH=""
+KERNEL_SERIAL_CMDLINE="console=tty1 console=ttyS0"
 
 usage() {
   cat <<'EOF'
@@ -52,14 +53,14 @@ Options:
   --inject-ssh-password <p> SSH password for key injection (default: arch)
   --no-tmux                 Run QEMU directly (default is tmux session)
   --tmux-session <name>     tmux session name (default: qemu-<vm-name>)
-  --headless                Run without graphical display
-  --bios                    Use legacy BIOS firmware instead of UEFI
+  --log-path <path>         Log file path for tmux-backed QEMU output
+  --no-kvm                  Disable KVM acceleration (useful in CI)
   -h, --help                Show this help
 
 Notes:
   - Downloads Arch basic qcow2 image on first run.
   - Creates a writable overlay so the downloaded base image stays untouched.
-  - Defaults to UEFI boot when OVMF firmware is available.
+  - Requires UEFI boot with OVMF firmware.
   - Arch basic image defaults: user 'arch', password 'arch', sshd enabled.
   - Default network shape uses two NICs with real-server MACs for lan0/wan0 rules.
   - Key injection waits for SSH, then appends key to ~/.ssh/authorized_keys.
@@ -139,12 +140,12 @@ while [ "$#" -gt 0 ]; do
       TMUX_SESSION="$2"
       shift 2
       ;;
-    --headless)
-      HEADLESS=1
-      shift
+    --log-path)
+      LOG_PATH="$2"
+      shift 2
       ;;
-    --bios)
-      UEFI=0
+    --no-kvm)
+      ENABLE_KVM=0
       shift
       ;;
     -h|--help)
@@ -180,22 +181,49 @@ fi
 IMAGE_DIR="${VM_DIR}/images"
 DISK_DIR="${VM_DIR}/disks"
 FIRMWARE_DIR="${VM_DIR}/firmware"
-mkdir -p "$IMAGE_DIR" "$DISK_DIR"
+LOG_DIR="${VM_DIR}/logs"
+mkdir -p "$IMAGE_DIR" "$DISK_DIR" "$LOG_DIR"
+
+if [ -z "$LOG_PATH" ]; then
+  LOG_PHASE_TAG="$PHASE"
+  if [ "$COMPAT_NIC" -eq 1 ]; then
+    LOG_PHASE_TAG="compat"
+  fi
+  LOG_PATH="${LOG_DIR}/qemu-${NAME}-${LOG_PHASE_TAG}.log"
+fi
 
 OVMF_CODE="/usr/share/edk2/x64/OVMF_CODE.4m.fd"
 OVMF_VARS_TEMPLATE="/usr/share/edk2/x64/OVMF_VARS.4m.fd"
 OVMF_VARS_LOCAL="${FIRMWARE_DIR}/OVMF_VARS.4m.fd"
 
-if [ "$UEFI" -eq 1 ]; then
-  if [ ! -f "$OVMF_CODE" ] || [ ! -f "$OVMF_VARS_TEMPLATE" ]; then
-    echo "UEFI firmware not found. Install edk2-ovmf or use --bios." >&2
-    exit 1
+OVMF_PAIRS=(
+  "/usr/share/edk2/x64/OVMF_CODE.4m.fd:/usr/share/edk2/x64/OVMF_VARS.4m.fd"
+  "/usr/share/OVMF/OVMF_CODE_4M.fd:/usr/share/OVMF/OVMF_VARS_4M.fd"
+  "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd"
+)
+
+OVMF_CODE=""
+OVMF_VARS_TEMPLATE=""
+for pair in "${OVMF_PAIRS[@]}"; do
+  code_path="${pair%%:*}"
+  vars_path="${pair##*:}"
+  if [ -f "$code_path" ] && [ -f "$vars_path" ]; then
+    OVMF_CODE="$code_path"
+    OVMF_VARS_TEMPLATE="$vars_path"
+    break
   fi
-  mkdir -p "$FIRMWARE_DIR"
-  if [ ! -f "$OVMF_VARS_LOCAL" ]; then
-    cp "$OVMF_VARS_TEMPLATE" "$OVMF_VARS_LOCAL"
-    chmod u+rw "$OVMF_VARS_LOCAL"
-  fi
+done
+
+if [ -z "$OVMF_CODE" ] || [ -z "$OVMF_VARS_TEMPLATE" ]; then
+  echo "UEFI firmware not found. Install edk2-ovmf/ovmf." >&2
+  exit 1
+fi
+
+OVMF_VARS_LOCAL="${FIRMWARE_DIR}/$(basename "$OVMF_VARS_TEMPLATE")"
+mkdir -p "$FIRMWARE_DIR"
+if [ ! -f "$OVMF_VARS_LOCAL" ]; then
+  cp "$OVMF_VARS_TEMPLATE" "$OVMF_VARS_LOCAL"
+  chmod u+rw "$OVMF_VARS_LOCAL"
 fi
 
 BASE_IMAGE_PATH="${IMAGE_DIR}/Arch-Linux-x86_64-basic.qcow2"
@@ -225,9 +253,7 @@ fi
 
 QEMU_ARGS=(
   -name "$NAME"
-  -enable-kvm
   -machine q35
-  -cpu host
   -smp "$CPUS"
   -m "$RAM_MB"
   -rtc base=utc
@@ -235,6 +261,18 @@ QEMU_ARGS=(
   -device nvme,drive=nvme0,serial=232880490001327413C4
   -device ich9-ahci,id=ahci
 )
+
+if [ "$ENABLE_KVM" -eq 1 ]; then
+  QEMU_ARGS+=(
+    -cpu host
+    -enable-kvm
+  )
+else
+  QEMU_ARGS+=(
+    -cpu max
+    -accel tcg,thread=multi
+  )
+fi
 
 for i in $(seq 1 "$DATA_DISK_COUNT"); do
   DATA_DISK_PATH="${DISK_DIR}/data-sata${i}.qcow2"
@@ -295,34 +333,27 @@ QEMU_ARGS+=(
   -boot order=c,menu=on
 )
 
-if [ "$UEFI" -eq 1 ]; then
-  QEMU_ARGS+=(
-    -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE"
-    -drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL"
-  )
-fi
-
-if [ "$HEADLESS" -eq 1 ]; then
-  QEMU_ARGS+=(
-    -nographic
-    -serial mon:stdio
-  )
-else
-  QEMU_ARGS+=(
-    -display gtk,gl=on
-  )
-fi
+QEMU_ARGS+=(
+  -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE"
+  -drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL"
+  -smbios type=11,value="io.systemd.stub.kernel-cmdline-extra=${KERNEL_SERIAL_CMDLINE}"
+  -nographic
+  -serial mon:stdio
+)
 
 echo "Starting VM '$NAME' from arch-boxes image"
 echo "  VM dir:      $VM_DIR"
 echo "  Boot overlay: $OVERLAY_PATH"
-if [ "$UEFI" -eq 1 ]; then
-  echo "  Firmware:    UEFI (OVMF)"
+echo "  Firmware:    UEFI (OVMF)"
+if [ "$ENABLE_KVM" -eq 1 ]; then
+  echo "  Accel:       kvm"
 else
-  echo "  Firmware:    BIOS"
+  echo "  Accel:       tcg"
 fi
+echo "  Cmdline:     ${KERNEL_SERIAL_CMDLINE} (systemd-stub SMBIOS hint)"
 echo "  SSH:         ssh arch@127.0.0.1 -p ${SSH_FORWARD_PORT}"
 echo "  Credentials: arch / arch"
+echo "  Log:         ${LOG_PATH}"
 if [ "$COMPAT_NIC" -eq 1 ]; then
   echo "  NIC mode:    compatibility (single virtio-net)"
 else
@@ -356,13 +387,25 @@ EOF
       exit 0
     fi
 
-    DISPLAY="${DISPLAY:-qemu-askpass}" SSH_ASKPASS="$ASKPASS_SCRIPT" SSH_ASKPASS_REQUIRE=force \
-      QEMU_INJECT_SSH_PASSWORD="$INJECT_SSH_PASSWORD" \
-      setsid -w ssh -o PubkeyAuthentication=no -o PreferredAuthentications=password \
-      -o StrictHostKeyChecking=no -o UserKnownHostsFile="$KNOWN_HOSTS_PATH" \
-      -o ConnectTimeout=8 -p "$SSH_FORWARD_PORT" "${INJECT_SSH_USER}@127.0.0.1" \
-      'mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && cat >> ~/.ssh/authorized_keys' \
-      < "$INJECT_SSH_KEY_PATH" >"$INJECT_LOG_PATH" 2>&1 || true
+    : >"$INJECT_LOG_PATH"
+    injected=0
+    for _ in $(seq 1 120); do
+      if DISPLAY="${DISPLAY:-qemu-askpass}" SSH_ASKPASS="$ASKPASS_SCRIPT" SSH_ASKPASS_REQUIRE=force \
+        QEMU_INJECT_SSH_PASSWORD="$INJECT_SSH_PASSWORD" \
+        setsid -w ssh -o PubkeyAuthentication=no -o PreferredAuthentications=password \
+        -o StrictHostKeyChecking=no -o UserKnownHostsFile="$KNOWN_HOSTS_PATH" \
+        -o ConnectTimeout=8 -p "$SSH_FORWARD_PORT" "${INJECT_SSH_USER}@127.0.0.1" \
+        'mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && cat >> ~/.ssh/authorized_keys' \
+        < "$INJECT_SSH_KEY_PATH" >>"$INJECT_LOG_PATH" 2>&1; then
+        injected=1
+        break
+      fi
+      sleep 2
+    done
+
+    if [ "$injected" -ne 1 ]; then
+      echo "SSH key injection failed after retries" >>"$INJECT_LOG_PATH"
+    fi
   ) &
   disown >/dev/null 2>&1 || true
 fi
@@ -384,7 +427,18 @@ if [ "$START_IN_TMUX" -eq 1 ]; then
     QEMU_COMMAND+=" $(printf '%q' "$arg")"
   done
 
-  tmux new-session -d -s "$TMUX_SESSION" "$QEMU_COMMAND"
+  QEMU_LAUNCHER_PATH="${LOG_DIR}/launch-${NAME}.sh"
+  cat > "$QEMU_LAUNCHER_PATH" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+set -o pipefail
+stdbuf -oL -eL ${QEMU_COMMAND} \
+  2>&1 | awk '{ print strftime("[%Y-%m-%d %H:%M:%S]"), \$0; fflush(); }' \
+  | tee -a $(printf '%q' "$LOG_PATH")
+EOF
+  chmod 700 "$QEMU_LAUNCHER_PATH"
+
+  tmux new-session -d -s "$TMUX_SESSION" "$QEMU_LAUNCHER_PATH"
   echo "Started tmux session: $TMUX_SESSION"
   echo "Attach with: tmux attach -t $TMUX_SESSION"
   exit 0

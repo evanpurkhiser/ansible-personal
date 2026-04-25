@@ -1,0 +1,200 @@
+name: integration
+on:
+  pull_request:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  qemu-smoke:
+    name: Boot qemu arch-box smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve arch-box image hash
+        id: archbox-image
+        run: |
+          set -euo pipefail
+          SHA_LINE="$(curl -fsSL https://fastly.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-basic.qcow2.SHA256)"
+          IMAGE_HASH="${SHA_LINE%% *}"
+          echo "hash=${IMAGE_HASH}" >> "$GITHUB_OUTPUT"
+      - name: Restore arch-box image cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/qemu-archbox
+          key: ${{ runner.os }}-qemu-archbox-${{ steps.archbox-image.outputs.hash }}
+      - name: Install qemu tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf tmux
+      - name: Boot VM and wait for SSH banner
+        run: |
+          set -euo pipefail
+          VM_DIR="$RUNNER_TEMP/qemu-smoke"
+          LOG_PATH="$RUNNER_TEMP/qemu-smoke.log"
+          TMUX_SESSION="qemu-smoke-ci"
+          CACHE_DIR="$HOME/.cache/qemu-archbox"
+
+          mkdir -p "$VM_DIR"
+          mkdir -p "$VM_DIR/images"
+          mkdir -p "$CACHE_DIR"
+
+          if [[ -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2" ]]; then
+            cp -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2" "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2"
+          fi
+          if [[ -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256" ]]; then
+            cp -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256" "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256"
+          fi
+
+          qemu/server/boot-qemu-archbox.sh \
+            --no-kvm \
+            --name qemu-smoke \
+            --vm-dir "$VM_DIR" \
+            --tmux-session "$TMUX_SESSION" \
+            --ssh-port 2222 \
+            --compat-nic \
+            --data-disk-count 1 \
+            --data-disk-size 2G \
+            >"$LOG_PATH" 2>&1 &
+          BOOT_PID=$!
+
+          cleanup() {
+            tmux kill-session -t "$TMUX_SESSION" >/dev/null 2>&1 || true
+            kill "$BOOT_PID" >/dev/null 2>&1 || true
+            wait "$BOOT_PID" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          SESSION_READY=0
+          for _ in $(seq 1 120); do
+            if tmux has-session -t "$TMUX_SESSION" 2>/dev/null; then
+              SESSION_READY=1
+              break
+            fi
+            if ! kill -0 "$BOOT_PID" 2>/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          if [[ "$SESSION_READY" -ne 1 ]]; then
+            echo "QEMU tmux session did not start"
+            echo "--- qemu launcher output ---"
+            sed -n '1,240p' "$LOG_PATH"
+            if [[ -f "$VM_DIR/logs/qemu-qemu-smoke-compat.log" ]]; then
+              echo "--- qemu serial log ---"
+              sed -n '1,240p' "$VM_DIR/logs/qemu-qemu-smoke-compat.log"
+            fi
+            exit 1
+          fi
+
+          BANNER=""
+          for _ in $(seq 1 180); do
+            if ! tmux has-session -t "$TMUX_SESSION" 2>/dev/null; then
+              echo "QEMU tmux session exited before SSH banner was ready"
+              echo "--- qemu launcher output ---"
+              sed -n '1,240p' "$LOG_PATH"
+              if [[ -f "$VM_DIR/logs/qemu-qemu-smoke-compat.log" ]]; then
+                echo "--- qemu serial log ---"
+                sed -n '1,240p' "$VM_DIR/logs/qemu-qemu-smoke-compat.log"
+              fi
+              exit 1
+            fi
+            BANNER="$(timeout 3 bash -lc 'exec 3<>/dev/tcp/127.0.0.1/2222; IFS= read -r -t 2 line <&3; printf "%s" "$line"' || true)"
+            if [[ "$BANNER" == SSH-2.0-* ]]; then
+              break
+            fi
+            sleep 1
+          done
+
+          if [[ "$BANNER" != SSH-2.0-* ]]; then
+            echo "Expected SSH banner, got: '$BANNER'"
+            echo "--- qemu launcher output ---"
+            sed -n '1,240p' "$LOG_PATH"
+            if [[ -f "$VM_DIR/logs/qemu-qemu-smoke-compat.log" ]]; then
+              echo "--- qemu serial log ---"
+              sed -n '1,240p' "$VM_DIR/logs/qemu-qemu-smoke-compat.log"
+            fi
+            exit 1
+          fi
+
+          if [[ -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2" ]]; then
+            cp -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2" "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2"
+          fi
+          if [[ -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256" ]]; then
+            cp -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256" "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256"
+          fi
+
+          echo "SSH banner: $BANNER"
+
+  qemu-full-lab:
+    name: Full qemu lab apply
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve arch-box image hash
+        id: archbox-image
+        run: |
+          set -euo pipefail
+          SHA_LINE="$(curl -fsSL https://fastly.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-basic.qcow2.SHA256)"
+          IMAGE_HASH="${SHA_LINE%% *}"
+          echo "hash=${IMAGE_HASH}" >> "$GITHUB_OUTPUT"
+      - name: Restore arch-box image cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/qemu-archbox
+          key: ${{ runner.os }}-qemu-archbox-${{ steps.archbox-image.outputs.hash }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          pip install ansible
+          ansible-galaxy install -r requirements.yml
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf tmux
+      - name: Run full two-phase qemu lab
+        env:
+          TMPDIR: ${{ runner.temp }}
+        run: |
+          set -euo pipefail
+
+          VM_DIR="${{ runner.temp }}/ci-qemu-lab"
+          CACHE_DIR="$HOME/.cache/qemu-archbox"
+          mkdir -p "$VM_DIR/images"
+          mkdir -p "$CACHE_DIR"
+
+          if [[ -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2" ]]; then
+            cp -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2" "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2"
+          fi
+          if [[ -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256" ]]; then
+            cp -f "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256" "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256"
+          fi
+
+          qemu/server/run-qemu-server-apply.sh \
+            --name ci-qemu-lab \
+            --vm-dir "$VM_DIR" \
+            --ssh-port 2222 \
+            --data-disk-size 8G \
+            --no-kvm
+
+          if [[ -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2" ]]; then
+            cp -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2" "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2"
+          fi
+          if [[ -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256" ]]; then
+            cp -f "$VM_DIR/images/Arch-Linux-x86_64-basic.qcow2.SHA256" "$CACHE_DIR/Arch-Linux-x86_64-basic.qcow2.SHA256"
+          fi
+      - name: Upload qemu lab artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qemu-lab-artifacts
+          path: |
+            ${{ runner.temp }}/ci-qemu-lab
+            /tmp/boot-qemu-archbox-keyinject-*.log
+          if-no-files-found: ignore

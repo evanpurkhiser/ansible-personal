@@ -63,7 +63,7 @@ Available tags: `zfs`, `packages`, `sshd`, `network`, `hardware`, `pam-ssh-agent
 Secrets live in `vars/secrets.yml`, which is gitignored and never committed. Generate it by running:
 
 ```sh
-./makesecrets.sh
+./makesecrets.py
 ```
 
 This requires the 1Password CLI (`op`) to be authenticated. The `common` role will run this automatically if the file doesn't exist yet.

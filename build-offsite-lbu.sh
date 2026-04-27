@@ -31,7 +31,7 @@ mkdir -p "$OUTPUT_DIR"
 # Ensure secrets are available
 if [ ! -f "$SCRIPT_DIR/vars/secrets.yml" ]; then
 	echo "==> Generating secrets from 1password..."
-	sh "$SCRIPT_DIR/makesecrets.sh"
+	"$SCRIPT_DIR/makesecrets.py"
 fi
 
 # Generate a throwaway SSH key for connecting to the build container.

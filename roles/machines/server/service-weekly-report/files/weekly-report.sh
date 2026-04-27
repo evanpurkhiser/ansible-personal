@@ -18,7 +18,7 @@ echo "🧠 $memory"
 
 # Temperatures
 temp_cpu="$(sensors coretemp-isa-0000 -j | jq '."coretemp-isa-0000"."Package id 0".temp1_input | (. * 10 | round / 10)')"
-temp_mem="$(sensors jc42-i2c-1-1a -j | jq '."jc42-i2c-1-1a".temp1.temp1_input | (. * 10 | round / 10)')"
+temp_mem="$(sensors -j | jq 'first(to_entries[] | select(.key | startswith("jc42-")) | .value.temp1.temp1_input) | (. * 10 | round / 10)')"
 temp_ssd="$(sensors nvme-pci-0500 -j | jq '."nvme-pci-0500".Composite.temp1_input | (. * 10 | round / 10)')"
 echo "❄️ *cpu:* ${temp_cpu}° / *mem:* ${temp_mem}° / *ssd:* ${temp_ssd}"
 

@@ -63,12 +63,6 @@ SECRETS: Secrets = {
         "openai_token": "op://Private/fc4edctkopi57hlm476o6r46oq/Instagram Saver API Key",
     },
 
-    # Bambu Lab P1S
-    "bambulab_printer": {
-        "serial": "op://Private/rkrwve7w33m5x7xo7bhk3ppd4y/Printer Serial",
-        "access_code": "op://Private/rkrwve7w33m5x7xo7bhk3ppd4y/Printer Access Code",
-    },
-
     # opencode SSH agent proxy key
     "opencode_ssh_agent_proxy_key": "op://Private/c2indiikwssnyfxsdsy7w6ac44/private key",
 

@@ -191,11 +191,6 @@
   ansible.builtin.import_role:
     { name: machines/server/service-auto-system-update }
 
-- name: Import bambulab-lights-off role
-  tags: [bambulab-lights-off]
-  ansible.builtin.import_role:
-    { name: machines/server/service-bambulab-lights-off }
-
 - name: Import opencode role
   tags: [opencode]
   ansible.builtin.import_role: { name: machines/server/service-opencode }

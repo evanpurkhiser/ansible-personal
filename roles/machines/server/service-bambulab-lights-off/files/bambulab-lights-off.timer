@@ -1,8 +1,0 @@
-[Unit]
-Description=Turn off Bambu Lab printer lights when idle
-
-[Timer]
-OnCalendar=*:0/15
-
-[Install]
-WantedBy=timers.target

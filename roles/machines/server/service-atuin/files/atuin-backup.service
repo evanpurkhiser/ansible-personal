@@ -1,0 +1,13 @@
+[Unit]
+Description=Dump the atuin postgres database
+Requires=container-atuin-postgres.service
+After=container-atuin-postgres.service
+
+[Service]
+ReadWritePaths=/mnt/documents/archived/atuin-backup
+ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
+  /usr/bin/sh /usr/local/bin/atuin-backup.sh
+
+# Report runs to sentry monitors.
+Environment=SENTRY_MONITOR_SLUG=atuin-backup
+Environment=SENTRY_DSN="https://d97d5845a18449d5a2966781f37e5bc4@o126623.ingest.sentry.io/4504880681582592"

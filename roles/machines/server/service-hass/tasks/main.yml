@@ -4,6 +4,17 @@
     state: directory
     mode: "0755"
 
+# HA's built-in backups land here. Living on the documents ZFS pool means
+# zrepl picks them up in the hourly snapshot and replicates them offsite
+# with the same retention as the rest of the pool.
+- name: Ensure hass backup directory on ZFS
+  ansible.builtin.file:
+    path: /mnt/documents/archived/home-assistant-backups
+    state: directory
+    owner: evan
+    group: users
+    mode: "0755"
+
 - name: Ensure hass configuration
   notify: Restart home-assistant
   ansible.builtin.copy:
@@ -42,6 +53,7 @@
     network: host
     volume:
       - "/var/lib/hass:/config"
+      - "/mnt/documents/archived/home-assistant-backups:/config/backups"
       - "/etc/localtime:/etc/localtime:ro"
     device:
       - "/dev/zwave:/dev/zwave"

@@ -3,7 +3,7 @@ Description=Record the name of all documents
 
 [Service]
 ReadOnlyPaths=/mnt/documents
-ReadWritePaths=/mnt/documents/archived/file-history
+ReadWritePaths=/mnt/documents/backups/file-history
 ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/sh /usr/local/bin/record-file-history.sh
 

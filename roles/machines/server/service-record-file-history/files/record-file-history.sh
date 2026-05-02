@@ -6,7 +6,7 @@ set -e
 # useful in the scenario where I have a catastophic data loss and I would like
 # to know what files I had that were NOT being backed up (such as large media)
 
-LOCATION="/mnt/documents/archived/file-history"
+LOCATION="/mnt/documents/backups/file-history"
 FILE_NAME="$(date +'%Y-%m-%d_%H-%M').txt"
 
 mkdir -p "${LOCATION}"

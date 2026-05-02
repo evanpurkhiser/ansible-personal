@@ -1,6 +1,6 @@
 - name: Add evanpurkhiser package signing key
   community.general.pacman_key:
-    id: B5849CBB1122C462550F2B72A04148F92E741E20
+    id: DE0CDD0EBA7CBA65BC23BA28E9A664529E7CACFB
     keyserver: keyserver.ubuntu.com
     ensure_trusted: true
     state: present

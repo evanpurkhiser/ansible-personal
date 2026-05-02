@@ -9,7 +9,7 @@
 # with the same retention as the rest of the pool.
 - name: Ensure hass backup directory on ZFS
   ansible.builtin.file:
-    path: /mnt/documents/archived/home-assistant-backups
+    path: /mnt/documents/backups/home-assistant
     state: directory
     owner: evan
     group: users
@@ -53,7 +53,7 @@
     network: host
     volume:
       - "/var/lib/hass:/config"
-      - "/mnt/documents/archived/home-assistant-backups:/config/backups"
+      - "/mnt/documents/backups/home-assistant:/config/backups"
       - "/etc/localtime:/etc/localtime:ro"
     device:
       - "/dev/zwave:/dev/zwave"

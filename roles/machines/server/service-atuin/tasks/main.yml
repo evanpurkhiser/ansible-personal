@@ -98,7 +98,7 @@
 
 - name: Ensure atuin backup directory on ZFS
   ansible.builtin.file:
-    path: /mnt/documents/archived/atuin-backup
+    path: /mnt/documents/backups/atuin
     state: directory
     mode: "0755"
 

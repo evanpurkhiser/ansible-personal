@@ -4,7 +4,7 @@ Requires=container-atuin-postgres.service
 After=container-atuin-postgres.service
 
 [Service]
-ReadWritePaths=/mnt/documents/archived/atuin-backup
+ReadWritePaths=/mnt/documents/backups/atuin
 ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/sh /usr/local/bin/atuin-backup.sh
 

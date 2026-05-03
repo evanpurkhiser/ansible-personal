@@ -37,11 +37,6 @@
       POSTGRES_USER: atuin
       POSTGRES_PASSWORD: atuin
       POSTGRES_DB: atuin
-    generate_systemd:
-      after: pod-atuin.service
-      path: /etc/systemd/system/
-      restart_policy: always
-      new: true
 
 - name: Ensure atuin server container
   containers.podman.podman_container:
@@ -57,11 +52,6 @@
       ATUIN_PORT: 8888
       ATUIN_OPEN_REGISTRATION: false
       ATUIN_DB_URI: "postgres://atuin:atuin@localhost/atuin"
-    generate_systemd:
-      after: pod-atuin.service
-      path: /etc/systemd/system/
-      restart_policy: always
-      new: true
 
 - name: Ensure atuin-abacus container
   containers.podman.podman_container:
@@ -75,11 +65,6 @@
       CACHE_TTL_SECONDS: "300"
     label:
       io.containers.autoupdate: registry
-    generate_systemd:
-      after: pod-atuin.service
-      path: /etc/systemd/system/
-      restart_policy: always
-      new: true
 
 - name: Ensure atuin pod is running
   ansible.builtin.systemd:

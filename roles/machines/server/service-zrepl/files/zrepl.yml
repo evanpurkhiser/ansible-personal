@@ -30,6 +30,10 @@ jobs:
           negate: true
           regex: "^zrepl_.*"
       keep_receiver:
+        # Keep all snapshots in the newest minute to avoid pruning in-flight holds
+        - type: grid
+          grid: 1x1m(keep=all)
+          regex: "^zrepl_.*"
         # 2 weeks daily, 8 weeks weekly, 6 months monthly
         - type: grid
           grid: 14x1d | 8x1w | 6x30d

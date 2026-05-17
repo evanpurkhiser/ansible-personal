@@ -1,0 +1,14 @@
+[Unit]
+Description=Purkhiser Bot HTTP notification service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/purkhiser-bot.conf
+ExecStart=/usr/local/bin/purkhiser-bot-server.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -1,13 +1,44 @@
 - name: Add Purkhiser Bot token as conf
   ansible.builtin.copy:
     dest: /etc/purkhiser-bot.conf
-    mode: "0666"
+    mode: "0600"
     content: |
       TELEGRAM_TOKEN={{ purkhiser_bot_token }}
       TELEGRAM_CHANNEL=-722956237
+      PURKHISER_BOT_PORT=9090
 
 - name: Install purkhiser-bot.sh script
   ansible.builtin.copy:
     src: purkhiser-bot.sh
     dest: /usr/local/bin/
-    mode: "0777"
+    mode: "0755"
+
+- name: Install purkhiser-bot-server.py
+  notify:
+    - Systemd daemon-reload
+    - Restart purkhiser-bot
+  ansible.builtin.copy:
+    src: purkhiser-bot-server.py
+    dest: /usr/local/bin/
+    mode: "0755"
+
+- name: Install purkhiser-bot systemd service
+  notify:
+    - Systemd daemon-reload
+    - Restart purkhiser-bot
+  ansible.builtin.copy:
+    src: purkhiser-bot.service
+    dest: /etc/systemd/system/purkhiser-bot.service
+    mode: "0644"
+
+- name: Enable purkhiser-bot service
+  ansible.builtin.service:
+    name: purkhiser-bot.service
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Register purkhiser-bot as tailscale service
+  tailscale_service:
+    name: purkhiser-bot
+    local_port: 9090

@@ -1,0 +1,8 @@
+- name: Systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart purkhiser-bot
+  ansible.builtin.service:
+    name: purkhiser-bot.service
+    state: restarted

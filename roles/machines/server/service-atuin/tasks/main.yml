@@ -106,3 +106,8 @@
     name: atuin-backup.timer
     state: started
     enabled: true
+
+- name: Register atuin as tailscale service
+  tailscale_service:
+    name: atuin
+    local_port: 8888

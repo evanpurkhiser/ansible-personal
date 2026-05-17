@@ -143,3 +143,8 @@
     src: transmission-helper-handler.sh
     dest: /usr/local/bin/transmission-helper-handler.sh
     mode: "0766"
+
+- name: Register transmission as tailscale service
+  tailscale_service:
+    name: transmission
+    local_port: 9091

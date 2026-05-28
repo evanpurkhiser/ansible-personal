@@ -5,4 +5,4 @@ Description=Run a periodic IPTorrents authenticated request
 Type=oneshot
 User=evan
 Environment=HOME=/home/evan
-ExecStart=/home/evan/.local/bin/ipt search "linux" --limit 1
+ExecStart=/usr/bin/ipt search "linux" --limit 1

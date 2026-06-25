@@ -1,4 +1,5 @@
 - name: Install things3-cloud from evanpurkhiser pacman repo
+  notify: Restart things3-server
   community.general.pacman:
     name: things3-cloud
     state: present

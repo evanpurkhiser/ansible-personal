@@ -1,14 +1,31 @@
 name: lint
 on:
+  pull_request:
   push:
-    branches: [main]
+    branches:
+      - "**"
+  workflow_dispatch:
 
 jobs:
   lint:
     name: Lint with ansible-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - run: pip install ansible ansible-lint
-      - run: ansible-lint
+      - run: ansible-lint --profile min
+
+  bash-syntax:
+    name: Validate bash script syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check qemu/server scripts
+        run: |
+          set -euo pipefail
+          for script in qemu/server/*.sh; do
+            bash -n "$script"
+          done

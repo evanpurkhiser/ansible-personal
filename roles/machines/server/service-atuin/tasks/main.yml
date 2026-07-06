@@ -1,11 +1,13 @@
 - name: Ensure atuin directories
   with_items:
-    - atuin/data
-    - atuin/config
+    - path: atuin/data
+      mode: "0700"
+    - path: atuin/config
+      mode: "0755"
   ansible.builtin.file:
-    path: /var/lib/{{ item }}
+    path: /var/lib/{{ item.path }}
     state: directory
-    mode: "0755"
+    mode: "{{ item.mode }}"
 
 - name: Ensure atuin server.toml
   ansible.builtin.copy:

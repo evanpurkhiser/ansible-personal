@@ -7,8 +7,11 @@ jobs:
   lint:
     name: Lint with ansible-lint
     runs-on: ubuntu-latest
+    env:
+      ANSIBLE_LIBRARY: ./library
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
       - run: pip install ansible ansible-lint
+      - run: ansible-galaxy collection install -r requirements.yml --no-cache
       - run: ansible-lint

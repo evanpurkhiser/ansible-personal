@@ -112,4 +112,4 @@
 - name: Register atuin as tailscale service
   tailscale_service:
     name: atuin
-    local_port: 8888
+    local_port: 7070

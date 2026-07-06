@@ -191,6 +191,10 @@
   ansible.builtin.import_role:
     { name: machines/server/service-auto-system-update }
 
+- name: Import agent-auth role
+  tags: [agent-auth, agent-sudo, opencode, pam-ssh-agent]
+  ansible.builtin.import_role: { name: machines/server/service-agent-auth }
+
 - name: Import opencode role
   tags: [opencode]
   ansible.builtin.import_role: { name: machines/server/service-opencode }

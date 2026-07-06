@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+REAL_SUDO=/usr/bin/sudo
+LIB=/usr/local/libexec/agents/agent-auth-lib.sh
+
+source "$LIB"
+
+if [[ $# -eq 0 ]]; then
+	exec "$REAL_SUDO"
+fi
+
+macbook_route=$(agent_auth_find_macbook_route || true)
+IFS=$'\t' read -r macbook_name macbook_ip <<<"$macbook_route"
+
+if [[ -z "${macbook_ip:-}" ]]; then
+	message="No active MacBook on Tailscale to authenticate sudo via pam_ssh_agent"
+	printf '[agent-sudo] %s\n' "$message" >&2
+	logger -t agent-sudo "$message"
+	exit 1
+fi
+
+command=$(agent_sudo_format_command "$@")
+display_command=${command#sudo }
+cwd=$(pwd -P 2>/dev/null || pwd)
+host=$(</proc/sys/kernel/hostname)
+
+macbook_host=${macbook_name%%.*}
+
+if ! printf '🔐 *Agent attempting sudo* (%s via %s)\n🗂️ `%s`\n\n```command\n%s\n```\n' \
+	"$host" \
+	"$macbook_host" \
+	"$cwd" \
+	"$display_command" | purkhiser-bot.sh >/dev/null; then
+	logger -t agent-sudo "Failed to send sudo notification for: $command"
+fi
+
+exec "$REAL_SUDO" "$@"

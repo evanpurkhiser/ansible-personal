@@ -11,3 +11,14 @@
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid }}"
     DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ machines_evan_uid }}/bus"
+
+- name: Restart opencode
+  ansible.builtin.systemd:
+    name: opencode
+    state: restarted
+    scope: user
+  become: true
+  become_user: evan
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid }}"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ machines_evan_uid }}/bus"

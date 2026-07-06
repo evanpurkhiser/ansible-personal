@@ -63,8 +63,8 @@ SECRETS: Secrets = {
         "openai_token": "op://Private/fc4edctkopi57hlm476o6r46oq/Instagram Saver API Key",
     },
 
-    # opencode SSH agent proxy key
-    "opencode_ssh_agent_proxy_key": "op://Private/c2indiikwssnyfxsdsy7w6ac44/private key",
+    # SSH agent proxy key
+    "ssh_agent_proxy_key": "op://Private/c2indiikwssnyfxsdsy7w6ac44/private key",
 
     # Transmission Helper
     "transmission_helper": {

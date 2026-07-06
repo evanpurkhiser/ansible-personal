@@ -1,0 +1,64 @@
+transmission:
+  baseUrl: http://localhost:9091/
+telegram:
+  chatId: "-722956237"
+moveCompleteDir: /mnt/documents/downloads/torrents-seeding/other
+sentryDsn: https://254c85b83a782bab95ddca042bff1625@o126623.ingest.us.sentry.io/4509976585437184
+
+categories:
+  movies:
+    layout: movie
+    path: /mnt/documents/multimedia/videos/movies
+    prompt: Anything that is a feature-length film or otherwise considered a movie.
+    label: Movie
+    examples:
+      - |
+        "The.Dark.Knight.2008.1080p.BluRay.x264-GROUP.mkv"
+        -> layout: "movie"
+           category: "movies"
+           title: "The Dark Knight"
+           filePath: "The.Dark.Knight.2008.1080p.BluRay.x264-GROUP.mkv"
+      - |
+        "Toy.Story/Toy.Story.rar"
+        -> Extract using unrar_file tool
+        -> Tool returns ["Toy.Story/Toy.Story.mkv"], this list of files is considered with the rest of the torrent files.
+        -> Do NOT include the archive itself as a filePath in the final output.
+        -> layout: "movie"
+           category: "movies"
+           title: "Toy Story"
+           filePath: "Toy.Story/Toy.Story.mkv"
+      - |
+        "A.Star.Is.Born.1976.mkv"
+        -> Web Search "a star is born" to see if the year is an important factor.
+        -> layout: "movie"
+           category: "movies"
+           title: "A Star Is Born (1976)"
+           filePath: "A.Star.Is.Born.1976.mkv"
+  anime:
+    layout: series
+    path: /mnt/documents/multimedia/videos/anime
+    prompt: A Japanese anime series produced and animated in Japan. Supersedes TV series, but anime movies should still use the movies category.
+    label: Anime
+    examples:
+      - |
+        "Frieren.S01E01.1080p.WEB-DL.mkv"
+        -> layout: "series"
+           category: "anime"
+           seriesTitle: "Frieren: Beyond Journey's End"
+           season: 1
+           episode: 1
+           filePath: "Frieren.S01E01.1080p.WEB-DL.mkv"
+  tv-series:
+    layout: series
+    path: /mnt/documents/multimedia/videos/series
+    prompt: A TV Series with seasons / episodes.
+    label: TV Series
+    examples:
+      - |
+        "Breaking.Bad.S01E01.Pilot.1080p.WEB-DL.x264/S01E01.mkv"
+        -> layout: "series"
+           category: "tv-series"
+           seriesTitle: "Breaking Bad"
+           season: 1
+           episode: 1
+           filePath: "Breaking.Bad.S01E01.Pilot.1080p.WEB-DL.x264/S01E01.mkv"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-AGENT_AUTH_TAILSCALE_MACBOOK_PATTERN=${AGENT_AUTH_TAILSCALE_MACBOOK_PATTERN:-"macbook-work|macbook-air|macbook-home"}
+AGENT_AUTH_TAILSCALE_MACBOOK_PATTERN=${AGENT_AUTH_TAILSCALE_MACBOOK_PATTERN:-"macbook-.*"}
 
 agent_auth_find_macbook_route() {
 	tailscale status --json 2>/dev/null | jq -r --arg pattern "$AGENT_AUTH_TAILSCALE_MACBOOK_PATTERN" '

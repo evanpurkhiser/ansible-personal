@@ -9,7 +9,7 @@
 - name: Ensure transmission runs as "evan"
   ansible.builtin.copy:
     src: transmission-user.conf
-    dest: /etc/systemd/system/transmission.service.d/
+    dest: /etc/systemd/system/transmission-daemon.service.d/
     mode: "0644"
 
 - name: Read existing transmission settings
@@ -30,7 +30,7 @@
 
 - name: Enable transmission daemon
   ansible.builtin.service:
-    name: transmission
+    name: transmission-daemon
     state: started
     enabled: true
     daemon_reload: true

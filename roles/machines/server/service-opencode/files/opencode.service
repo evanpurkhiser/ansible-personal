@@ -6,11 +6,10 @@ Requires=import-environment.service
 
 [Service]
 Type=simple
-Environment=PATH=/usr/local/libexec/agents/bin:/home/evan/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin
 Environment=SSH_AUTH_SOCK=/run/ssh-agent-proxy.sock
 Environment=OPENCODE_HOST=http://localhost:9995
 EnvironmentFile=-/home/evan/.config/opencode/mcp.env
-ExecStart=/usr/bin/opencode serve --hostname 0.0.0.0 --port 9995
+ExecStart=/usr/local/libexec/opencode/serve
 Restart=on-failure
 RestartSec=5s
 

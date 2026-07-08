@@ -5,6 +5,23 @@
   become: true
   become_user: aur-builder
 
+- name: Create opencode libexec directory
+  ansible.builtin.file:
+    path: /usr/local/libexec/opencode
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install opencode serve wrapper
+  ansible.builtin.copy:
+    src: opencode-serve
+    dest: /usr/local/libexec/opencode/serve
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Restart opencode
+
 - name: Install import-environment systemd user service
   ansible.builtin.copy:
     src: import-environment.service
@@ -40,6 +57,7 @@
     mode: "0644"
   notify:
     - Systemd user daemon-reload
+    - Restart import-environment
     - Restart opencode
 
 - name: Enable opencode user service

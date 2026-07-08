@@ -1,0 +1,4 @@
+#!/bin/sh
+
+export PATH="/usr/local/libexec/agents/bin:${PATH}"
+exec /usr/bin/opencode serve --hostname 0.0.0.0 --port 9995

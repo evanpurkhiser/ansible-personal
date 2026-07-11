@@ -11,14 +11,19 @@
     group: root
     mode: "0755"
 
-- name: Install codex app-server wrapper
+- name: Install codex remote-control wrapper
   ansible.builtin.copy:
-    src: codex-app-server
-    dest: /usr/local/libexec/codex/app-server
+    src: codex-remote-control
+    dest: /usr/local/libexec/codex/remote-control
     owner: root
     group: root
     mode: "0755"
   notify: Restart codex
+
+- name: Remove codex app-server wrapper
+  ansible.builtin.file:
+    path: /usr/local/libexec/codex/app-server
+    state: absent
 
 - name: Ensure codex config directory
   ansible.builtin.file:
@@ -26,31 +31,6 @@
     state: directory
     owner: evan
     mode: "0700"
-
-- name: Check codex app-server token
-  ansible.builtin.stat:
-    path: /home/evan/.config/codex/app-server-token
-  register: codex_app_server_token_stat
-  no_log: true
-
-- name: Generate codex app-server token
-  ansible.builtin.command: openssl rand -base64 32
-  register: codex_app_server_token
-  changed_when: true
-  become: true
-  become_user: evan
-  when: not codex_app_server_token_stat.stat.exists
-  no_log: true
-
-- name: Install codex app-server token
-  ansible.builtin.copy:
-    content: "{{ codex_app_server_token.stdout }}\n"
-    dest: /home/evan/.config/codex/app-server-token
-    owner: evan
-    mode: "0600"
-  when: not codex_app_server_token_stat.stat.exists
-  no_log: true
-  notify: Restart codex
 
 - name: Install codex systemd user service
   ansible.builtin.copy:

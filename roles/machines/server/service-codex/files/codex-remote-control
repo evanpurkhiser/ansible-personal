@@ -1,0 +1,4 @@
+#!/bin/sh
+
+export PATH="/usr/local/libexec/agents/bin:${PATH}"
+exec /usr/bin/codex remote-control start

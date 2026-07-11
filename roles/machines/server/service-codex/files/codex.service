@@ -5,13 +5,13 @@ Wants=network-online.target
 Requires=import-environment.service
 
 [Service]
-Type=simple
+Type=oneshot
 Environment=SSH_AUTH_SOCK=/run/ssh-agent-proxy.sock
 Environment=CODEX_HOME=/home/evan/.config/codex
 EnvironmentFile=-/home/evan/.config/codex/mcp.env
-ExecStart=/usr/local/libexec/codex/app-server
-Restart=on-failure
-RestartSec=5s
+ExecStart=/usr/local/libexec/codex/remote-control
+ExecStop=/usr/bin/codex remote-control stop
+RemainAfterExit=yes
 
 [Install]
 WantedBy=default.target

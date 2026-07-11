@@ -1,7 +1,0 @@
-#!/bin/sh
-
-export PATH="/usr/local/libexec/agents/bin:${PATH}"
-exec /usr/bin/codex app-server \
-	--listen ws://0.0.0.0:9996 \
-	--ws-auth capability-token \
-	--ws-token-file /home/evan/.config/codex/app-server-token

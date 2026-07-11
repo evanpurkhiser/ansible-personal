@@ -1,0 +1,75 @@
+- name: Install codex
+  community.general.pacman:
+    name: openai-codex
+    state: present
+
+- name: Create codex libexec directory
+  ansible.builtin.file:
+    path: /usr/local/libexec/codex
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install codex app-server wrapper
+  ansible.builtin.copy:
+    src: codex-app-server
+    dest: /usr/local/libexec/codex/app-server
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Restart codex
+
+- name: Ensure codex config directory
+  ansible.builtin.file:
+    path: /home/evan/.config/codex
+    state: directory
+    owner: evan
+    mode: "0700"
+
+- name: Check codex app-server token
+  ansible.builtin.stat:
+    path: /home/evan/.config/codex/app-server-token
+  register: codex_app_server_token_stat
+  no_log: true
+
+- name: Generate codex app-server token
+  ansible.builtin.command: openssl rand -base64 32
+  register: codex_app_server_token
+  changed_when: true
+  become: true
+  become_user: evan
+  when: not codex_app_server_token_stat.stat.exists
+  no_log: true
+
+- name: Install codex app-server token
+  ansible.builtin.copy:
+    content: "{{ codex_app_server_token.stdout }}\n"
+    dest: /home/evan/.config/codex/app-server-token
+    owner: evan
+    mode: "0600"
+  when: not codex_app_server_token_stat.stat.exists
+  no_log: true
+  notify: Restart codex
+
+- name: Install codex systemd user service
+  ansible.builtin.copy:
+    src: codex.service
+    dest: /etc/systemd/user/codex.service
+    mode: "0644"
+  notify:
+    - Systemd user daemon-reload
+    - Restart codex
+
+- name: Enable codex user service
+  ansible.builtin.systemd:
+    name: codex
+    state: started
+    enabled: true
+    daemon_reload: true
+    scope: user
+  become: true
+  become_user: evan
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid }}"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ machines_evan_uid }}/bus"

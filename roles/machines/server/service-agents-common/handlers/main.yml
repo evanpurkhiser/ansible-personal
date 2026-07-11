@@ -1,7 +1,3 @@
-- name: Systemd daemon-reload
-  ansible.builtin.systemd:
-    daemon_reload: true
-
 - name: Systemd user daemon-reload
   ansible.builtin.systemd:
     daemon_reload: true
@@ -12,9 +8,9 @@
     XDG_RUNTIME_DIR: "/run/user/{{ machines_evan_uid }}"
     DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ machines_evan_uid }}/bus"
 
-- name: Restart opencode
+- name: Restart import-environment
   ansible.builtin.systemd:
-    name: opencode
+    name: import-environment
     state: restarted
     scope: user
   become: true

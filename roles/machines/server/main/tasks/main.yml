@@ -192,12 +192,20 @@
     { name: machines/server/service-auto-system-update }
 
 - name: Import agent-auth role
-  tags: [agent-auth, agent-sudo, opencode, pam-ssh-agent]
+  tags: [agent-auth, agent-sudo, codex, opencode, pam-ssh-agent]
   ansible.builtin.import_role: { name: machines/server/service-agent-auth }
+
+- name: Import agents-common role
+  tags: [agents-common, codex, opencode]
+  ansible.builtin.import_role: { name: machines/server/service-agents-common }
 
 - name: Import opencode role
   tags: [opencode]
   ansible.builtin.import_role: { name: machines/server/service-opencode }
+
+- name: Import codex role
+  tags: [codex]
+  ansible.builtin.import_role: { name: machines/server/service-codex }
 
 - name: Import clean-macfiles role
   tags: [clean-macfiles]

@@ -139,7 +139,7 @@
     dest: /etc/systemd/system/dnsmasq.service.d/override
     content: |
       [Service]
-      # Small delay to ensure the lan0 device was correctly triggere dby udev
+      # Small delay to ensure the lan0 device was correctly triggered by udev
       ExecStartPre=/bin/sleep 1
     mode: "0644"
 

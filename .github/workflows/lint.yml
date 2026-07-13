@@ -1,17 +1,18 @@
 name: lint
+
 on:
   push:
     branches: [main]
+  pull_request:
 
 jobs:
   lint:
-    name: Lint with ansible-lint
+    name: prek
     runs-on: ubuntu-latest
     env:
       ANSIBLE_LIBRARY: ./library
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-      - run: pip install ansible ansible-lint
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v4
       - run: ansible-galaxy collection install -r requirements.yml --no-cache
-      - run: ansible-lint
+      - run: prek run --all-files

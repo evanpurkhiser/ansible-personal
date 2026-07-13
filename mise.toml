@@ -1,0 +1,8 @@
+[tools]
+python = "3.13"
+uv = "0.11.28"
+"pipx:ansible-lint" = "26.6.0"
+prek = "0.4.9"
+shellcheck = "0.11.0"
+shfmt = "3.13.1"
+actionlint = "1.7.12"

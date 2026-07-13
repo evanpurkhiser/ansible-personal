@@ -21,33 +21,27 @@ type Secrets = str | dict[str, "Secrets"] | list["Secrets"]
 SECRETS: Secrets = {
     # Access point credentials
     "wifi_password": "op://Private/hnysllbhcfa4rmsmtko2x3naeq/wireless network password",
-
     # Public SSH Key
     "public_ssh_key": "op://Private/szzjm25e6a4sgemptdt3qy5bvu/public key",
-
     # Telegram bots
     "purkhiser_bot_token": "op://Private/wddknbssdbdpbilpy25olziegm/Purkhiser Bot",
     "doppovich_bot_token": "op://Private/wddknbssdbdpbilpy25olziegm/Doppovich Bot",
     "apartment_bot_token": "op://Private/wddknbssdbdpbilpy25olziegm/Purkhiser Bot",
-
     # nginx config
     "nginx": {
         "cloudflare_cert": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/Origin Certificate",
         "cloudflare_key": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/Origin Private Key",
     },
-
     # Venmo auto cashout
     "venmo_auto_cashout": {
         "venmo_token": "op://Private/3pab6f5j6zg5bpw762hq5swe4u/API Token",
         "lunchmoney_token": "op://Private/iyur5zrspndy3j4uxifwa7mj4y/Venmo Auto Cashout API Key",
     },
-
     # Venmo Lunchmoney AI
     "venmo_lunchmoney_ai": {
         "lunchmoney_token": "op://Private/iyur5zrspndy3j4uxifwa7mj4y/Venmo Lunchmoney AI API Key",
         "openai_token": "op://Private/fc4edctkopi57hlm476o6r46oq/Venmo Lunchmoney AI API Key",
     },
-
     # Meal Log
     "meal_log": {
         "record_token": "op://Private/l7fle3v7rksnryvm3i2cax4eqe/Record Token",
@@ -56,27 +50,22 @@ SECRETS: Secrets = {
         "r2_access_key_id": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/Access Key ID",
         "r2_secret_access_key": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/Secret Access Key",
     },
-
     # Instagram Saver
     "instagram_saver": {
         "google_places_api_key": "op://Private/ss4qbfjbpbep7ph5prrdxxmena/Google Map Places API Key",
         "openai_token": "op://Private/fc4edctkopi57hlm476o6r46oq/Instagram Saver API Key",
     },
-
     # SSH agent proxy key
     "ssh_agent_proxy_key": "op://Private/c2indiikwssnyfxsdsy7w6ac44/private key",
-
     # Transmission Helper
     "transmission_helper": {
         "openai_api_key": "op://Private/fc4edctkopi57hlm476o6r46oq/Transmission Helper API Key",
         "telegram_token": "op://Private/wddknbssdbdpbilpy25olziegm/Purkhiser Bot",
     },
-
     # Auto System Update
     "auto_system_update": {
         "openai_api_key": "op://Private/fc4edctkopi57hlm476o6r46oq/Auto System Update API Key",
     },
-
     # Home assistant
     "home_assistant": {
         "hacs_github_api_key": "op://Private/mfv2dujsrfa4bl6hdexjwqwdoq/HACS Github API Key",
@@ -84,13 +73,11 @@ SECRETS: Secrets = {
         "youtube_data_api_key": "op://Private/ss4qbfjbpbep7ph5prrdxxmena/YouTube Data API Key",
         "lunchmoney_token": "op://Private/iyur5zrspndy3j4uxifwa7mj4y/Home Assistant API Key",
     },
-
     # Things3
     "things3": {
         "email": "op://Private/lwymezf6azedfiebtvb2qv2ahi/username",
         "password": "op://Private/lwymezf6azedfiebtvb2qv2ahi/password",
     },
-
     # Offsite WiFi networks
     # PSK values are wpa_passphrase pre-computed hashes stored in 1password
     "offsite_wifi_networks": [

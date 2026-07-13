@@ -36,12 +36,12 @@ TIMEOUT = 30
 while True:
     elapsed = time.time() - last_activity
     remaining = max(0, TIMEOUT - elapsed)
-    
+
     r, _, _ = select.select([stdin_fd, sock_fd], [], [], remaining)
-    
+
     if not r:  # Timeout occurred
         sys.exit(0)
-    
+
     for fd in r:
         d = os.read(fd, 4096)
         if not d:

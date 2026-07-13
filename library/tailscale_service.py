@@ -55,11 +55,18 @@ from ansible.module_utils.basic import AnsibleModule
 
 
 def serve_flag(expose_port):
-    return "--https={}".format(expose_port) if expose_port == 443 else "--http={}".format(expose_port)
+    return (
+        "--https={}".format(expose_port)
+        if expose_port == 443
+        else "--http={}".format(expose_port)
+    )
 
 
 def check_and_configure(module, service, local_port, expose_ports):
-    expected = {"tcp:{}".format(p): "http://localhost:{}".format(local_port) for p in expose_ports}
+    expected = {
+        "tcp:{}".format(p): "http://localhost:{}".format(local_port)
+        for p in expose_ports
+    }
 
     rc, stdout, _ = module.run_command(
         ["tailscale", "serve", "get-config", "--service={}".format(service)]

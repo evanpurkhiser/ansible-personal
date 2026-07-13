@@ -95,7 +95,7 @@ fi
 services="$(systemctl list-units --type=service --output=json |
   jq '{
     active: ([.[] | select(.active == "active")] | length),
-    failed: ([.[] | select(.active == "failed")] | length), 
+    failed: ([.[] | select(.active == "failed")] | length),
     inactive: ([.[] | select(.active == "inactive")] | length)
   }' |
   jq -r '"\(if .failed > 0 then "‼️ " else "" end)*active:* \(.active) / *failed:* \(.failed) / *inactive:* \(.inactive)"')"
@@ -112,4 +112,3 @@ echo "🐳 *Podman containers*"
 podman_ps="$(podman ps --format=json | jq -r '.[] | "\(.Names[0])\t\(.Status)"' | column -s$'\t' -t)"
 echo -ne '```containers\n'"${podman_ps}" '```\n'
 echo ""
-

@@ -22,7 +22,7 @@ POST_SESSION=""
 APPLY_EXTRA_ARGS=()
 
 usage() {
-  cat <<'EOF'
+	cat <<'EOF'
 Run the full two-phase server apply against a QEMU arch-box VM.
 
 Usage:
@@ -57,88 +57,88 @@ EOF
 }
 
 require_cmd() {
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo "Missing required command: $1" >&2
-    exit 1
-  fi
+	if ! command -v "$1" >/dev/null 2>&1; then
+		echo "Missing required command: $1" >&2
+		exit 1
+	fi
 }
 
 while [[ "$#" -gt 0 ]]; do
-  case "$1" in
-    --name)
-      NAME="$2"
-      shift 2
-      ;;
-    --vm-dir)
-      VM_DIR="$2"
-      shift 2
-      ;;
-    --ssh-port)
-      SSH_PORT="$2"
-      shift 2
-      ;;
-    --ssh-host)
-      SSH_HOST="$2"
-      shift 2
-      ;;
-    --ssh-user)
-      SSH_USER="$2"
-      shift 2
-      ;;
-    --ssh-key)
-      SSH_KEY="$2"
-      shift 2
-      ;;
-    --secrets-file)
-      SECRETS_FILE="$2"
-      shift 2
-      ;;
-    --data-disk-size)
-      DATA_DISK_SIZE="$2"
-      shift 2
-      ;;
-    --no-fake-devices)
-      PREPARE_FAKE_DEVICES=0
-      shift
-      ;;
-    --phase2-start-at-task)
-      PHASE2_START_AT_TASK="$2"
-      shift 2
-      ;;
-    --no-phase2-resume)
-      PHASE2_START_AT_TASK=""
-      shift
-      ;;
-    --bootstrap-session)
-      BOOTSTRAP_SESSION="$2"
-      shift 2
-      ;;
-    --post-session)
-      POST_SESSION="$2"
-      shift 2
-      ;;
-    --)
-      shift
-      APPLY_EXTRA_ARGS=("$@")
-      break
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    *)
-      echo "Unknown option: $1" >&2
-      usage
-      exit 1
-      ;;
-  esac
+	case "$1" in
+	--name)
+		NAME="$2"
+		shift 2
+		;;
+	--vm-dir)
+		VM_DIR="$2"
+		shift 2
+		;;
+	--ssh-port)
+		SSH_PORT="$2"
+		shift 2
+		;;
+	--ssh-host)
+		SSH_HOST="$2"
+		shift 2
+		;;
+	--ssh-user)
+		SSH_USER="$2"
+		shift 2
+		;;
+	--ssh-key)
+		SSH_KEY="$2"
+		shift 2
+		;;
+	--secrets-file)
+		SECRETS_FILE="$2"
+		shift 2
+		;;
+	--data-disk-size)
+		DATA_DISK_SIZE="$2"
+		shift 2
+		;;
+	--no-fake-devices)
+		PREPARE_FAKE_DEVICES=0
+		shift
+		;;
+	--phase2-start-at-task)
+		PHASE2_START_AT_TASK="$2"
+		shift 2
+		;;
+	--no-phase2-resume)
+		PHASE2_START_AT_TASK=""
+		shift
+		;;
+	--bootstrap-session)
+		BOOTSTRAP_SESSION="$2"
+		shift 2
+		;;
+	--post-session)
+		POST_SESSION="$2"
+		shift 2
+		;;
+	--)
+		shift
+		APPLY_EXTRA_ARGS=("$@")
+		break
+		;;
+	-h | --help)
+		usage
+		exit 0
+		;;
+	*)
+		echo "Unknown option: $1" >&2
+		usage
+		exit 1
+		;;
+	esac
 done
 
 if [[ -z "$BOOTSTRAP_SESSION" ]]; then
-  BOOTSTRAP_SESSION="qemu-${NAME}-bootstrap"
+	BOOTSTRAP_SESSION="qemu-${NAME}-bootstrap"
 fi
 if [[ -z "$POST_SESSION" ]]; then
-  POST_SESSION="qemu-${NAME}-post"
+	POST_SESSION="qemu-${NAME}-post"
 fi
 
 require_cmd tmux
@@ -146,110 +146,110 @@ require_cmd ssh
 require_cmd ssh-keygen
 
 if [[ ! -x "${SCRIPT_DIR}/boot-qemu-archbox.sh" ]]; then
-  echo "Missing executable script: ${SCRIPT_DIR}/boot-qemu-archbox.sh" >&2
-  exit 1
+	echo "Missing executable script: ${SCRIPT_DIR}/boot-qemu-archbox.sh" >&2
+	exit 1
 fi
 
 if [[ ! -x "${SCRIPT_DIR}/apply-server-qemu.sh" ]]; then
-  echo "Missing executable script: ${SCRIPT_DIR}/apply-server-qemu.sh" >&2
-  exit 1
+	echo "Missing executable script: ${SCRIPT_DIR}/apply-server-qemu.sh" >&2
+	exit 1
 fi
 
 if [[ ! -f "$SECRETS_FILE" ]]; then
-  echo "Secrets file not found: $SECRETS_FILE" >&2
-  exit 1
+	echo "Secrets file not found: $SECRETS_FILE" >&2
+	exit 1
 fi
 
 if [[ ! -f "$SSH_KEY" ]]; then
-  mkdir -p "$(dirname "$SSH_KEY")"
-  ssh-keygen -t ed25519 -N "" -f "$SSH_KEY" -C "ansible-qemu" >/dev/null
+	mkdir -p "$(dirname "$SSH_KEY")"
+	ssh-keygen -t ed25519 -N "" -f "$SSH_KEY" -C "ansible-qemu" >/dev/null
 fi
 
 SSH_PUB_KEY="${SSH_KEY}.pub"
 if [[ ! -f "$SSH_PUB_KEY" ]]; then
-  echo "Missing SSH public key: $SSH_PUB_KEY" >&2
-  exit 1
+	echo "Missing SSH public key: $SSH_PUB_KEY" >&2
+	exit 1
 fi
 
 KNOWN_HOSTS_FILE="$(mktemp)"
 
 SSH_COMMON=(
-  -i "$SSH_KEY"
-  -o IdentitiesOnly=yes
-  -o StrictHostKeyChecking=no
-  -o UserKnownHostsFile="$KNOWN_HOSTS_FILE"
-  -o ConnectTimeout=3
-  -p "$SSH_PORT"
+	-i "$SSH_KEY"
+	-o IdentitiesOnly=yes
+	-o StrictHostKeyChecking=no
+	-o UserKnownHostsFile="$KNOWN_HOSTS_FILE"
+	-o ConnectTimeout=3
+	-p "$SSH_PORT"
 )
 
 cleanup() {
-  rm -f "$KNOWN_HOSTS_FILE"
+	rm -f "$KNOWN_HOSTS_FILE"
 }
 trap cleanup EXIT
 
 wait_for_key_ssh() {
-  local attempts="$1"
-  for _ in $(seq 1 "$attempts"); do
-    if timeout 5 ssh "${SSH_COMMON[@]}" "${SSH_USER}@${SSH_HOST}" "true" >/dev/null 2>&1; then
-      return 0
-    fi
-    sleep 2
-  done
-  return 1
+	local attempts="$1"
+	for _ in $(seq 1 "$attempts"); do
+		if timeout 5 ssh "${SSH_COMMON[@]}" "${SSH_USER}@${SSH_HOST}" "true" >/dev/null 2>&1; then
+			return 0
+		fi
+		sleep 2
+	done
+	return 1
 }
 
 apply_once() {
-  local phase="$1"
-  local play_extra=()
-  local args=(
-    "--ssh-host" "$SSH_HOST"
-    "--ssh-user" "$SSH_USER"
-    "--ssh-port" "$SSH_PORT"
-    "--ssh-key" "$SSH_KEY"
-    "--secrets-file" "$SECRETS_FILE"
-  )
+	local phase="$1"
+	local play_extra=()
+	local args=(
+		"--ssh-host" "$SSH_HOST"
+		"--ssh-user" "$SSH_USER"
+		"--ssh-port" "$SSH_PORT"
+		"--ssh-key" "$SSH_KEY"
+		"--secrets-file" "$SECRETS_FILE"
+	)
 
-  if [[ "${#APPLY_EXTRA_ARGS[@]}" -gt 0 ]]; then
-    play_extra+=("${APPLY_EXTRA_ARGS[@]}")
-  fi
+	if [[ "${#APPLY_EXTRA_ARGS[@]}" -gt 0 ]]; then
+		play_extra+=("${APPLY_EXTRA_ARGS[@]}")
+	fi
 
-  if [[ "$phase" = "phase2" && -n "$PHASE2_START_AT_TASK" ]]; then
-    play_extra+=(--start-at-task "$PHASE2_START_AT_TASK")
-  fi
+	if [[ "$phase" = "phase2" && -n "$PHASE2_START_AT_TASK" ]]; then
+		play_extra+=(--start-at-task "$PHASE2_START_AT_TASK")
+	fi
 
-  if [[ "${#play_extra[@]}" -gt 0 ]]; then
-    args+=(-- "${play_extra[@]}")
-  fi
+	if [[ "${#play_extra[@]}" -gt 0 ]]; then
+		args+=(-- "${play_extra[@]}")
+	fi
 
-  "${SCRIPT_DIR}/apply-server-qemu.sh" "${args[@]}"
+	"${SCRIPT_DIR}/apply-server-qemu.sh" "${args[@]}"
 }
 
 prepare_fake_devices() {
-  if [[ "$PREPARE_FAKE_DEVICES" -ne 1 ]]; then
-    return 0
-  fi
+	if [[ "$PREPARE_FAKE_DEVICES" -ne 1 ]]; then
+		return 0
+	fi
 
-  timeout 5 ssh "${SSH_COMMON[@]}" "${SSH_USER}@${SSH_HOST}" \
-    "sudo ln -sf /dev/null /dev/zwave && sudo ln -sf /dev/null /dev/zigbee" >/dev/null
+	timeout 5 ssh "${SSH_COMMON[@]}" "${SSH_USER}@${SSH_HOST}" \
+		"sudo ln -sf /dev/null /dev/zwave && sudo ln -sf /dev/null /dev/zigbee" >/dev/null
 }
 
 echo "==> Starting bootstrap phase VM"
 tmux kill-session -t "$BOOTSTRAP_SESSION" 2>/dev/null || true
 "${SCRIPT_DIR}/boot-qemu-archbox.sh" \
-  --headless \
-  --name "$NAME" \
-  --vm-dir "$VM_DIR" \
-  --reset-overlay \
-  --phase bootstrap \
-  --ssh-port "$SSH_PORT" \
-  --data-disk-size "$DATA_DISK_SIZE" \
-  --inject-ssh-key "$SSH_PUB_KEY" \
-  --tmux-session "$BOOTSTRAP_SESSION"
+	--headless \
+	--name "$NAME" \
+	--vm-dir "$VM_DIR" \
+	--reset-overlay \
+	--phase bootstrap \
+	--ssh-port "$SSH_PORT" \
+	--data-disk-size "$DATA_DISK_SIZE" \
+	--inject-ssh-key "$SSH_PUB_KEY" \
+	--tmux-session "$BOOTSTRAP_SESSION"
 
 if ! wait_for_key_ssh 30; then
-  echo "SSH key auth not ready after bootstrap wait." >&2
-  echo "Attach serial with: tmux attach -t $BOOTSTRAP_SESSION" >&2
-  exit 1
+	echo "SSH key auth not ready after bootstrap wait." >&2
+	echo "Attach serial with: tmux attach -t $BOOTSTRAP_SESSION" >&2
+	exit 1
 fi
 
 echo "==> Phase 1 apply"
@@ -262,29 +262,29 @@ echo "==> Graceful poweroff after phase 1"
 timeout 5 ssh "${SSH_COMMON[@]}" "${SSH_USER}@${SSH_HOST}" "sudo poweroff" >/dev/null || true
 
 for _ in $(seq 1 60); do
-  if tmux has-session -t "$BOOTSTRAP_SESSION" 2>/dev/null; then
-    sleep 2
-  else
-    break
-  fi
+	if tmux has-session -t "$BOOTSTRAP_SESSION" 2>/dev/null; then
+		sleep 2
+	else
+		break
+	fi
 done
 tmux kill-session -t "$BOOTSTRAP_SESSION" 2>/dev/null || true
 
 echo "==> Starting post-network phase VM"
 tmux kill-session -t "$POST_SESSION" 2>/dev/null || true
 "${SCRIPT_DIR}/boot-qemu-archbox.sh" \
-  --headless \
-  --name "$NAME" \
-  --vm-dir "$VM_DIR" \
-  --phase post-network \
-  --ssh-port "$SSH_PORT" \
-  --data-disk-size "$DATA_DISK_SIZE" \
-  --tmux-session "$POST_SESSION"
+	--headless \
+	--name "$NAME" \
+	--vm-dir "$VM_DIR" \
+	--phase post-network \
+	--ssh-port "$SSH_PORT" \
+	--data-disk-size "$DATA_DISK_SIZE" \
+	--tmux-session "$POST_SESSION"
 
 wait_for_key_ssh 90 || {
-  echo "Post-network SSH did not become ready." >&2
-  echo "Attach serial with: tmux attach -t $POST_SESSION" >&2
-  exit 1
+	echo "Post-network SSH did not become ready." >&2
+	echo "Attach serial with: tmux attach -t $POST_SESSION" >&2
+	exit 1
 }
 
 echo "==> Prepare fake zigbee/zwave devices (post-network)"

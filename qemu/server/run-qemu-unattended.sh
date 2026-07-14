@@ -20,7 +20,7 @@ AUTHORIZED_KEY_FILE=""
 HTTP_PORT=8012
 
 usage() {
-  cat <<'EOF'
+	cat <<'EOF'
 Run a mostly unattended Arch install in QEMU, then boot into installed system.
 
 Usage:
@@ -55,35 +55,80 @@ EOF
 }
 
 require_cmd() {
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo "Missing required command: $1" >&2
-    exit 1
-  fi
+	if ! command -v "$1" >/dev/null 2>&1; then
+		echo "Missing required command: $1" >&2
+		exit 1
+	fi
 }
 
 while [ "$#" -gt 0 ]; do
-  case "$1" in
-    --name) NAME="$2"; shift 2 ;;
-    --vm-dir) VM_DIR="$2"; shift 2 ;;
-    --ram) RAM_MB="$2"; shift 2 ;;
-    --cpus) CPUS="$2"; shift 2 ;;
-    --boot-disk-size) BOOT_DISK_SIZE="$2"; shift 2 ;;
-    --data-disk-count) DATA_DISK_COUNT="$2"; shift 2 ;;
-    --data-disk-size) DATA_DISK_SIZE="$2"; shift 2 ;;
-    --ssh-port) SSH_PORT="$2"; shift 2 ;;
-    --target-disk) TARGET_DISK="$2"; shift 2 ;;
-    --hostname) HOSTNAME_VALUE="$2"; shift 2 ;;
-    --timezone) TIMEZONE="$2"; shift 2 ;;
-    --root-password) ROOT_PASSWORD="$2"; shift 2 ;;
-    --authorized-key-file) AUTHORIZED_KEY_FILE="$2"; shift 2 ;;
-    --http-port) HTTP_PORT="$2"; shift 2 ;;
-    -h|--help) usage; exit 0 ;;
-    *)
-      echo "Unknown option: $1" >&2
-      usage
-      exit 1
-      ;;
-  esac
+	case "$1" in
+	--name)
+		NAME="$2"
+		shift 2
+		;;
+	--vm-dir)
+		VM_DIR="$2"
+		shift 2
+		;;
+	--ram)
+		RAM_MB="$2"
+		shift 2
+		;;
+	--cpus)
+		CPUS="$2"
+		shift 2
+		;;
+	--boot-disk-size)
+		BOOT_DISK_SIZE="$2"
+		shift 2
+		;;
+	--data-disk-count)
+		DATA_DISK_COUNT="$2"
+		shift 2
+		;;
+	--data-disk-size)
+		DATA_DISK_SIZE="$2"
+		shift 2
+		;;
+	--ssh-port)
+		SSH_PORT="$2"
+		shift 2
+		;;
+	--target-disk)
+		TARGET_DISK="$2"
+		shift 2
+		;;
+	--hostname)
+		HOSTNAME_VALUE="$2"
+		shift 2
+		;;
+	--timezone)
+		TIMEZONE="$2"
+		shift 2
+		;;
+	--root-password)
+		ROOT_PASSWORD="$2"
+		shift 2
+		;;
+	--authorized-key-file)
+		AUTHORIZED_KEY_FILE="$2"
+		shift 2
+		;;
+	--http-port)
+		HTTP_PORT="$2"
+		shift 2
+		;;
+	-h | --help)
+		usage
+		exit 0
+		;;
+	*)
+		echo "Unknown option: $1" >&2
+		usage
+		exit 1
+		;;
+	esac
 done
 
 require_cmd expect
@@ -93,8 +138,8 @@ require_cmd qemu-system-x86_64
 require_cmd qemu-img
 
 if [ -n "$AUTHORIZED_KEY_FILE" ] && [ ! -f "$AUTHORIZED_KEY_FILE" ]; then
-  echo "Authorized key file not found: $AUTHORIZED_KEY_FILE" >&2
-  exit 1
+	echo "Authorized key file not found: $AUTHORIZED_KEY_FILE" >&2
+	exit 1
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -102,10 +147,10 @@ STAGE_DIR="$(mktemp -d)"
 HTTP_PID=""
 
 cleanup() {
-  if [ -n "$HTTP_PID" ] && kill -0 "$HTTP_PID" >/dev/null 2>&1; then
-    kill "$HTTP_PID" >/dev/null 2>&1 || true
-  fi
-  rm -rf "$STAGE_DIR"
+	if [ -n "$HTTP_PID" ] && kill -0 "$HTTP_PID" >/dev/null 2>&1; then
+		kill "$HTTP_PID" >/dev/null 2>&1 || true
+	fi
+	rm -rf "$STAGE_DIR"
 }
 trap cleanup EXIT
 
@@ -113,7 +158,7 @@ cp "${SCRIPT_DIR}/install-arch-unattended.sh" "${STAGE_DIR}/install-arch-unatten
 chmod 755 "${STAGE_DIR}/install-arch-unattended.sh"
 
 if [ -n "$AUTHORIZED_KEY_FILE" ]; then
-  cp "$AUTHORIZED_KEY_FILE" "${STAGE_DIR}/authorized_key.pub"
+	cp "$AUTHORIZED_KEY_FILE" "${STAGE_DIR}/authorized_key.pub"
 fi
 
 python -m http.server "$HTTP_PORT" --bind 127.0.0.1 --directory "$STAGE_DIR" >/tmp/run-qemu-http.log 2>&1 &
@@ -170,18 +215,18 @@ expect {
 EOF_EXPECT
 
 expect "$EXPECT_SCRIPT" \
-  "${SCRIPT_DIR}/boot-qemu.sh" \
-  --headless \
-  --name "$NAME" \
-  --vm-dir "$VM_DIR" \
-  --ram "$RAM_MB" \
-  --cpus "$CPUS" \
-  --boot-disk-size "$BOOT_DISK_SIZE" \
-  --data-disk-count "$DATA_DISK_COUNT" \
-  --data-disk-size "$DATA_DISK_SIZE" \
-  --ssh-port "$SSH_PORT" \
-  "$HTTP_PORT" "$TARGET_DISK" "$HOSTNAME_VALUE" "$TIMEZONE" "$ROOT_PASSWORD" \
-  "$( [ -n "$AUTHORIZED_KEY_FILE" ] && echo 1 || echo 0 )"
+	"${SCRIPT_DIR}/boot-qemu.sh" \
+	--headless \
+	--name "$NAME" \
+	--vm-dir "$VM_DIR" \
+	--ram "$RAM_MB" \
+	--cpus "$CPUS" \
+	--boot-disk-size "$BOOT_DISK_SIZE" \
+	--data-disk-count "$DATA_DISK_COUNT" \
+	--data-disk-size "$DATA_DISK_SIZE" \
+	--ssh-port "$SSH_PORT" \
+	"$HTTP_PORT" "$TARGET_DISK" "$HOSTNAME_VALUE" "$TIMEZONE" "$ROOT_PASSWORD" \
+	"$([ -n "$AUTHORIZED_KEY_FILE" ] && echo 1 || echo 0)"
 
 rm -f "$EXPECT_SCRIPT"
 
@@ -190,13 +235,13 @@ echo "==> Booting installed system (no install media attached)"
 echo "==> SSH should be available on localhost:${SSH_PORT}"
 
 exec "${SCRIPT_DIR}/boot-qemu.sh" \
-  --headless \
-  --no-install-media \
-  --name "$NAME" \
-  --vm-dir "$VM_DIR" \
-  --ram "$RAM_MB" \
-  --cpus "$CPUS" \
-  --boot-disk-size "$BOOT_DISK_SIZE" \
-  --data-disk-count "$DATA_DISK_COUNT" \
-  --data-disk-size "$DATA_DISK_SIZE" \
-  --ssh-port "$SSH_PORT"
+	--headless \
+	--no-install-media \
+	--name "$NAME" \
+	--vm-dir "$VM_DIR" \
+	--ram "$RAM_MB" \
+	--cpus "$CPUS" \
+	--boot-disk-size "$BOOT_DISK_SIZE" \
+	--data-disk-count "$DATA_DISK_COUNT" \
+	--data-disk-size "$DATA_DISK_SIZE" \
+	--ssh-port "$SSH_PORT"

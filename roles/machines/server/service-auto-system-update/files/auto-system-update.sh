@@ -22,13 +22,13 @@ system_prompt="You are analyzing the output of an Arch Linux system update perfo
 Output ONLY the summary text, no preamble."
 
 ai_summary=$(curl -s https://api.openai.com/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ${OPENAI_API_KEY}" \
-  -d "$(jq -n \
-    --arg model "gpt-4o-mini" \
-    --arg system_prompt "$system_prompt" \
-    --arg user_content "$update_output" \
-    '{
+	-H "Content-Type: application/json" \
+	-H "Authorization: Bearer ${OPENAI_API_KEY}" \
+	-d "$(jq -n \
+		--arg model "gpt-4o-mini" \
+		--arg system_prompt "$system_prompt" \
+		--arg user_content "$update_output" \
+		'{
       "model": $model,
       "messages": [
         {"role": "system", "content": $system_prompt},

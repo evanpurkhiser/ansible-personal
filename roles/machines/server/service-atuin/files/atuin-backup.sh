@@ -10,8 +10,8 @@ LOCATION="/mnt/documents/backups/atuin"
 FILE_NAME="atuin_$(date +'%Y-%m-%d_%H-%M').sql.gz"
 
 podman exec -e PGPASSWORD=atuin atuin-postgres \
-  pg_dump -U atuin -d atuin --clean --if-exists \
-  | gzip >"${LOCATION}/${FILE_NAME}"
+	pg_dump -U atuin -d atuin --clean --if-exists |
+	gzip >"${LOCATION}/${FILE_NAME}"
 
 chown evan:users "${LOCATION}/${FILE_NAME}"
 

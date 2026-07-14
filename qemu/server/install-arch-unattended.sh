@@ -12,7 +12,7 @@ AUTHORIZED_KEY_FILE=""
 REBOOT_AFTER=1
 
 usage() {
-  cat <<'EOF'
+	cat <<'EOF'
 Unattended Arch install for the QEMU lab VM.
 
 WARNING: This script destroys all data on the target disk.
@@ -43,73 +43,73 @@ EOF
 }
 
 require_cmd() {
-  if ! command -v "$1" >/dev/null 2>&1; then
-    echo "Missing required command: $1" >&2
-    exit 1
-  fi
+	if ! command -v "$1" >/dev/null 2>&1; then
+		echo "Missing required command: $1" >&2
+		exit 1
+	fi
 }
 
 partition_path() {
-  local disk="$1"
-  local part="$2"
-  if [[ "$disk" =~ [0-9]$ ]]; then
-    printf '%sp%s' "$disk" "$part"
-  else
-    printf '%s%s' "$disk" "$part"
-  fi
+	local disk="$1"
+	local part="$2"
+	if [[ "$disk" =~ [0-9]$ ]]; then
+		printf '%sp%s' "$disk" "$part"
+	else
+		printf '%s%s' "$disk" "$part"
+	fi
 }
 
 while [[ "$#" -gt 0 ]]; do
-  case "$1" in
-    --target-disk)
-      TARGET_DISK="$2"
-      shift 2
-      ;;
-    --hostname)
-      HOSTNAME_VALUE="$2"
-      shift 2
-      ;;
-    --timezone)
-      TIMEZONE="$2"
-      shift 2
-      ;;
-    --root-password)
-      ROOT_PASSWORD="$2"
-      shift 2
-      ;;
-    --authorized-key-file)
-      AUTHORIZED_KEY_FILE="$2"
-      shift 2
-      ;;
-    --no-reboot)
-      REBOOT_AFTER=0
-      shift
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    *)
-      echo "Unknown option: $1" >&2
-      usage
-      exit 1
-      ;;
-  esac
+	case "$1" in
+	--target-disk)
+		TARGET_DISK="$2"
+		shift 2
+		;;
+	--hostname)
+		HOSTNAME_VALUE="$2"
+		shift 2
+		;;
+	--timezone)
+		TIMEZONE="$2"
+		shift 2
+		;;
+	--root-password)
+		ROOT_PASSWORD="$2"
+		shift 2
+		;;
+	--authorized-key-file)
+		AUTHORIZED_KEY_FILE="$2"
+		shift 2
+		;;
+	--no-reboot)
+		REBOOT_AFTER=0
+		shift
+		;;
+	-h | --help)
+		usage
+		exit 0
+		;;
+	*)
+		echo "Unknown option: $1" >&2
+		usage
+		exit 1
+		;;
+	esac
 done
 
 if [[ "$EUID" -ne 0 ]]; then
-  echo "Run as root." >&2
-  exit 1
+	echo "Run as root." >&2
+	exit 1
 fi
 
 if [[ ! -b "$TARGET_DISK" ]]; then
-  echo "Target disk not found: $TARGET_DISK" >&2
-  exit 1
+	echo "Target disk not found: $TARGET_DISK" >&2
+	exit 1
 fi
 
 if [[ -n "$AUTHORIZED_KEY_FILE" && ! -f "$AUTHORIZED_KEY_FILE" ]]; then
-  echo "Authorized key file not found: $AUTHORIZED_KEY_FILE" >&2
-  exit 1
+	echo "Authorized key file not found: $AUTHORIZED_KEY_FILE" >&2
+	exit 1
 fi
 
 require_cmd sgdisk
@@ -150,30 +150,30 @@ mount --mkdir "$BOOT_PART" /mnt/boot
 
 echo "==> Installing base packages"
 pacstrap -K /mnt \
-  base \
-  linux-lts \
-  linux-firmware \
-  neovim \
-  bash-completion \
-  openssh \
-  python \
-  sudo \
-  efibootmgr
+	base \
+	linux-lts \
+	linux-firmware \
+	neovim \
+	bash-completion \
+	openssh \
+	python \
+	sudo \
+	efibootmgr
 
 echo "==> Generating fstab"
-genfstab -U /mnt >> /mnt/etc/fstab
+genfstab -U /mnt >>/mnt/etc/fstab
 
 ROOT_PARTUUID="$(blkid -s PARTUUID -o value "$ROOT_PART")"
 
 echo "==> Configuring installed system"
 arch-chroot /mnt /usr/bin/env \
-  HOSTNAME_VALUE="$HOSTNAME_VALUE" \
-  TIMEZONE="$TIMEZONE" \
-  LOCALE="$LOCALE" \
-  KEYMAP="$KEYMAP" \
-  ROOT_PASSWORD="$ROOT_PASSWORD" \
-  ROOT_PARTUUID="$ROOT_PARTUUID" \
-  /bin/bash <<'CHROOT'
+	HOSTNAME_VALUE="$HOSTNAME_VALUE" \
+	TIMEZONE="$TIMEZONE" \
+	LOCALE="$LOCALE" \
+	KEYMAP="$KEYMAP" \
+	ROOT_PASSWORD="$ROOT_PASSWORD" \
+	ROOT_PARTUUID="$ROOT_PARTUUID" \
+	/bin/bash <<'CHROOT'
 set -euo pipefail
 
 ln -sf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime
@@ -240,9 +240,9 @@ systemctl enable sshd
 CHROOT
 
 if [[ -n "$AUTHORIZED_KEY_FILE" ]]; then
-  echo "==> Installing root authorized key"
-  install -d -m 700 /mnt/root/.ssh
-  install -m 600 "$AUTHORIZED_KEY_FILE" /mnt/root/.ssh/authorized_keys
+	echo "==> Installing root authorized key"
+	install -d -m 700 /mnt/root/.ssh
+	install -m 600 "$AUTHORIZED_KEY_FILE" /mnt/root/.ssh/authorized_keys
 fi
 
 echo "==> Install complete"
@@ -251,10 +251,10 @@ echo "Root partition: $ROOT_PART"
 echo "Boot partition: $BOOT_PART"
 
 if [[ "$REBOOT_AFTER" -eq 1 ]]; then
-  echo "==> Rebooting in 5 seconds (remove installer media if needed)"
-  sleep 5
-  reboot
+	echo "==> Rebooting in 5 seconds (remove installer media if needed)"
+	sleep 5
+	reboot
 else
-  echo "==> Not rebooting (--no-reboot)."
-  echo "    Run: umount -R /mnt && reboot"
+	echo "==> Not rebooting (--no-reboot)."
+	echo "    Run: umount -R /mnt && reboot"
 fi

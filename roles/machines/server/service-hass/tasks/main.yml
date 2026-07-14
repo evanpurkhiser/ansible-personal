@@ -22,6 +22,14 @@
     dest: /var/lib/hass/configuration.yaml
     mode: "0644"
 
+- name: Ensure hass custom ZHA quirks
+  notify: Restart home-assistant
+  ansible.builtin.copy:
+    src: custom_zha_quirks/
+    dest: /var/lib/hass/custom_zha_quirks/
+    mode: "0644"
+    directory_mode: "0755"
+
 - name: Ensure automations file
   ansible.builtin.file:
     path: /var/lib/hass/automations.yaml

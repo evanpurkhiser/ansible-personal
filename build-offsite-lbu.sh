@@ -40,8 +40,6 @@ fi
 if [ ! -f "$BUILD_KEY" ]; then
 	ssh-keygen -t ed25519 -N "" -f "$BUILD_KEY" -C "ansible-offsite-build" >/dev/null
 fi
-BUILD_PUBKEY="$(cat "${BUILD_KEY}.pub")"
-
 # Pull image if needed
 echo "==> Pulling Alpine $ALPINE_IMAGE..."
 podman pull "$ALPINE_IMAGE"

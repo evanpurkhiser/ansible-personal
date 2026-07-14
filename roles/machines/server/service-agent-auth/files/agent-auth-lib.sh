@@ -19,8 +19,8 @@ agent_auth_find_macbook_route() {
 }
 
 agent_auth_find_macbook() {
-	local name ip
-	IFS=$'\t' read -r name ip < <(agent_auth_find_macbook_route)
+	local ip
+	IFS=$'\t' read -r _ ip < <(agent_auth_find_macbook_route)
 
 	if [[ -z "${ip:-}" ]]; then
 		return 1

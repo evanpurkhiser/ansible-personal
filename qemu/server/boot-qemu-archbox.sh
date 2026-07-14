@@ -231,9 +231,9 @@ QEMU_ARGS=(
 	-smp "$CPUS"
 	-m "$RAM_MB"
 	-rtc base=utc
-	-drive if=none,file="$OVERLAY_PATH",id=nvme0,format=qcow2
-	-device nvme,drive=nvme0,serial=232880490001327413C4
-	-device ich9-ahci,id=ahci
+	-drive "if=none,file=$OVERLAY_PATH,id=nvme0,format=qcow2"
+	-device "nvme,drive=nvme0,serial=232880490001327413C4"
+	-device "ich9-ahci,id=ahci"
 )
 
 for i in $(seq 1 "$DATA_DISK_COUNT"); do
@@ -243,15 +243,15 @@ for i in $(seq 1 "$DATA_DISK_COUNT"); do
 		qemu-img create -f qcow2 "$DATA_DISK_PATH" "$DATA_DISK_SIZE"
 	fi
 	QEMU_ARGS+=(
-		-drive if=none,file="$DATA_DISK_PATH",id=sata${i},format=qcow2
-		-device ide-hd,drive=sata${i},bus=ahci.$((i - 1)),serial=WDC-SATA-DISK-${i}
+		-drive "if=none,file=$DATA_DISK_PATH,id=sata${i},format=qcow2"
+		-device "ide-hd,drive=sata${i},bus=ahci.$((i - 1)),serial=WDC-SATA-DISK-${i}"
 	)
 done
 
 if [ "$COMPAT_NIC" -eq 1 ]; then
 	QEMU_ARGS+=(
-		-netdev user,id=mgmt,hostfwd=tcp::${SSH_FORWARD_PORT}-:22
-		-device virtio-net-pci,netdev=mgmt,mac=52:54:00:20:00:01
+		-netdev "user,id=mgmt,hostfwd=tcp::${SSH_FORWARD_PORT}-:22"
+		-device "virtio-net-pci,netdev=mgmt,mac=52:54:00:20:00:01"
 	)
 else
 	LAN_NET=""
@@ -273,17 +273,17 @@ else
 
 	if [ "$SSH_VIA" = "lan" ]; then
 		QEMU_ARGS+=(
-			-netdev user,id=lan,net=${LAN_NET},dhcpstart=${LAN_DHCPSTART},hostfwd=tcp::${SSH_FORWARD_PORT}-${SSH_TARGET}:22
-			-device virtio-net-pci,netdev=lan,mac=d0:50:99:c2:9f:07
-			-netdev user,id=wan
-			-device virtio-net-pci,netdev=wan,mac=d0:50:99:c2:9f:08
+			-netdev "user,id=lan,net=${LAN_NET},dhcpstart=${LAN_DHCPSTART},hostfwd=tcp::${SSH_FORWARD_PORT}-${SSH_TARGET}:22"
+			-device "virtio-net-pci,netdev=lan,mac=d0:50:99:c2:9f:07"
+			-netdev "user,id=wan"
+			-device "virtio-net-pci,netdev=wan,mac=d0:50:99:c2:9f:08"
 		)
 	elif [ "$SSH_VIA" = "wan" ]; then
 		QEMU_ARGS+=(
-			-netdev user,id=lan
-			-device virtio-net-pci,netdev=lan,mac=d0:50:99:c2:9f:07
-			-netdev user,id=wan,hostfwd=tcp::${SSH_FORWARD_PORT}-:22
-			-device virtio-net-pci,netdev=wan,mac=d0:50:99:c2:9f:08
+			-netdev "user,id=lan"
+			-device "virtio-net-pci,netdev=lan,mac=d0:50:99:c2:9f:07"
+			-netdev "user,id=wan,hostfwd=tcp::${SSH_FORWARD_PORT}-:22"
+			-device "virtio-net-pci,netdev=wan,mac=d0:50:99:c2:9f:08"
 		)
 	else
 		echo "Invalid --ssh-via value: $SSH_VIA (expected lan or wan)" >&2
@@ -292,13 +292,13 @@ else
 fi
 
 QEMU_ARGS+=(
-	-boot order=c,menu=on
+	-boot "order=c,menu=on"
 )
 
 if [ "$UEFI" -eq 1 ]; then
 	QEMU_ARGS+=(
-		-drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE"
-		-drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL"
+		-drive "if=pflash,format=raw,readonly=on,file=$OVMF_CODE"
+		-drive "if=pflash,format=raw,file=$OVMF_VARS_LOCAL"
 	)
 fi
 
@@ -309,7 +309,7 @@ if [ "$HEADLESS" -eq 1 ]; then
 	)
 else
 	QEMU_ARGS+=(
-		-display gtk,gl=on
+		-display "gtk,gl=on"
 	)
 fi
 
@@ -343,11 +343,13 @@ EOF
 		chmod 700 "$ASKPASS_SCRIPT"
 
 		ssh_ready=0
-		for _ in $(seq 1 120); do
+		attempt=0
+		while [ "$attempt" -lt 120 ]; do
 			if timeout 8 bash -lc "exec 3<>/dev/tcp/127.0.0.1/${SSH_FORWARD_PORT}; read -r -t 3 _ <&3" >/dev/null 2>&1; then
 				ssh_ready=1
 				break
 			fi
+			attempt=$((attempt + 1))
 			sleep 2
 		done
 

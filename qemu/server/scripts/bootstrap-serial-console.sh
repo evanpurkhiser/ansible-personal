@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 set -euo pipefail
 
 if ! grep -q "console=ttyS0,115200n8" /etc/default/grub; then

@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+# shellcheck source=/dev/null
 source /etc/auto-system-update.conf
 
 # Output to stderr so it bypasses sentry-cli and goes to systemd journal

@@ -183,8 +183,8 @@ QEMU_ARGS+=(
 
 if [ "$UEFI" -eq 1 ]; then
 	QEMU_ARGS+=(
-		-drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE"
-		-drive if=pflash,format=raw,file="$OVMF_VARS_LOCAL"
+		-drive "if=pflash,format=raw,readonly=on,file=$OVMF_CODE"
+		-drive "if=pflash,format=raw,file=$OVMF_VARS_LOCAL"
 	)
 fi
 
@@ -195,39 +195,39 @@ if [ "$HEADLESS" -eq 1 ]; then
 	)
 else
 	QEMU_ARGS+=(
-		-display gtk,gl=on
+		-display "gtk,gl=on"
 	)
 fi
 
 QEMU_ARGS+=(
-	-drive if=none,file="$BOOT_DISK_PATH",id=nvme0,format=qcow2
-	-device nvme,drive=nvme0,serial=232880490001327413C4
-	-device ich9-ahci,id=ahci
+	-drive "if=none,file=$BOOT_DISK_PATH,id=nvme0,format=qcow2"
+	-device "nvme,drive=nvme0,serial=232880490001327413C4"
+	-device "ich9-ahci,id=ahci"
 )
 
 for i in $(seq 1 "$DATA_DISK_COUNT"); do
 	DATA_DISK_PATH="${DISK_DIR}/data-sata${i}.qcow2"
 	QEMU_ARGS+=(
-		-drive if=none,file="$DATA_DISK_PATH",id=sata${i},format=qcow2
-		-device ide-hd,drive=sata${i},bus=ahci.$((i - 1)),serial=WDC-SATA-DISK-${i}
+		-drive "if=none,file=$DATA_DISK_PATH,id=sata${i},format=qcow2"
+		-device "ide-hd,drive=sata${i},bus=ahci.$((i - 1)),serial=WDC-SATA-DISK-${i}"
 	)
 done
 
 QEMU_ARGS+=(
-	-netdev user,id=lan,hostfwd=tcp::${SSH_FORWARD_PORT}-:22
-	-device igb,netdev=lan,mac=52:54:00:10:00:07
-	-netdev user,id=wan
-	-device e1000e,netdev=wan,mac=52:54:00:10:00:08
+	-netdev "user,id=lan,hostfwd=tcp::${SSH_FORWARD_PORT}-:22"
+	-device "igb,netdev=lan,mac=52:54:00:10:00:07"
+	-netdev "user,id=wan"
+	-device "e1000e,netdev=wan,mac=52:54:00:10:00:08"
 )
 
 if [ "$ATTACH_INSTALL_MEDIA" -eq 1 ]; then
 	QEMU_ARGS+=(
-		-boot order=d,menu=on
+		-boot "order=d,menu=on"
 		-cdrom "$ISO_PATH"
 	)
 else
 	QEMU_ARGS+=(
-		-boot order=c,menu=on
+		-boot "order=c,menu=on"
 	)
 fi
 

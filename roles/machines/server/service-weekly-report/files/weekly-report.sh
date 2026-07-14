@@ -24,7 +24,7 @@ echo "❄️ *cpu:* ${temp_cpu}° / *mem:* ${temp_mem}° / *ssd:* ${temp_ssd}"
 
 # Disk usages
 function usage() {
-	df $1 -h --output=used,avail,pcent | tail -n +2 | awk '{printf "*used:* %s / *avail:* %s (%s)", $1,$2,$3}'
+	df "$1" -h --output=used,avail,pcent | tail -n +2 | awk '{printf "*used:* %s / *avail:* %s (%s)", $1,$2,$3}'
 }
 echo "💾 $(usage /dev/nvme0n1p2)"
 echo "🗂️ $(usage /mnt/documents)"
@@ -62,7 +62,7 @@ fi
 
 # Get the size difference between last two snapshots
 snapshot_sizes=$(zfs list -t snapshot -r documents -o used -H -p -s creation | tail -2)
-if [ $(echo "$snapshot_sizes" | wc -l) -eq 2 ]; then
+if [ "$(echo "$snapshot_sizes" | wc -l)" -eq 2 ]; then
 	prev_size=$(echo "$snapshot_sizes" | head -1)
 	curr_size=$(echo "$snapshot_sizes" | tail -1)
 	size_diff=$((curr_size - prev_size))
@@ -102,9 +102,9 @@ services="$(systemctl list-units --type=service --output=json |
 echo "🛠️ \[systemd] ${services}"
 
 # Torrents
-torrents_downloading="$(transmission-remote -l | grep 'Downloading' | wc -l)"
-torrents_seeding="$(transmission-remote -l | grep 'Seeding' | wc -l)"
-torrents_idle="$(transmission-remote -l | grep 'Idle' | wc -l)"
+torrents_downloading="$(transmission-remote -l | awk '/Downloading/ {count++} END {print count + 0}')"
+torrents_seeding="$(transmission-remote -l | awk '/Seeding/ {count++} END {print count + 0}')"
+torrents_idle="$(transmission-remote -l | awk '/Idle/ {count++} END {print count + 0}')"
 echo "📡 \[transmission] *down:* ${torrents_downloading} / *seeding:* ${torrents_seeding} / *idle:* ${torrents_idle}"
 echo ""
 

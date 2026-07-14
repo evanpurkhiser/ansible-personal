@@ -157,6 +157,7 @@ SSH_OPTS=(
 )
 
 run_ssh() {
+	# shellcheck disable=SC2029 # Arguments are intentionally evaluated remotely.
 	ssh "${SSH_OPTS[@]}" "${SSH_USER}@${SSH_HOST}" "$@"
 }
 

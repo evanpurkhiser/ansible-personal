@@ -35,6 +35,11 @@ rev = "v1.7.12"
 hooks = [{ id = "actionlint-system", priority = 11 }]
 
 [[repos]]
+repo = "https://github.com/zizmorcore/zizmor-pre-commit"
+rev = "v1.27.0"
+hooks = [{ id = "zizmor", args = ["--min-severity", "high"], priority = 11 }]
+
+[[repos]]
 repo = "local"
 hooks = [
   { id = "ansible-lint", name = "ansible-lint", entry = "env ANSIBLE_LIBRARY=./library ansible-lint", language = "system", types_or = ["jinja", "yaml"], pass_filenames = false, priority = 11 },

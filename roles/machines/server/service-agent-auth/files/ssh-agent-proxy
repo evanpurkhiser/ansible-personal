@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-AGENT_SOCK="/Users/evan/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+OP_AGENT_SOCK="/Users/evan/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 SSH_KEY="/etc/ssh-agent-proxy-key"
 SSH_USER="evan"
 LIB="/usr/local/libexec/agents/agent-auth-lib.sh"
@@ -65,4 +65,4 @@ exec ssh \
 	-o ConnectTimeout=5 \
 	-o BatchMode=yes \
 	"$HOST" \
-	"echo '$PROXY_B64' | base64 -d > /tmp/ssh-agent-proxy.py && python3 /tmp/ssh-agent-proxy.py '$AGENT_SOCK'"
+	"echo '$PROXY_B64' | base64 -d > /tmp/ssh-agent-proxy.py && python3 /tmp/ssh-agent-proxy.py '$OP_AGENT_SOCK'"

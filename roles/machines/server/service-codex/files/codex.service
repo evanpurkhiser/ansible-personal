@@ -8,6 +8,7 @@ Requires=import-environment.service
 Type=simple
 Environment=SSH_AUTH_SOCK=/run/ssh-agent-proxy.sock
 Environment=CODEX_HOME=/home/evan/.config/codex
+Environment=AGENT_BROWSER_IDLE_TIMEOUT_MS=1800000
 EnvironmentFile=-/home/evan/.config/codex/mcp.env
 ExecStart=/usr/local/libexec/codex/remote-control
 Restart=on-failure

@@ -1,12 +1,14 @@
 #!/bin/bash
-# Finds the most-active online MacBook via Tailscale and proxies
-# a single SSH agent request through to its 1Password agent socket.
+# Finds the most-active online MacBook via Tailscale and proxies a single SSH
+# agent request through to its 1Password agent socket. Falls back to the local
+# agent-witness socket when no MacBook is online.
 # Intended to be run as a systemd service instance (Accept=yes),
 # with stdin/stdout connected to the client socket.
 
 set -euo pipefail
 
 OP_AGENT_SOCK="/Users/evan/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+AGENT_WITNESS_SOCK="/run/agent-witness/agent.sock"
 SSH_KEY="/etc/ssh-agent-proxy-key"
 SSH_USER="evan"
 LIB="/usr/local/libexec/agents/agent-auth-lib.sh"
@@ -54,8 +56,13 @@ PYEOF
 HOST=$(agent_auth_find_macbook || true)
 
 if [[ -z "$HOST" || "$HOST" == "null" ]]; then
-	echo "ssh-agent-proxy: no macbook online" >&2
-	exit 0
+	if [[ ! -S "$AGENT_WITNESS_SOCK" ]]; then
+		echo "ssh-agent-proxy: no macbook online and agent-witness socket is unavailable" >&2
+		exit 1
+	fi
+
+	echo "ssh-agent-proxy: no macbook online, using agent-witness" >&2
+	exec socat STDIO "UNIX-CONNECT:$AGENT_WITNESS_SOCK"
 fi
 
 exec ssh \

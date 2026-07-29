@@ -1,5 +1,7 @@
 [Unit]
-Description=SSH agent proxy connection (1Password via MacBook)
+Description=SSH agent proxy connection
+Wants=container-agent-witness.service
+After=container-agent-witness.service
 
 [Service]
 Type=simple

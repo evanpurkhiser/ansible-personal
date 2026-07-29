@@ -1,0 +1,10 @@
+state_path = "/var/lib/agent-witness/state.json"
+vapid_private_key_file = "/var/lib/agent-witness/vapid.key"
+
+control_socket = "/run/agent-witness/control.sock"
+control_socket_mode = "0600"
+
+unix_socket = "/run/agent-witness/agent.sock"
+socket_mode = "0660"
+
+http_listen = "0.0.0.0:9345"

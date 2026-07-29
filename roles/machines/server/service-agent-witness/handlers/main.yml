@@ -1,0 +1,5 @@
+- name: Restart agent-witness
+  ansible.builtin.systemd:
+    name: container-agent-witness
+    state: restarted
+    daemon_reload: true

@@ -137,6 +137,11 @@
   tags: [waitress]
   ansible.builtin.import_role: { name: machines/server/service-waitress }
 
+- name: Import agent-witness role
+  tags: [agent-witness]
+  ansible.builtin.import_role:
+    { name: machines/server/service-agent-witness }
+
 - name: Import meal-log role
   tags: [meal-log]
   ansible.builtin.import_role: { name: machines/server/service-meal-log }

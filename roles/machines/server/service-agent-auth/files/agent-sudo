@@ -15,7 +15,7 @@ macbook_route=$(agent_auth_find_macbook_route || true)
 IFS=$'\t' read -r macbook_name macbook_ip <<<"$macbook_route"
 
 if [[ -z "${macbook_ip:-}" ]]; then
-	message="MacBooks offline, using agent-witness. Wake request sent to Evan's iPhone to authorize the request."
+	message="MacBooks offline, using agent-witness. Wake request will be sent to Evan's iPhone for authorization."
 	printf '[agent-sudo] %s\n' "$message" >&2
 	logger -t agent-sudo "$message"
 	auth_route=agent-witness

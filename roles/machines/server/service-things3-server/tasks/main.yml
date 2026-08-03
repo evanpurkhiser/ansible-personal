@@ -3,7 +3,6 @@
   community.general.pacman:
     name: things3-cloud
     state: present
-    update_cache: true
 
 - name: Install Things3 auth environment file
   notify: Restart things3-server

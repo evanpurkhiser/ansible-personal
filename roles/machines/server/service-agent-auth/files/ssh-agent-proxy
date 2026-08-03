@@ -7,51 +7,12 @@
 
 set -euo pipefail
 
-OP_AGENT_SOCK="/Users/evan/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 AGENT_WITNESS_SOCK="/run/agent-witness/agent.sock"
 SSH_KEY="/etc/ssh-agent-proxy-key"
 SSH_USER="evan"
 LIB="/usr/local/libexec/agents/agent-auth-lib.sh"
 
 source "$LIB"
-
-# We need to proxy between the SSH stdio channel and the 1Password Unix agent
-# socket on the Mac. socat could do this (socat STDIO UNIX-CONNECT:...) but
-# it's not installed by default on macOS. Python 3 is, so we embed a small
-# proxy script as base64 and write it to /tmp at runtime — this also avoids
-# consuming stdin, which carries the agent socket data.
-PROXY_B64=$(
-	base64 -w0 <<'PYEOF'
-import socket, sys, os, select, time
-
-sock_path = sys.argv[1]
-s = socket.socket(socket.AF_UNIX)
-s.connect(sock_path)
-
-stdin_fd = sys.stdin.buffer.fileno()
-stdout_fd = sys.stdout.buffer.fileno()
-sock_fd = s.fileno()
-
-last_activity = time.time()
-TIMEOUT = 30
-
-while True:
-    elapsed = time.time() - last_activity
-    remaining = max(0, TIMEOUT - elapsed)
-
-    r, _, _ = select.select([stdin_fd, sock_fd], [], [], remaining)
-
-    if not r:  # Timeout occurred
-        sys.exit(0)
-
-    for fd in r:
-        d = os.read(fd, 4096)
-        if not d:
-            sys.exit(0)
-        os.write(stdout_fd if fd == sock_fd else sock_fd, d)
-        last_activity = time.time()
-PYEOF
-)
 
 HOST=$(agent_auth_find_macbook || true)
 
@@ -65,11 +26,17 @@ if [[ -z "$HOST" || "$HOST" == "null" ]]; then
 	exec socat STDIO "UNIX-CONNECT:$AGENT_WITNESS_SOCK"
 fi
 
+# No remote command is passed: the MacBook pins this key to a forced command
+# (~/.ssh/ssh-agent-proxy-serve, managed in the dotfiles) that relays stdio to
+# its 1Password agent socket. That keeps the key from being able to run anything
+# else over there, and keeps the agent socket path defined on the machine that
+# actually owns it.
 exec ssh \
+	-T \
 	-i "$SSH_KEY" \
 	-l "$SSH_USER" \
+	-o IdentitiesOnly=yes \
 	-o StrictHostKeyChecking=accept-new \
 	-o ConnectTimeout=5 \
 	-o BatchMode=yes \
-	"$HOST" \
-	"echo '$PROXY_B64' | base64 -d > /tmp/ssh-agent-proxy.py && python3 /tmp/ssh-agent-proxy.py '$OP_AGENT_SOCK'"
+	"$HOST"

@@ -83,7 +83,9 @@
     enabled: true
     daemon_reload: true
 
-- name: Register hass as tailscale service
-  tailscale_service:
+- name: Expose hass internally
+  notify: Reload nginx
+  internal_service:
     name: hass
+    domain: ha
     local_port: 8123

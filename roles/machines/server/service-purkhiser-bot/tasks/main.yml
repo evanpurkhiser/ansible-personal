@@ -38,7 +38,8 @@
     enabled: true
     daemon_reload: true
 
-- name: Register purkhiser-bot as tailscale service
-  tailscale_service:
+- name: Expose purkhiser-bot internally
+  notify: Reload nginx
+  internal_service:
     name: purkhiser-bot
     local_port: 9090

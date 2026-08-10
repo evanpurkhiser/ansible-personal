@@ -80,7 +80,9 @@
     dest: /usr/local/bin/transmission-helper-handler.sh
     mode: "0766"
 
-- name: Register transmission as tailscale service
-  tailscale_service:
+- name: Expose transmission internally
+  notify: Reload nginx
+  internal_service:
     name: transmission
+    domain: tx
     local_port: 9091

@@ -1,0 +1,16 @@
+[Unit]
+Description=Renew prk.network TLS certificate
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/lego-cloudflare.conf
+UMask=0077
+ExecStart=/usr/bin/lego run \
+  --path /var/lib/lego \
+  --email evanpurkhiser@gmail.com \
+  --accept-tos \
+  --dns cloudflare \
+  --dns.propagation.disable-rns \
+  --domains prk.network \
+  --domains *.prk.network \
+  --deploy-hook /usr/local/bin/reload-nginx-certificate

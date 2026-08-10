@@ -31,6 +31,7 @@ SECRETS: Secrets = {
     "nginx": {
         "cloudflare_cert": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/Origin Certificate",
         "cloudflare_key": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/Origin Private Key",
+        "cloudflare_dns_api_token": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/prk.network letsencrypt DNS-01/token",
     },
     # Venmo auto cashout
     "venmo_auto_cashout": {

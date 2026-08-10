@@ -1,2 +1,5 @@
+- name: Import certificate tasks
+  ansible.builtin.import_tasks: certificates.yml
+
 - name: Import nginx tasks
   ansible.builtin.import_tasks: nginx.yml

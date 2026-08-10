@@ -109,7 +109,8 @@
     state: started
     enabled: true
 
-- name: Register atuin as tailscale service
-  tailscale_service:
+- name: Expose atuin internally
+  notify: Reload nginx
+  internal_service:
     name: atuin
     local_port: 7070

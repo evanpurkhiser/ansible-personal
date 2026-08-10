@@ -1,3 +1,9 @@
+- name: Ensure internal nginx configuration directory
+  ansible.builtin.file:
+    path: /etc/nginx/internal-services.d
+    state: directory
+    mode: "0755"
+
 - name: Ensure public nginx site configurations
   ansible.builtin.copy:
     src: public-sites.d/

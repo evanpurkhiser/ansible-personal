@@ -56,8 +56,9 @@
     enabled: true
     daemon_reload: true
 
-- name: Register agent-witness as tailscale service
-  tailscale_service:
+- name: Expose agent-witness internally
+  notify: Reload nginx
+  internal_service:
     name: agent-witness
     local_port: 9345
     expose_ports: [443]

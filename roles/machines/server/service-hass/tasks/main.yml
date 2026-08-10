@@ -82,3 +82,8 @@
     state: started
     enabled: true
     daemon_reload: true
+
+- name: Register hass as tailscale service
+  tailscale_service:
+    name: hass
+    local_port: 8123

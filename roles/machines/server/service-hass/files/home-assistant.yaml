@@ -7,6 +7,14 @@ homeassistant:
   longitude: -73.979350
   external_url: https://hass.evanpurkhiser.com
 
+  auth_providers:
+    - type: trusted_networks
+      trusted_networks:
+        - 100.64.0.0/10
+        - fd7a:115c:a1e0::/48
+      allow_bypass_login: true
+    - type: homeassistant
+
   customize:
     light.donut_light:
       supported_color_modes:
@@ -17,10 +25,6 @@ homeassistant:
         - brightness
         - color_temp
       color_mode: brightness
-http:
-  use_x_forwarded_for: true
-  trusted_proxies: [127.0.0.1]
-
 zha:
   custom_quirks_path: /config/custom_zha_quirks
 

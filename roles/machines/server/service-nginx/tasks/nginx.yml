@@ -1,0 +1,32 @@
+- name: Ensure public nginx site configurations
+  ansible.builtin.copy:
+    src: public-sites.d/
+    dest: /etc/nginx/public-sites.d/
+    mode: "0644"
+    directory_mode: "0755"
+  notify: Reload nginx
+
+- name: Ensure nginx server configuration
+  ansible.builtin.copy:
+    src: nginx.conf
+    dest: /etc/nginx/
+    mode: "0644"
+  notify: Reload nginx
+
+- name: Ensure Cloudflare origin cert
+  ansible.builtin.copy:
+    dest: /etc/ssl/cloudflare_origin.crt
+    mode: "0600"
+    content: "{{ nginx.cloudflare_cert }}"
+
+- name: Ensure Cloudflare origin key
+  ansible.builtin.copy:
+    dest: /etc/ssl/cloudflare_origin.key
+    mode: "0600"
+    content: "{{ nginx.cloudflare_key }}"
+
+- name: Enable nginx server
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true

@@ -1,3 +1,11 @@
+- name: Ensure public nginx site configurations
+  ansible.builtin.copy:
+    src: public-sites.d/
+    dest: /etc/nginx/public-sites.d/
+    mode: "0644"
+    directory_mode: "0755"
+  notify: Reload nginx
+
 - name: Ensure nginx server configuration
   ansible.builtin.copy:
     src: nginx.conf

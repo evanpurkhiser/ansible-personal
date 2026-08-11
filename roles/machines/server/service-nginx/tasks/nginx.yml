@@ -4,6 +4,20 @@
     state: directory
     mode: "0755"
 
+- name: Ensure development service proxy
+  ansible.builtin.copy:
+    src: dev-services.conf
+    dest: /etc/nginx/internal-services.d/00-dev.conf
+    mode: "0644"
+  notify: Reload nginx
+
+- name: Ensure development service unavailable page
+  ansible.builtin.copy:
+    src: dev-service-unavailable.html
+    dest: /usr/share/nginx/html/dev-service-unavailable.html
+    mode: "0644"
+  notify: Reload nginx
+
 - name: Ensure public nginx site configurations
   ansible.builtin.copy:
     src: public-sites.d/

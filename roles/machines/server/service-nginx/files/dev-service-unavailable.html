@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Development service unavailable</title>
+<style>
+  :root { color-scheme: light dark; font: 16px/1.5 system-ui, sans-serif; }
+  body { display: grid; min-height: 100vh; margin: 0; place-items: center; }
+  main { max-width: 28rem; padding: 2rem; text-align: center; }
+  h1 { margin: 0 0 .5rem; font-size: clamp(1.5rem, 6vw, 2.25rem); }
+  p { margin: 0; opacity: .7; }
+  code { font: inherit; font-weight: 600; }
+</style>
+<main>
+  <h1>Nothing is running here</h1>
+  <p>No development service is listening on port <code></code>.</p>
+</main>
+<script>document.querySelector('code').textContent = location.hostname.split('.')[0]</script>
+</html>

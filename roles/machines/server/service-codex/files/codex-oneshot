@@ -1,0 +1,434 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#   "websockets==16.1.1",
+# ]
+# ///
+
+import argparse
+import asyncio
+import json
+import os
+import sys
+from collections import deque
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import Any
+
+DEFAULT_TIMEOUT = 600.0
+MAX_MESSAGE_SIZE = 16 * 1024 * 1024
+
+
+class AppServerError(Exception):
+    pass
+
+
+@dataclass(frozen=True)
+class RunResult:
+    thread_id: str
+    turn_id: str
+    status: str
+    reply: str | None = None
+    error: str | None = None
+
+
+class AppServerClient:
+    def __init__(self, websocket: Any) -> None:
+        self.websocket = websocket
+        self.next_request_id = 0
+        self.notifications: deque[dict[str, Any]] = deque()
+
+    async def initialize(self) -> None:
+        await self.request(
+            "initialize",
+            {
+                "clientInfo": {
+                    "name": "codex_oneshot",
+                    "title": "Codex Oneshot",
+                    "version": "1.0.0",
+                }
+            },
+        )
+        await self.notify("initialized", {})
+
+    async def request(self, method: str, params: dict[str, Any]) -> dict[str, Any]:
+        request_id = self.next_request_id
+        self.next_request_id += 1
+
+        await self.websocket.send(
+            json.dumps({"method": method, "id": request_id, "params": params})
+        )
+
+        while True:
+            message = await self.receive()
+
+            if message.get("id") != request_id:
+                self.notifications.append(message)
+                continue
+
+            if error := message.get("error"):
+                detail = error.get("message", json.dumps(error))
+                raise AppServerError(f"{method}: {detail}")
+
+            result = message.get("result")
+            if not isinstance(result, dict):
+                raise AppServerError(f"{method}: malformed response")
+
+            return result
+
+    async def notify(self, method: str, params: dict[str, Any]) -> None:
+        await self.websocket.send(json.dumps({"method": method, "params": params}))
+
+    async def receive(self) -> dict[str, Any]:
+        while True:
+            raw_message = await self.websocket.recv()
+            if not isinstance(raw_message, str):
+                raise AppServerError("app-server sent a binary message")
+
+            message = json.loads(raw_message)
+            if not isinstance(message, dict):
+                raise AppServerError("app-server sent a malformed message")
+
+            if "method" not in message or "id" not in message:
+                return message
+
+            await self.websocket.send(
+                json.dumps(
+                    {
+                        "id": message["id"],
+                        "error": {
+                            "code": -32601,
+                            "message": (
+                                "codex-oneshot cannot handle server requests: "
+                                f"{message['method']}"
+                            ),
+                        },
+                    }
+                )
+            )
+
+    async def next_notification(self) -> dict[str, Any]:
+        if self.notifications:
+            return self.notifications.popleft()
+
+        return await self.receive()
+
+
+def create_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Start one turn on the local Codex app server.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--working-dir",
+        type=Path,
+        default=Path.cwd(),
+        help="working directory used to group and run the thread",
+    )
+    parser.add_argument("--thread-name", help="user-facing name for the new thread")
+    parser.add_argument(
+        "--ephemeral",
+        action="store_true",
+        help="keep the thread in memory without persisting it",
+    )
+
+    prompt = parser.add_mutually_exclusive_group()
+    prompt.add_argument("--prompt", help="prompt text; defaults to standard input")
+    prompt.add_argument(
+        "--prompt-file",
+        type=Path,
+        metavar="PATH",
+        help="read the prompt from PATH; use - for standard input",
+    )
+
+    instructions = parser.add_mutually_exclusive_group()
+    instructions.add_argument(
+        "--developer-instructions",
+        help="developer instructions applied to the thread",
+    )
+    instructions.add_argument(
+        "--developer-instructions-file",
+        type=Path,
+        metavar="PATH",
+        help="read developer instructions from PATH",
+    )
+
+    parser.add_argument(
+        "--model", help="model override; defaults to the server setting"
+    )
+    parser.add_argument(
+        "--effort",
+        choices=("none", "minimal", "low", "medium", "high", "xhigh", "max", "ultra"),
+        help="reasoning effort override",
+    )
+    parser.add_argument(
+        "--sandbox",
+        choices=("read-only", "workspace-write", "danger-full-access"),
+        help="sandbox override; defaults to the server setting",
+    )
+    parser.add_argument(
+        "--approval-policy",
+        choices=("untrusted", "on-request", "never"),
+        help="approval policy override; use never for unattended jobs",
+    )
+    parser.add_argument(
+        "--config-json",
+        type=Path,
+        metavar="PATH",
+        help="JSON object containing per-thread Codex configuration overrides",
+    )
+    parser.add_argument(
+        "--socket",
+        type=Path,
+        default=default_socket_path(),
+        help="app-server Unix socket",
+    )
+    parser.add_argument(
+        "--wait-for-reply",
+        action="store_true",
+        help="wait for completion and print the final agent reply",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=positive_float,
+        default=DEFAULT_TIMEOUT,
+        help="maximum seconds to wait for app-server activity",
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="emit a JSON result instead of plain text",
+    )
+
+    return parser
+
+
+def default_socket_path() -> Path:
+    codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".config" / "codex"))
+    return codex_home / "app-server-control" / "app-server-control.sock"
+
+
+def positive_float(value: str) -> float:
+    parsed = float(value)
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("must be greater than zero")
+
+    return parsed
+
+
+def read_text(path: Path) -> str:
+    if path == Path("-"):
+        return sys.stdin.read()
+
+    return path.read_text()
+
+
+def load_prompt(args: argparse.Namespace, parser: argparse.ArgumentParser) -> str:
+    if args.prompt is not None:
+        prompt = args.prompt
+    elif args.prompt_file is not None:
+        prompt = read_text(args.prompt_file)
+    elif not sys.stdin.isatty():
+        prompt = sys.stdin.read()
+    else:
+        parser.error(
+            "provide --prompt, --prompt-file, or prompt text on standard input"
+        )
+
+    if not prompt.strip():
+        parser.error("prompt must not be empty")
+
+    return prompt
+
+
+def load_developer_instructions(args: argparse.Namespace) -> str | None:
+    if args.developer_instructions is not None:
+        return args.developer_instructions
+    if args.developer_instructions_file is not None:
+        return read_text(args.developer_instructions_file)
+
+    return None
+
+
+def load_config(path: Path | None) -> dict[str, Any] | None:
+    if path is None:
+        return None
+
+    config = json.loads(path.read_text())
+    if not isinstance(config, dict):
+        raise TypeError("--config-json must contain a JSON object")
+
+    return config
+
+
+def thread_start_params(
+    args: argparse.Namespace,
+    developer_instructions: str | None,
+    config: dict[str, Any] | None,
+) -> dict[str, Any]:
+    params: dict[str, Any] = {
+        "cwd": str(args.working_dir),
+        "ephemeral": args.ephemeral,
+        "serviceName": "codex_oneshot",
+    }
+    optional = {
+        "approvalPolicy": args.approval_policy,
+        "config": config,
+        "developerInstructions": developer_instructions,
+        "model": args.model,
+        "sandbox": args.sandbox,
+    }
+    params.update({key: value for key, value in optional.items() if value is not None})
+
+    return params
+
+
+def find_agent_reply(turn: dict[str, Any]) -> str | None:
+    final_reply = None
+    latest_reply = None
+
+    for item in turn.get("items", []):
+        if item.get("type") != "agentMessage":
+            continue
+
+        latest_reply = item.get("text")
+        if item.get("phase") == "final_answer":
+            final_reply = latest_reply
+
+    return final_reply or latest_reply
+
+
+async def wait_for_turn(
+    client: AppServerClient,
+    thread_id: str,
+    turn_id: str,
+) -> RunResult:
+    final_reply = None
+    latest_reply = None
+
+    while True:
+        notification = await client.next_notification()
+        params = notification.get("params", {})
+        if params.get("threadId") not in (None, thread_id):
+            continue
+        if params.get("turnId") not in (None, turn_id):
+            continue
+
+        if notification.get("method") == "item/completed":
+            item = params.get("item", {})
+            if item.get("type") != "agentMessage":
+                continue
+
+            latest_reply = item.get("text")
+            if item.get("phase") == "final_answer":
+                final_reply = latest_reply
+
+        if notification.get("method") != "turn/completed":
+            continue
+
+        turn = params.get("turn", {})
+        if turn.get("id") != turn_id:
+            continue
+
+        error = turn.get("error") or {}
+        return RunResult(
+            thread_id=thread_id,
+            turn_id=turn_id,
+            status=turn.get("status", "failed"),
+            reply=final_reply or latest_reply or find_agent_reply(turn),
+            error=error.get("message"),
+        )
+
+
+async def run(args: argparse.Namespace, prompt: str) -> RunResult:
+    try:
+        from websockets.asyncio.client import unix_connect
+    except ImportError as error:
+        raise AppServerError("the python-websockets package is required") from error
+
+    developer_instructions = load_developer_instructions(args)
+    config = load_config(args.config_json)
+
+    async with unix_connect(
+        path=str(args.socket),
+        uri="ws://localhost/",
+        compression=None,
+        close_timeout=1,
+        max_size=MAX_MESSAGE_SIZE,
+        open_timeout=min(args.timeout, 30.0),
+    ) as websocket:
+        client = AppServerClient(websocket)
+        await client.initialize()
+
+        thread_result = await client.request(
+            "thread/start",
+            thread_start_params(args, developer_instructions, config),
+        )
+        thread_id = thread_result["thread"]["id"]
+
+        if args.thread_name:
+            await client.request(
+                "thread/name/set",
+                {"threadId": thread_id, "name": args.thread_name},
+            )
+
+        turn_params: dict[str, Any] = {
+            "threadId": thread_id,
+            "input": [{"type": "text", "text": prompt}],
+        }
+        if args.effort:
+            turn_params["effort"] = args.effort
+
+        turn_result = await client.request("turn/start", turn_params)
+        turn_id = turn_result["turn"]["id"]
+
+        if not args.wait_for_reply:
+            return RunResult(thread_id, turn_id, "inProgress")
+
+        return await wait_for_turn(client, thread_id, turn_id)
+
+
+def validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) -> None:
+    args.working_dir = args.working_dir.expanduser().resolve()
+    args.socket = args.socket.expanduser().resolve()
+
+    if not args.working_dir.is_dir():
+        parser.error(f"working directory does not exist: {args.working_dir}")
+    if not args.socket.exists():
+        parser.error(f"app-server socket does not exist: {args.socket}")
+
+
+def print_result(result: RunResult, as_json: bool) -> None:
+    if as_json:
+        print(json.dumps(asdict(result), ensure_ascii=False))
+    elif result.reply is not None:
+        print(result.reply)
+    else:
+        print(result.thread_id)
+
+
+async def main() -> int:
+    parser = create_parser()
+    args = parser.parse_args()
+    validate_args(args, parser)
+    prompt = load_prompt(args, parser)
+
+    try:
+        async with asyncio.timeout(args.timeout):
+            result = await run(args, prompt)
+    except TimeoutError:
+        print(
+            f"codex-oneshot: timed out after {args.timeout:g} seconds", file=sys.stderr
+        )
+        return 1
+    except (AppServerError, OSError, TypeError, ValueError) as error:
+        print(f"codex-oneshot: {error}", file=sys.stderr)
+        return 1
+
+    print_result(result, args.json)
+    return 0 if result.status in ("inProgress", "completed") else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(asyncio.run(main()))

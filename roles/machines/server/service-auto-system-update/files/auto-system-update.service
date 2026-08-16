@@ -5,8 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-TimeoutStartSec=600s
-EnvironmentFile=/etc/auto-system-update.conf
+TimeoutStartSec=900s
 ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/local/bin/auto-system-update.sh
 

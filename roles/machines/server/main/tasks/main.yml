@@ -51,6 +51,7 @@
       - tree-sitter-cli
       - unrar
       - unzip
+      - uv
       - wget
       - zip
       - wrangler

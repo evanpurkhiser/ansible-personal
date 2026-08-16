@@ -1,9 +1,24 @@
-- name: Install auto-system-update config
+- name: Ensure system update state directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: evan
+    group: users
+    mode: "0700"
+  loop:
+    - /home/evan/.local/state/system-updates
+    - /home/evan/.local/state/system-updates/runs
+
+- name: Remove legacy auto-system-update config
+  ansible.builtin.file:
+    path: /etc/auto-system-update.conf
+    state: absent
+
+- name: Install auto-system-update prompt
   ansible.builtin.copy:
-    dest: /etc/auto-system-update.conf
-    mode: "0600"
-    content: |
-      OPENAI_API_KEY={{ auto_system_update.openai_api_key }}
+    src: auto-system-update.prompt
+    dest: /etc/auto-system-update.prompt
+    mode: "0644"
 
 - name: Install auto-system-update.sh script
   ansible.builtin.copy:

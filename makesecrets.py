@@ -63,10 +63,6 @@ SECRETS: Secrets = {
         "openai_api_key": "op://Private/fc4edctkopi57hlm476o6r46oq/Transmission Helper API Key",
         "telegram_token": "op://Private/wddknbssdbdpbilpy25olziegm/Purkhiser Bot",
     },
-    # Auto System Update
-    "auto_system_update": {
-        "openai_api_key": "op://Private/fc4edctkopi57hlm476o6r46oq/Auto System Update API Key",
-    },
     # Home assistant
     "home_assistant": {
         "hacs_github_api_key": "op://Private/mfv2dujsrfa4bl6hdexjwqwdoq/HACS Github API Key",

@@ -2,47 +2,62 @@
 
 set -euo pipefail
 
-# shellcheck source=/dev/null
-source /etc/auto-system-update.conf
-
 # Output to stderr so it bypasses sentry-cli and goes to systemd journal
 exec 1>&2
 
-update_output=$(sudo -u aur-builder yay -Syu --noconfirm 2>&1 || true)
+state_dir=/home/evan/.local/state/system-updates
+run_timestamp=$(date --utc +%Y-%m-%dT%H-%M-%SZ)
+run_log="${state_dir}/runs/${run_timestamp}.log"
 
-# Output full update logs (now goes to stderr/journal)
-echo "${update_output}"
+if update_output=$(sudo -u aur-builder yay -Syu --noconfirm 2>&1); then
+	update_status=0
+else
+	update_status=$?
+fi
 
-system_prompt="You are analyzing the output of an Arch Linux system update performed with 'yay -Syu --noconfirm'. Your task is to:
-1. Summarize what packages were updated
-2. Call-out any warnings, errors, or potentially concerning output, quoting them when they seem important
-3. If the update completed successfully with no issues, provide a brief positive summary
-4. Format your response in Telegram markdown style (if needed)
-5. Keep the summary concise (2-4 sentences) unless there are issues that need explanation
+{
+	printf 'Command: yay -Syu --noconfirm\n'
+	printf 'Invocation ID: %s\n' "${INVOCATION_ID:-unknown}"
+	printf 'Exit status: %s\n\n' "${update_status}"
+	printf '%s\n' "${update_output}"
+} | sudo -H -u evan tee "${run_log}"
 
-Output ONLY the summary text, no preamble."
+sudo -H -u evan ln -sfn "runs/${run_timestamp}.log" "${state_dir}/latest.log"
 
-ai_summary=$(curl -s https://api.openai.com/v1/chat/completions \
-	-H "Content-Type: application/json" \
-	-H "Authorization: Bearer ${OPENAI_API_KEY}" \
-	-d "$(jq -n \
-		--arg model "gpt-4o-mini" \
-		--arg system_prompt "$system_prompt" \
-		--arg user_content "$update_output" \
-		'{
-      "model": $model,
-      "messages": [
-        {"role": "system", "content": $system_prompt},
-        {"role": "user", "content": $user_content}
-      ],
-      "temperature": 0.3
-    }')" 2>/dev/null | jq -r '.choices[0].message.content')
+thread_name="System update $(date +%y.%m.%d)"
+if codex_result=$(sudo -H -u evan env CODEX_HOME=/home/evan/.config/codex \
+	/usr/local/bin/codex-oneshot \
+	--working-dir "${state_dir}" \
+	--thread-name "${thread_name}" \
+	--prompt-file "${run_log}" \
+	--developer-instructions-file /etc/auto-system-update.prompt \
+	--sandbox read-only \
+	--approval-policy never \
+	--wait-for-reply \
+	--timeout 600 \
+	--json); then
+	ai_summary=$(jq -r '.reply // empty' <<<"${codex_result}")
+	thread_id=$(jq -r '.thread_id // empty' <<<"${codex_result}")
+else
+	ai_summary="The system update ran, but Codex could not summarize its output. Review the invocation log for details."
+	thread_id=""
+fi
 
-# Send telegram notification with AI summary and invocation ID
+if [[ -z "${ai_summary}" ]]; then
+	ai_summary="The system update ran, but Codex returned an empty summary. Review the invocation log for details."
+fi
+
+if [[ -n "${thread_id}" ]]; then
+	thread_status="Codex thread \`${thread_id}\`"
+else
+	thread_status="Codex thread unavailable"
+fi
+
 /usr/local/bin/purkhiser-bot.sh <<EOF
 *🔄 System Update Report*
 
 ${ai_summary}
 
-Invocation \`${INVOCATION_ID}\`
+${thread_status}
+Invocation \`${INVOCATION_ID:-unknown}\`
 EOF

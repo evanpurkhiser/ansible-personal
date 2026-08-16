@@ -25,6 +25,14 @@
     path: /usr/local/libexec/codex/app-server
     state: absent
 
+- name: Install codex-oneshot
+  ansible.builtin.copy:
+    src: codex-oneshot
+    dest: /usr/local/bin/codex-oneshot
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Ensure codex config directory
   ansible.builtin.file:
     path: /home/evan/.config/codex

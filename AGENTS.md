@@ -35,6 +35,12 @@ paccache: Add paccache role
 
 ## Applying the Playbook
 
+Always run Ansible commands normally as the current user, exactly as shown
+below, and never with `sudo` or local-connection overrides. The playbook uses
+the `ansible-personal` SSH key automatically and handles remote-user access and
+privileges itself. Running Ansible under `sudo` hides the current user's
+installed collections and configuration.
+
 Install Galaxy dependencies (one-time):
 
 ```sh

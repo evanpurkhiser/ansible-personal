@@ -1,7 +1,7 @@
 #!/bin/bash
-# Finds the most-active online MacBook via Tailscale and proxies a single SSH
-# agent request through to its 1Password agent socket. Falls back to the local
-# agent-witness socket when no MacBook is online.
+# Finds online MacBooks via Tailscale and proxies a single SSH agent request
+# through the most recently active one whose display and 1Password agent are
+# ready. Falls back to the local agent-witness socket when none are ready.
 # Intended to be run as a systemd service instance (Accept=yes),
 # with stdin/stdout connected to the client socket.
 
@@ -11,20 +11,67 @@ AGENT_WITNESS_SOCK="/run/agent-witness/agent.sock"
 SSH_KEY="/etc/ssh-agent-proxy-key"
 SSH_USER="evan"
 LIB="/usr/local/libexec/agents/agent-auth-lib.sh"
+# The ssh-agent-proxy-serve forced command for this key recognizes this request
+# as a readiness probe instead of forwarding it to the normal agent relay.
+STATUS_REQUEST=$'AGENT-PROXY-STATUS/1\n'
 
 source "$LIB"
 
-HOST=$(agent_auth_find_macbook || true)
+SSH_OPTIONS=(
+	-T
+	-i "$SSH_KEY"
+	-l "$SSH_USER"
+	-o IdentitiesOnly=yes
+	-o StrictHostKeyChecking=accept-new
+	-o BatchMode=yes
+)
 
-if [[ -z "$HOST" || "$HOST" == "null" ]]; then
+macbook_is_ready() {
+	local ip=$1
+	local response
+
+	response=$(
+		printf '%s' "$STATUS_REQUEST" |
+			timeout --foreground 2 ssh \
+				"${SSH_OPTIONS[@]}" \
+				-o ConnectTimeout=1 \
+				-o ConnectionAttempts=1 \
+				"$ip"
+	) || return 1
+
+	[[ "$response" == "ready" ]]
+}
+
+find_ready_macbook() {
+	local name ip
+
+	while IFS=$'\t' read -r name ip; do
+		if ! macbook_is_ready "$ip"; then
+			printf 'ssh-agent-proxy: %s is online but not ready\n' "$name" >&2
+			continue
+		fi
+
+		printf '%s\t%s\n' "$name" "$ip"
+		return 0
+	done < <(agent_auth_find_macbook_routes)
+
+	return 1
+}
+
+route=$(find_ready_macbook || true)
+IFS=$'\t' read -r host_name host_ip <<<"$route"
+
+if [[ -z "${host_ip:-}" ]]; then
 	if [[ ! -S "$AGENT_WITNESS_SOCK" ]]; then
-		echo "ssh-agent-proxy: no macbook online and agent-witness socket is unavailable" >&2
+		echo "ssh-agent-proxy: no MacBook is ready and agent-witness socket is unavailable" >&2
 		exit 1
 	fi
 
-	echo "ssh-agent-proxy: no macbook online, using agent-witness" >&2
+	echo "ssh-agent-proxy: no MacBook is ready, using agent-witness" >&2
 	exec socat STDIO "UNIX-CONNECT:$AGENT_WITNESS_SOCK"
 fi
+
+printf 'ssh-agent-proxy: using %s\n' "$host_name" >&2
 
 # No remote command is passed: the MacBook pins this key to a forced command
 # (~/.ssh/ssh-agent-proxy-serve, managed in the dotfiles) that relays stdio to
@@ -32,11 +79,6 @@ fi
 # else over there, and keeps the agent socket path defined on the machine that
 # actually owns it.
 exec ssh \
-	-T \
-	-i "$SSH_KEY" \
-	-l "$SSH_USER" \
-	-o IdentitiesOnly=yes \
-	-o StrictHostKeyChecking=accept-new \
+	"${SSH_OPTIONS[@]}" \
 	-o ConnectTimeout=5 \
-	-o BatchMode=yes \
-	"$HOST"
+	"$host_ip"

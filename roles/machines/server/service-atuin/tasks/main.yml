@@ -68,6 +68,32 @@
     label:
       io.containers.autoupdate: registry
 
+- name: Inspect atuin server port binding
+  ansible.builtin.command: podman port atuin-infra 8888/tcp
+  register: atuin_server_port
+  changed_when: false
+  failed_when: false
+
+- name: Inspect atuin-abacus port binding
+  ansible.builtin.command: podman port atuin-infra 8000/tcp
+  register: atuin_abacus_port
+  changed_when: false
+  failed_when: false
+
+- name: Restart atuin with current port bindings
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - pod-atuin
+    - container-atuin-postgres
+    - container-atuin-server
+    - container-atuin-abacus
+  when: >-
+    atuin_server_port.stdout != '127.0.0.1:7070' or
+    atuin_abacus_port.stdout != '127.0.0.1:7071'
+
 - name: Ensure atuin pod is running
   ansible.builtin.systemd:
     name: pod-atuin

@@ -1,0 +1,5 @@
+- name: Restart waitress
+  ansible.builtin.systemd:
+    name: container-waitress
+    state: restarted
+    daemon_reload: true

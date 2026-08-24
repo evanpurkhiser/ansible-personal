@@ -1,0 +1,5 @@
+- name: Restart meal-log
+  ansible.builtin.systemd:
+    name: container-meal-log
+    state: restarted
+    daemon_reload: true

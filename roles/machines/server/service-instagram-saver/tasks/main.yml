@@ -7,6 +7,7 @@
       OPENAI_TOKEN={{ instagram_saver.openai_token }}
 
 - name: Ensure instagram-saver docker container
+  notify: Restart instagram-saver
   containers.podman.podman_container:
     name: instagram-saver
     image: ghcr.io/evanpurkhiser/instagram-saver:latest

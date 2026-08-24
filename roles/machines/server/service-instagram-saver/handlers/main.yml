@@ -1,0 +1,5 @@
+- name: Restart instagram-saver
+  ansible.builtin.systemd:
+    name: container-instagram-saver
+    state: restarted
+    daemon_reload: true

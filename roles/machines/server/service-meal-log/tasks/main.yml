@@ -17,6 +17,7 @@
       R2_BUCKET_NAME=meal-log-images
 
 - name: Ensure meal-log docker container
+  notify: Restart meal-log
   containers.podman.podman_container:
     name: meal-log
     image: ghcr.io/evanpurkhiser/meal-log:latest

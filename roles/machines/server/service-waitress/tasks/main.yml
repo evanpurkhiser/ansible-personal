@@ -1,4 +1,5 @@
 - name: Ensure waitress docker container
+  notify: Restart waitress
   containers.podman.podman_container:
     name: waitress
     image: ghcr.io/evanpurkhiser/waitress:latest

@@ -22,7 +22,7 @@
     image: ghcr.io/evanpurkhiser/meal-log:latest
     state: present
     publish:
-      - "9006:8888"
+      - "127.0.0.1:9006:8888"
     volume:
       - "/var/lib/meal-log:/data"
     env_file:

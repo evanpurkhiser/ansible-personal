@@ -4,7 +4,7 @@
     image: ghcr.io/evanpurkhiser/waitress:latest
     state: present
     publish:
-      - "9005:80"
+      - "127.0.0.1:9005:80"
     volume:
       - "/mnt/documents:/mnt/documents"
     env:

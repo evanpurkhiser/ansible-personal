@@ -20,8 +20,8 @@
     name: atuin
     infra_name: atuin-infra
     ports:
-      - 7070:8888
-      - 7071:8000
+      - "127.0.0.1:7070:8888"
+      - "127.0.0.1:7071:8000"
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always

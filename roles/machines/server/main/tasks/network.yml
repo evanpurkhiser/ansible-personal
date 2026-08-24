@@ -115,9 +115,34 @@
     port: 51413
     interface_in: wan0
 
-- name: UFW deny everything by default
+- name: UFW allow LAN forwarding
+  community.general.ufw:
+    rule: allow
+    route: true
+    interface_in: lan0
+
+- name: UFW allow Tailscale forwarding
+  community.general.ufw:
+    rule: allow
+    route: true
+    interface_in: tailscale0
+
+- name: UFW allow Podman forwarding
+  community.general.ufw:
+    rule: allow
+    route: true
+    interface_in: podman0
+
+- name: UFW deny incoming traffic by default
   community.general.ufw:
     state: enabled
+    direction: incoming
+    policy: deny
+
+- name: UFW deny routed traffic by default
+  community.general.ufw:
+    state: enabled
+    direction: routed
     policy: deny
 
 # Setup and configure DNS server

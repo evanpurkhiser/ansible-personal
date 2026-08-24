@@ -49,13 +49,13 @@
     - ssh-agent-proxy@.service
   notify: Systemd daemon-reload
 
-- name: Install ssh-agent-proxy SSH key
+- name: Install SSH agent proxy key for shared readiness checks
   ansible.builtin.copy:
     content: "{{ ssh_agent_proxy_key }}"
     dest: /etc/ssh-agent-proxy-key
     mode: "0600"
-    owner: root
-    group: root
+    owner: evan
+    group: users
 
 - name: Enable ssh-agent-proxy socket
   ansible.builtin.service:

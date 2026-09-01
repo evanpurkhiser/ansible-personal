@@ -43,6 +43,12 @@ frontend:
   themes: !include_dir_merge_named themes
 
 rest_command:
+  purkhiser_bot:
+    url: "http://purkhiser-bot/"
+    method: POST
+    content_type: text/plain
+    payload: "{{ message }}"
+
   things3_run:
     url: "http://127.0.0.1:8765/"
     method: POST

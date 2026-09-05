@@ -17,6 +17,11 @@ Your task is to:
    needs further explanation.
 6. Do not use emojis.
 
+Known warnings:
+
+- `==> WARNING: Possibly missing firmware for module: 'ast'` is expected on
+  this server. Ignore it completely and never mention it in the summary.
+
 Output only the summary, with no preamble.
 
 On later turns, respond normally to Evan's direct follow-up messages. The

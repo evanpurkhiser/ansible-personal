@@ -134,6 +134,10 @@
   tags: [hass]
   ansible.builtin.import_role: { name: machines/server/service-hass }
 
+- name: Import jellyfin role
+  tags: [jellyfin]
+  ansible.builtin.import_role: { name: machines/server/service-jellyfin }
+
 - name: Import waitress role
   tags: [waitress]
   ansible.builtin.import_role: { name: machines/server/service-waitress }

@@ -8,3 +8,6 @@ unix_socket = "/run/agent-witness/agent.sock"
 socket_mode = "0660"
 
 http_listen = "0.0.0.0:9345"
+
+sentry_backend_dsn = "https://84ed4bede23c9df51bd9824829b798d0@o126623.ingest.us.sentry.io/4511969286684672"
+sentry_frontend_dsn = "https://99e05d85f1d66960cffa61de404fa5d4@o126623.ingest.us.sentry.io/4511969287471104"

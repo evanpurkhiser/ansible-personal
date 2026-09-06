@@ -61,4 +61,3 @@
   internal_service:
     name: agent-witness
     local_port: 9345
-    expose_ports: [443]

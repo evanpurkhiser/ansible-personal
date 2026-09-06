@@ -78,6 +78,12 @@ This requires the 1Password CLI (`op`) to be authenticated. The `common` role wi
 
 ## Writing Roles
 
+### Desired state
+
+Service roles describe a clean installation's desired state. Perform one-time
+removal of obsolete files, units, listeners, and other historical artifacts
+manually during the migration instead of encoding cleanup tasks in the role.
+
 ### Task conventions
 
 - Every task must have a `name:` field

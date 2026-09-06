@@ -42,4 +42,5 @@
   notify: Reload nginx
   internal_service:
     name: purkhiser-bot
+    domain: bot
     local_port: 9090

@@ -44,7 +44,7 @@ frontend:
 
 rest_command:
   purkhiser_bot:
-    url: "http://purkhiser-bot/"
+    url: "https://bot.prk.network/"
     method: POST
     content_type: text/plain
     payload: "{{ message }}"

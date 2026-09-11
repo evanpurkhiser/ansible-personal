@@ -1,43 +1,46 @@
-- name: Create agent libexec directories
+- name: Create agent libexec directory
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: /usr/local/libexec/agents
     state: directory
     owner: root
     group: root
     mode: "0755"
-  loop:
-    - /usr/local/libexec/agents
-    - /usr/local/libexec/agents/bin
 
-- name: Install agent auth helper library
-  ansible.builtin.copy:
-    src: agent-auth-lib.sh
-    dest: /usr/local/libexec/agents/agent-auth-lib.sh
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Install agent sudo shim
-  ansible.builtin.copy:
-    src: agent-sudo
-    dest: /usr/local/libexec/agents/agent-sudo
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Link agent sudo shim into agent bin path
+- name: Create SSH agent proxy package directory
   ansible.builtin.file:
-    src: /usr/local/libexec/agents/agent-sudo
-    dest: /usr/local/libexec/agents/bin/sudo
-    state: link
+    path: /usr/local/libexec/agents/agent_proxy
+    state: directory
     owner: root
     group: root
-
-- name: Install ssh-agent-proxy script
-  ansible.builtin.copy:
-    src: ssh-agent-proxy
-    dest: /usr/local/bin/ssh-agent-proxy
     mode: "0755"
+
+- name: Install SSH agent proxy package
+  ansible.builtin.copy:
+    src: agent_proxy/
+    dest: /usr/local/libexec/agents/agent_proxy/
+    owner: root
+    group: root
+    mode: preserve
+
+- name: Install SSH agent proxy commands
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/usr/local/libexec/agents/{{ item }}"
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - ssh-agent-ctx
+    - ssh-agent-proxy
+
+- name: Link SSH agent context command
+  ansible.builtin.file:
+    src: /usr/local/libexec/agents/ssh-agent-ctx
+    dest: /usr/local/bin/ssh-agent-ctx
+    state: link
+    force: true
+    owner: root
+    group: root
 
 - name: Install ssh-agent-proxy systemd units
   ansible.builtin.copy:

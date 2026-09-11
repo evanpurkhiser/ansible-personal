@@ -202,7 +202,7 @@
     { name: machines/server/service-auto-system-update }
 
 - name: Import agent-auth role
-  tags: [agent-auth, agent-sudo, codex, pam-ssh-agent]
+  tags: [agent-auth, codex, pam-ssh-agent]
   ansible.builtin.import_role: { name: machines/server/service-agent-auth }
 
 - name: Import agents-common role

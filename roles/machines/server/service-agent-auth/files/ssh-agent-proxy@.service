@@ -5,7 +5,7 @@ After=container-agent-witness.service
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/ssh-agent-proxy
+ExecStart=/usr/local/libexec/agents/ssh-agent-proxy
 SuccessExitStatus=255
 StandardInput=socket
 StandardOutput=socket

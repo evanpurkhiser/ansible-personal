@@ -1,38 +1,16 @@
-#!/bin/bash
-# Finds online MacBooks via Tailscale and proxies a single SSH agent request
-# through the most recently active one whose display and 1Password agent are
-# ready. Falls back to the local agent-witness socket when none are ready.
-# Intended to be run as a systemd service instance (Accept=yes),
-# with stdin/stdout connected to the client socket.
+#!/usr/bin/env python3
 
-set -euo pipefail
+"""Configure logging and serve one systemd-accepted agent connection."""
 
-AGENT_WITNESS_SOCK="/run/agent-witness/agent.sock"
-LIB="/usr/local/libexec/agents/agent-auth-lib.sh"
+import logging
 
-source "$LIB"
+from agent_proxy.service import run_proxy
 
-route=$(agent_auth_find_ready_macbook_route || true)
-IFS=$'\t' read -r host_name host_ip <<<"$route"
 
-if [[ -z "${host_ip:-}" ]]; then
-	if [[ ! -S "$AGENT_WITNESS_SOCK" ]]; then
-		echo "ssh-agent-proxy: no MacBook is ready and agent-witness socket is unavailable" >&2
-		exit 1
-	fi
+def main() -> int:
+    logging.basicConfig(level=logging.INFO, format="%(name)s: %(message)s")
+    return run_proxy()
 
-	echo "ssh-agent-proxy: no MacBook is ready, using agent-witness" >&2
-	exec socat STDIO "UNIX-CONNECT:$AGENT_WITNESS_SOCK"
-fi
 
-printf 'ssh-agent-proxy: using %s\n' "$host_name" >&2
-
-# No remote command is passed: the MacBook pins this key to a forced command
-# (~/.ssh/ssh-agent-proxy-serve, managed in the dotfiles) that relays stdio to
-# its 1Password agent socket. That keeps the key from being able to run anything
-# else over there, and keeps the agent socket path defined on the machine that
-# actually owns it.
-exec ssh \
-	"${AGENT_AUTH_SSH_OPTIONS[@]}" \
-	-o ConnectTimeout=5 \
-	"$host_ip"
+if __name__ == "__main__":
+    raise SystemExit(main())

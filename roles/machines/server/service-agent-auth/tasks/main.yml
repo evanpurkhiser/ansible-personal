@@ -1,56 +1,7 @@
-- name: Create agent libexec directory
-  ansible.builtin.file:
-    path: /usr/local/libexec/agents
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Create SSH agent proxy package directory
-  ansible.builtin.file:
-    path: /usr/local/libexec/agents/agent_proxy
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Install SSH agent proxy package
-  ansible.builtin.copy:
-    src: agent_proxy/
-    dest: /usr/local/libexec/agents/agent_proxy/
-    owner: root
-    group: root
-    mode: preserve
-
-- name: Install SSH agent proxy commands
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "/usr/local/libexec/agents/{{ item }}"
-    owner: root
-    group: root
-    mode: "0755"
-  loop:
-    - ssh-agent-ctx
-    - ssh-agent-proxy
-
-- name: Link SSH agent context command
-  ansible.builtin.file:
-    src: /usr/local/libexec/agents/ssh-agent-ctx
-    dest: /usr/local/bin/ssh-agent-ctx
-    state: link
-    force: true
-    owner: root
-    group: root
-
-- name: Install ssh-agent-proxy systemd units
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: /etc/systemd/system/
-    mode: "0644"
-  loop:
-    - ssh-agent-proxy.socket
-    - ssh-agent-proxy@.service
-  notify: Systemd daemon-reload
+- name: Install agent-auth from evanpurkhiser pacman repo
+  community.general.pacman:
+    name: agent-auth
+    state: latest
 
 - name: Install SSH agent proxy key for shared readiness checks
   ansible.builtin.copy:
@@ -61,7 +12,7 @@
     group: users
 
 - name: Enable ssh-agent-proxy socket
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: ssh-agent-proxy.socket
     state: started
     enabled: true

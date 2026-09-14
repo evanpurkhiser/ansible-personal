@@ -13,15 +13,6 @@
     owner: root
     group: root
 
-- name: Install things3 server systemd service
-  notify:
-    - Systemd daemon-reload
-    - Restart things3-server
-  ansible.builtin.copy:
-    src: things3-server.service
-    dest: /etc/systemd/system/things3-server.service
-    mode: "0644"
-
 - name: Enable things3 server service
   ansible.builtin.service:
     name: things3-server.service

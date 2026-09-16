@@ -11,6 +11,14 @@
     owner: evan
     group: users
 
+- name: Configure SSH agent proxy dependency on agent-witness
+  ansible.builtin.copy:
+    src: agent-witness.conf
+    dest: /etc/systemd/system/ssh-agent-proxy@.service.d/
+    owner: root
+    group: root
+    mode: "0644"
+
 - name: Enable ssh-agent-proxy socket
   ansible.builtin.systemd:
     name: ssh-agent-proxy.socket

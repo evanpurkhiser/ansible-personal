@@ -1,0 +1,16 @@
+[Unit]
+Description=GitHub OIDC image deployment receiver
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+StateDirectory=deploy-image
+Environment=UV_CACHE_DIR=/var/lib/deploy-image/uv
+ExecStart=/usr/bin/uv run --python /usr/bin/python3 --script /usr/local/lib/deploy-image.py
+Restart=on-failure
+RestartSec=5
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

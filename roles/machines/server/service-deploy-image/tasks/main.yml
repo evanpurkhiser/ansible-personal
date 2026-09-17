@@ -1,0 +1,29 @@
+- name: Install uv for image deployment
+  community.general.pacman:
+    name: uv
+    state: present
+
+- name: Install image deployment receiver
+  notify: Restart image deployment receiver
+  ansible.builtin.copy:
+    src: deploy-image.py
+    dest: /usr/local/lib/deploy-image.py
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install image deployment service
+  notify: Restart image deployment receiver
+  ansible.builtin.copy:
+    src: deploy-image.service
+    dest: /etc/systemd/system/deploy-image.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable image deployment receiver
+  ansible.builtin.systemd:
+    name: deploy-image.service
+    state: started
+    enabled: true
+    daemon_reload: true

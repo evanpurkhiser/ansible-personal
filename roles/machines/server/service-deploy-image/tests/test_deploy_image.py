@@ -1,7 +1,6 @@
 import http.client
 import importlib.util
 import json
-import queue
 import subprocess
 import threading
 import time
@@ -62,6 +61,10 @@ class DeploymentTests(unittest.TestCase):
             {"exp": int(time.time()) - 60},
             {"repository_owner_id": "9999"},
             {"repository": "someone-else/waitress"},
+            {"repository": 123},
+            {"run_id": 123},
+            {"sha": None},
+            {"run_attempt": 1},
             {"ref": "refs/heads/feature"},
             {"event_name": "pull_request_target"},
             {
@@ -80,9 +83,7 @@ class DeploymentTests(unittest.TestCase):
             deploy.verify_identity(token, self.keys)
 
     def request(self, token, eligible=True, body=None):
-        server = deploy.HTTPServer(("127.0.0.1", 0), deploy.Handler)
-        server.keys = self.keys
-        server.pending = queue.Queue(maxsize=64)
+        server = deploy.DeploymentServer(("127.0.0.1", 0), self.keys)
         thread = threading.Thread(target=server.handle_request)
         thread.start()
         connection = http.client.HTTPConnection(*server.server_address, timeout=5)

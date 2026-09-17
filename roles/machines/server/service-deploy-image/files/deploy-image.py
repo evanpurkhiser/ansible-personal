@@ -11,7 +11,9 @@ import queue
 import re
 import subprocess
 import threading
+from collections.abc import Mapping
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import NotRequired, TypedDict, cast
 
 import jwt
 
@@ -21,7 +23,34 @@ WORKFLOW = "evanpurkhiser/workflows/.github/workflows/deploy-image-personal.yml@
 MAX_BODY = 16384
 
 
-def verify_identity(token, keys):
+class IdentityClaims(TypedDict):
+    repository: str
+    run_id: str
+    sha: NotRequired[str]
+    run_attempt: NotRequired[str]
+
+
+class DeploymentRequest(TypedDict):
+    repository: str
+    image: str
+    trigger_digest: str
+    commit_sha: str | None
+    run_id: str
+    run_attempt: str | None
+
+
+class ContainerSnapshot(TypedDict):
+    name: str
+    image: str
+    image_id: str
+    manifest_digest: str
+    state: str
+
+
+type ImageSnapshots = dict[str, ContainerSnapshot]
+
+
+def verify_identity(token: str, keys: jwt.PyJWKClient) -> IdentityClaims:
     claims = jwt.decode(
         token,
         keys.get_signing_key_from_jwt(token).key,
@@ -54,13 +83,17 @@ def verify_identity(token, keys):
     if any(claims.get(key) != value for key, value in expected.items()):
         raise ValueError("Workflow identity is not authorized")
 
+    for key in ("repository", "run_id", "sha", "run_attempt"):
+        if key in claims and not isinstance(claims[key], str):
+            raise ValueError(f"Expected a string claim: {key}")
+
     if not re.fullmatch(r"evanpurkhiser/[A-Za-z0-9_.-]+", claims["repository"]):
         raise ValueError("Repository is not authorized")
 
-    return claims
+    return cast(IdentityClaims, claims)
 
 
-def has_eligible_container(image):
+def has_eligible_container(image: str) -> bool:
     result = subprocess.run(
         [
             "/usr/bin/podman",
@@ -78,7 +111,9 @@ def has_eligible_container(image):
     return image in result.stdout.splitlines()
 
 
-def deployment_request(body, claims):
+def deployment_request(
+    body: Mapping[str, object], claims: IdentityClaims
+) -> DeploymentRequest:
     image = f"ghcr.io/{claims['repository']}:latest"
     digest = body.get("digest")
     if body.get("image") != image:
@@ -97,7 +132,7 @@ def deployment_request(body, claims):
     }
 
 
-def snapshot_images(image):
+def snapshot_images(image: str) -> ImageSnapshots:
     names = subprocess.run(
         ["/usr/bin/podman", "ps", "--all", "--format", "{{.Names}}"],
         check=True,
@@ -121,11 +156,13 @@ def snapshot_images(image):
         text=True,
         timeout=30,
     )
-    containers = [json.loads(line) for line in result.stdout.splitlines()]
+    containers = [
+        cast(ContainerSnapshot, json.loads(line)) for line in result.stdout.splitlines()
+    ]
     return {c["name"]: c for c in containers if c["image"] == image}
 
 
-def update_images(request):
+def update_images(request: DeploymentRequest) -> None:
     # The trigger digest is reporting context; deployment follows latest.
     # Auto-update checks every eligible container, while these snapshots cover
     # containers using the requested image. A successful systemd invocation
@@ -146,13 +183,15 @@ def update_images(request):
     except (subprocess.SubprocessError, OSError):
         logging.exception("Podman auto-update failed; see its service journal")
 
+    after: ImageSnapshots | None
     try:
         after = snapshot_images(request["image"])
     except (subprocess.SubprocessError, OSError, ValueError):
         logging.exception("Could not capture images after auto-update")
         after = None
 
-    report = request | {
+    report: dict[str, object] = {
+        **request,
         "update_service_succeeded": succeeded,
         "before": before,
         "after": after,
@@ -160,7 +199,7 @@ def update_images(request):
     logging.info("Deployment result: %s", json.dumps(report))
 
 
-def update_worker(pending):
+def update_worker(pending: queue.Queue[DeploymentRequest]) -> None:
     while True:
         request = pending.get()
 
@@ -173,11 +212,13 @@ def update_worker(pending):
 
 
 class Handler(BaseHTTPRequestHandler):
-    def setup(self):
+    server: "DeploymentServer"
+
+    def setup(self) -> None:
         super().setup()
         self.connection.settimeout(15)
 
-    def do_POST(self):
+    def do_POST(self) -> None:
         if self.path != "/deploy-image":
             self.respond(404, "Unknown route")
             return
@@ -193,7 +234,7 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         try:
-            body = json.loads(self.rfile.read(size))
+            body: object = json.loads(self.rfile.read(size))
             if not isinstance(body, dict):
                 raise ValueError("Expected an object")
         except (ValueError, TimeoutError):
@@ -239,7 +280,7 @@ class Handler(BaseHTTPRequestHandler):
         logging.info("Accepted deployment: %s", json.dumps(request))
         self.respond(202, "Image update requested")
 
-    def respond(self, status, message):
+    def respond(self, status: int, message: str) -> None:
         body = json.dumps({"message": message}).encode()
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
@@ -248,11 +289,17 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
 
-def main():
+class DeploymentServer(HTTPServer):
+    def __init__(self, address: tuple[str, int], keys: jwt.PyJWKClient) -> None:
+        self.keys = keys
+        self.pending: queue.Queue[DeploymentRequest] = queue.Queue(maxsize=64)
+        super().__init__(address, Handler)
+
+
+def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    server = HTTPServer(("127.0.0.1", 19090), Handler)
-    server.keys = jwt.PyJWKClient(f"{ISSUER}/.well-known/jwks", timeout=10)
-    server.pending = queue.Queue(maxsize=64)
+    keys = jwt.PyJWKClient(f"{ISSUER}/.well-known/jwks", timeout=10)
+    server = DeploymentServer(("127.0.0.1", 19090), keys)
     threading.Thread(target=update_worker, args=(server.pending,), daemon=True).start()
     server.serve_forever()
 

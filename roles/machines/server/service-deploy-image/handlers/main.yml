@@ -1,0 +1,5 @@
+- name: Restart image deployment receiver
+  ansible.builtin.systemd:
+    name: deploy-image.service
+    state: restarted
+    daemon_reload: true

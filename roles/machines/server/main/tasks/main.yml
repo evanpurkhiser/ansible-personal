@@ -151,10 +151,6 @@
   tags: [meal-log]
   ansible.builtin.import_role: { name: machines/server/service-meal-log }
 
-- name: Import instagram-saver role
-  tags: [instagram-saver]
-  ansible.builtin.import_role: { name: machines/server/service-instagram-saver }
-
 - name: Import venmo-auto-cashout role
   tags: [venmo-auto-cashout]
   ansible.builtin.import_role:

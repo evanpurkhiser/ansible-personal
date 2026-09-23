@@ -51,11 +51,6 @@ SECRETS: Secrets = {
         "r2_access_key_id": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/Access Key ID",
         "r2_secret_access_key": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/Secret Access Key",
     },
-    # Instagram Saver
-    "instagram_saver": {
-        "google_places_api_key": "op://Private/ss4qbfjbpbep7ph5prrdxxmena/Google Map Places API Key",
-        "openai_token": "op://Private/fc4edctkopi57hlm476o6r46oq/Instagram Saver API Key",
-    },
     # SSH agent proxy key
     "ssh_agent_proxy_key": "op://Private/c2indiikwssnyfxsdsy7w6ac44/private key",
     # Transmission Helper

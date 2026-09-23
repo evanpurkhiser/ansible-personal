@@ -1,0 +1,118 @@
+- name: Ensure Places directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0700"
+  loop:
+    - /var/lib/places/data
+    - /mnt/documents/backups/places
+
+- name: Install Places configuration
+  notify: Restart Places
+  no_log: true
+  ansible.builtin.template:
+    src: places.yaml.j2
+    dest: /etc/places.yaml
+    mode: "0600"
+
+- name: Ensure Places pod
+  notify: Restart Places
+  containers.podman.podman_pod:
+    name: places
+    infra_name: places-infra
+    exit_policy: continue
+    ports:
+      - "127.0.0.1:5188:5188"
+
+- name: Ensure Places database container
+  notify: Restart Places
+  containers.podman.podman_container:
+    name: places-postgres
+    image: docker.io/postgis/postgis:17-3.5
+    state: present
+    pod: places
+    env:
+      POSTGRES_USER: places
+      POSTGRES_PASSWORD: places
+      POSTGRES_DB: places
+    command: postgres -c listen_addresses=127.0.0.1
+    volume:
+      - /var/lib/places/data:/var/lib/postgresql/data
+    sdnotify: healthy
+    healthcheck: pg_isready -h 127.0.0.1 -U places -d places
+    healthcheck_interval: 2s
+    healthcheck_timeout: 2s
+
+- name: Ensure Places server container
+  notify: Restart Places
+  containers.podman.podman_container:
+    name: places-server
+    image: ghcr.io/evanpurkhiser/places:latest
+    state: present
+    pod: places
+    requires:
+      - places-postgres
+    volume:
+      - /etc/places.yaml:/etc/places.yaml:ro
+    sdnotify: healthy
+    healthcheck: curl --fail --silent http://127.0.0.1:5188/health
+    healthcheck_interval: 2s
+    healthcheck_timeout: 2s
+    # Server updates restart the dependent worker using the same image.
+    label:
+      io.containers.autoupdate: registry
+
+- name: Ensure Places worker container
+  notify: Restart Places
+  containers.podman.podman_container:
+    name: places-worker
+    image: ghcr.io/evanpurkhiser/places:latest
+    state: present
+    pod: places
+    requires:
+      - places-server
+    command: worker
+    volume:
+      - /etc/places.yaml:/etc/places.yaml:ro
+
+- name: Generate Places systemd services
+  notify: Restart Places
+  containers.podman.podman_generate_systemd:
+    name: places
+    dest: /etc/systemd/system
+    new: true
+    no_header: true
+    restart_policy: always
+    restart_sec: 5
+    start_timeout: 180
+
+- name: Install Places backup script
+  ansible.builtin.copy:
+    src: places-backup.sh
+    dest: /usr/local/bin/places-backup.sh
+    mode: "0755"
+
+- name: Install Places backup service and timer
+  ansible.builtin.copy:
+    src: "places-backup.{{ item }}"
+    dest: "/etc/systemd/system/places-backup.{{ item }}"
+    mode: "0644"
+  loop: [service, timer]
+
+- name: Enable Places services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+    daemon_reload: true
+  loop:
+    - pod-places.service
+    - container-places-server.service
+    - container-places-worker.service
+    - places-backup.timer
+
+- name: Expose Places internally
+  notify: Reload nginx
+  internal_service:
+    name: places
+    local_port: 5188

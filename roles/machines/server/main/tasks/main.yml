@@ -175,6 +175,10 @@
   ansible.builtin.import_role:
     { name: machines/server/service-deploy-image }
 
+- name: Import Places role
+  tags: [places]
+  ansible.builtin.import_role: { name: machines/server/service-places }
+
 - name: Import zrepl role
   tags: [zrepl]
   ansible.builtin.import_role: { name: machines/server/service-zrepl }

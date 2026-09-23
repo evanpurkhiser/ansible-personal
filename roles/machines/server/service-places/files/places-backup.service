@@ -1,0 +1,9 @@
+[Unit]
+Description=Back up the Places database to ZFS
+Requires=container-places-postgres.service
+After=container-places-postgres.service
+RequiresMountsFor=/mnt/documents
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/places-backup.sh

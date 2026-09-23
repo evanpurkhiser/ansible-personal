@@ -1,0 +1,51 @@
+server:
+  host: 0.0.0.0
+  port: 5188
+database:
+  url: postgres://places:places@127.0.0.1:5432/places
+google:
+  apiKey: {{ places.google_api_key | to_json }}
+openai:
+  key: {{ places.openai_api_key | to_json }}
+workers:
+  instagram-import:
+    batchSize: 1
+    concurrency: 1
+  gmaps-import:
+    batchSize: 1
+    concurrency: 1
+  gmaps-sync:
+    batchSize: 1
+    concurrency: 1
+instagram:
+  alwaysApplyTags: [imported.needs-review]
+  excludedTags: [attr:good-bathroom, attr:great-vibe]
+  excludedNamespaces:
+    - imported
+    - gmaps-list
+    - rating
+    - status
+    - priority
+    - trip
+    - vivian
+  requiredNamespaces: [type]
+  capture:
+    model: gpt-5.6-luna
+    reasoningEffort: medium
+    instructions: |
+      Assign the most specific supported type to each place. Add multiple
+      types only when they describe distinct uses of the place.
+
+      For dining venues, choose one format when the evidence supports it:
+      fast, casual, upscale, or fine.
+
+      Assign meal tags for meals the venue clearly serves. Multiple meal
+      tags are appropriate when supported.
+
+      Assign occasion and attribute tags using concrete details from the
+      post and place information. Treat promotional praise as insufficient
+      evidence for suitability or amenities.
+
+      Use attr:laptop-friendly when there is clear evidence that working
+      with a laptop is welcome. Use verify:laptop-friendly when laptop
+      suitability is relevant but uncertain. Choose at most one of these.

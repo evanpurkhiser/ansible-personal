@@ -1,0 +1,5 @@
+- name: Restart Places
+  ansible.builtin.systemd:
+    name: pod-places
+    state: restarted
+    daemon_reload: true

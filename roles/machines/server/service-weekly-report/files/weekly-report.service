@@ -3,7 +3,7 @@ Description=Report server status to telegram
 
 [Service]
 ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
-  /usr/bin/sh -c "/usr/local/bin/weekly-report.sh | /usr/local/bin/purkhiser-bot.sh"
+  /usr/bin/sh -c "/usr/local/bin/weekly-report.sh | /usr/local/bin/purkhiser-bot.sh system-notices"
 
 # Report runs to sentry monitors.
 Environment=SENTRY_MONITOR_SLUG=weekly-report

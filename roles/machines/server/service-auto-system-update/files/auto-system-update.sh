@@ -53,7 +53,7 @@ else
 	thread_status="Codex thread unavailable"
 fi
 
-/usr/local/bin/purkhiser-bot.sh <<EOF
+/usr/local/bin/purkhiser-bot.sh system-notices <<EOF
 *🔄 System Update Report*
 
 ${ai_summary}

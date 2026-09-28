@@ -1,10 +1,14 @@
 - name: Add Purkhiser Bot token as conf
+  notify: Restart purkhiser-bot
   ansible.builtin.copy:
     dest: /etc/purkhiser-bot.conf
     mode: "0600"
     content: |
       TELEGRAM_TOKEN={{ purkhiser_bot_token }}
       TELEGRAM_CHANNEL=-722956237
+      TELEGRAM_CHANNEL_APARTMENT=-5529186296
+      TELEGRAM_CHANNEL_AGENT_AUTH=-5139292558
+      TELEGRAM_CHANNEL_SYSTEM_NOTICES=-722956237
       PURKHISER_BOT_PORT=9090
 
 - name: Install purkhiser-bot.sh script

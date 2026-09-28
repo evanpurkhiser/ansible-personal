@@ -44,7 +44,7 @@ frontend:
 
 rest_command:
   purkhiser_bot:
-    url: "https://bot.prk.network/"
+    url: "https://bot.prk.network/?channel=apartment"
     method: POST
     content_type: text/plain
     payload: "{{ message }}"

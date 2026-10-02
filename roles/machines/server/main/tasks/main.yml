@@ -42,7 +42,6 @@
       - ripgrep
       - khard
       - ansible
-      - gogcli
       - codespell
       - github-cli
       - mitmproxy

@@ -38,7 +38,7 @@
       - NET_BIND_SERVICE
     volume:
       - /etc/rbl-linkd.toml:/etc/rbl-linkd.toml:ro
-      - /mnt/documents/multimedia/djing:/mnt/documents/multimedia/djing:ro
+      - /mnt/documents/multimedia/djing:/djing:ro
     label:
       io.containers.autoupdate: registry
     generate_systemd:

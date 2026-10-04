@@ -109,6 +109,11 @@
   tags: [pam-ssh-agent]
 
 # Services
+- name: Import podman-auto-update role
+  tags: [podman-auto-update]
+  ansible.builtin.import_role:
+    { name: machines/server/service-podman-auto-update }
+
 - name: Import nfs role
   tags: [nfs]
   ansible.builtin.import_role: { name: machines/server/service-nfs }
@@ -150,6 +155,10 @@
   tags: [meal-log]
   ansible.builtin.import_role: { name: machines/server/service-meal-log }
 
+- name: Import rbl-linkd role
+  tags: [rbl-linkd]
+  ansible.builtin.import_role: { name: machines/server/service-rbl-linkd }
+
 - name: Import venmo-auto-cashout role
   tags: [venmo-auto-cashout]
   ansible.builtin.import_role:
@@ -163,11 +172,6 @@
 - name: Import atuin role
   tags: [atuin]
   ansible.builtin.import_role: { name: machines/server/service-atuin }
-
-- name: Import podman-auto-update role
-  tags: [podman-auto-update]
-  ansible.builtin.import_role:
-    { name: machines/server/service-podman-auto-update }
 
 - name: Import image deployment receiver role
   tags: [deploy-image]

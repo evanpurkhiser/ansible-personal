@@ -1,3 +1,21 @@
+- name: Install reflector
+  community.general.pacman:
+    name: reflector
+    state: present
+
+- name: Configure reflector
+  ansible.builtin.copy:
+    src: reflector.conf
+    dest: /etc/xdg/reflector/reflector.conf
+    mode: "0644"
+  notify: Refresh pacman mirrorlist
+
+- name: Enable reflector timer service
+  ansible.builtin.systemd:
+    name: reflector.timer
+    enabled: true
+    state: started
+
 - name: Install pacsync timer and service
   ansible.builtin.copy:
     src: pacsync.{{ item }}

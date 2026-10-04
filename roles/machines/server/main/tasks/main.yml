@@ -2,6 +2,7 @@
   ansible.builtin.import_role: { name: common }
 
 - name: Import pacsync
+  tags: [pacsync]
   ansible.builtin.import_role: { name: pacsync }
 
 - name: Import personal arch repo

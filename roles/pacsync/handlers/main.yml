@@ -1,0 +1,4 @@
+- name: Refresh pacman mirrorlist
+  ansible.builtin.systemd:
+    name: reflector.service
+    state: started

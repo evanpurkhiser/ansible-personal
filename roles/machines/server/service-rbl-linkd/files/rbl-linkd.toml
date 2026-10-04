@@ -12,9 +12,9 @@ sorts = ["default", "track-name", "artist", "album", "bpm", "rating", "key", "la
 second_column = "comment"
 
 [player]
-key_notation = "classic"
+key_notation = "alphanumeric"
 key_order = "musical"
-waveform_color = "3band"
+waveform_color = "rgb"
 waveform_position = "center"
 overview_waveform = "half"
 

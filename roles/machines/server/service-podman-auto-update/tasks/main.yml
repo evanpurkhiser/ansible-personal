@@ -1,7 +1,33 @@
+- name: Ensure containers configuration directory
+  ansible.builtin.file:
+    path: /etc/containers
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Authenticate Podman to ghcr.io
+  containers.podman.podman_login:
+    registry: ghcr.io
+    username: "{{ ghcr.username }}"
+    password: "{{ ghcr.token }}"
+    authfile: /etc/containers/auth.json
+  no_log: true
+
+- name: Secure Podman registry credentials
+  ansible.builtin.file:
+    path: /etc/containers/auth.json
+    state: file
+    owner: root
+    group: root
+    mode: "0600"
+
 - name: Ensure podman-auto-update.timer override directory
   ansible.builtin.file:
     path: /etc/systemd/system/podman-auto-update.timer.d
     state: directory
+    owner: root
+    group: root
     mode: "0755"
 
 - name: Override podman-auto-update timer file
@@ -9,12 +35,22 @@
     src: podman-auto-update-schedule.conf
     dest: /etc/systemd/system/podman-auto-update.timer.d/
     mode: "0644"
+  notify: Systemd daemon-reload
+
+- name: Ensure podman-auto-update service override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/podman-auto-update.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
 
 - name: Override podman-auto-update service
   ansible.builtin.copy:
     src: podman-auto-update-overrides.conf
     dest: /etc/systemd/system/podman-auto-update.service.d/
     mode: "0644"
+  notify: Systemd daemon-reload
 
 - name: Enable podman-auto-update timer service
   ansible.builtin.service:

@@ -27,6 +27,11 @@ SECRETS: Secrets = {
     "purkhiser_bot_token": "op://Private/wddknbssdbdpbilpy25olziegm/Purkhiser Bot",
     "doppovich_bot_token": "op://Private/wddknbssdbdpbilpy25olziegm/Doppovich Bot",
     "apartment_bot_token": "op://Private/wddknbssdbdpbilpy25olziegm/Purkhiser Bot",
+    # GitHub Container Registry
+    "ghcr": {
+        "username": "evanpurkhiser",
+        "token": "op://Private/mfv2dujsrfa4bl6hdexjwqwdoq/Private GHCR PAT (classic)",
+    },
     # nginx config
     "nginx": {
         "cloudflare_cert": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/Origin Certificate",

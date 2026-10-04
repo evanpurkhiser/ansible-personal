@@ -1,0 +1,22 @@
+[library]
+options = "/djing/rekordbox/options.json"
+database = "/djing/rekordbox/master.db"
+share_root = "/djing/rekordbox/share"
+
+[[library.path_maps]]
+from = "/Volumes/documents/multimedia/djing"
+to = "/djing"
+
+[browse]
+sorts = ["default", "track-name", "artist", "album", "bpm", "rating", "key", "label", "genre", "date-added", "dj-play-count"]
+second_column = "comment"
+
+[player]
+key_notation = "alphanumeric"
+key_order = "musical"
+waveform_color = "rgb"
+waveform_position = "center"
+overview_waveform = "half"
+
+[colors]
+labels = ["Pink", "Red", "Orange", "Yellow", "Green", "Aqua", "Blue", "Purple"]

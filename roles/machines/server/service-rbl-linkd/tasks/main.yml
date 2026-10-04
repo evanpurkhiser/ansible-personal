@@ -1,0 +1,57 @@
+- name: Ensure rekordbox library directory
+  ansible.builtin.file:
+    path: /mnt/documents/multimedia/djing/rekordbox
+    state: directory
+    owner: evan
+    group: users
+    mode: "0755"
+
+- name: Install rbl-linkd configuration
+  notify: Restart rbl-linkd
+  ansible.builtin.copy:
+    src: rbl-linkd.toml
+    dest: /etc/rbl-linkd.toml
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure rbl-linkd LAN network
+  containers.podman.podman_network:
+    name: rbl-linkd
+    driver: macvlan
+    interface_name: lan0
+    subnet: 10.0.0.0/24
+    gateway: 10.0.0.1
+    disable_dns: true
+
+- name: Ensure rbl-linkd container
+  notify: Restart rbl-linkd
+  containers.podman.podman_container:
+    name: rbl-linkd
+    image: ghcr.io/evanpurkhiser/rbxport:latest
+    authfile: /etc/containers/auth.json
+    state: present
+    network: rbl-linkd
+    ip: 10.0.0.5
+    mac_address: 02:52:42:58:50:01
+    cap_add:
+      - NET_BIND_SERVICE
+    volume:
+      - /etc/rbl-linkd.toml:/etc/rbl-linkd.toml:ro
+      - /mnt/documents/multimedia/djing:/djing:ro
+    label:
+      io.containers.autoupdate: registry
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+      after:
+        - mnt-documents.mount
+        - network-online.target
+
+- name: Ensure rbl-linkd container is running
+  ansible.builtin.systemd:
+    name: container-rbl-linkd
+    state: started
+    enabled: true
+    daemon_reload: true

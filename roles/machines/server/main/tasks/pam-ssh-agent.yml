@@ -10,9 +10,19 @@
     dest: /etc/pam.d/sudo
     mode: "0644"
 
+- name: Set PAM security directory permissions
+  ansible.builtin.file:
+    path: /etc/security
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags: [package-permissions]
+
 - name: Add authorized public ssh-key for sudo
   ansible.posix.authorized_key:
     user: root
     path: /etc/security/authorized_keys
     key: "{{ public_ssh_key }}"
     comment: personal
+    manage_dir: false

@@ -9,6 +9,15 @@
     state: directory
     mode: "0700"
 
+- name: Set private certificate directory permissions
+  ansible.builtin.file:
+    path: /etc/ssl/private
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  tags: [package-permissions]
+
 - name: Install lego Cloudflare credentials
   ansible.builtin.copy:
     dest: /etc/lego-cloudflare.conf

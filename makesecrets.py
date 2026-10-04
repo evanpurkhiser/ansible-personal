@@ -30,7 +30,7 @@ SECRETS: Secrets = {
     # GitHub Container Registry
     "ghcr": {
         "username": "evanpurkhiser",
-        "token": "op://Private/mfv2dujsrfa4bl6hdexjwqwdoq/Private GHCR PAT (classic)",
+        "token": "op://Private/mfv2dujsrfa4bl6hdexjwqwdoq/Private GHCR classic PAT",
     },
     # nginx config
     "nginx": {

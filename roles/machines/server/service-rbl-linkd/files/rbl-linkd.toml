@@ -7,6 +7,10 @@ share_root = "/djing/rekordbox/share"
 from = "/Volumes/documents/multimedia/djing"
 to = "/djing"
 
+[[library.path_maps]]
+from = "/Users/evan/Music/Tracks"
+to = "/djing/tracks"
+
 [browse]
 sorts = ["default", "track-name", "artist", "album", "bpm", "rating", "key", "label", "genre", "date-added", "dj-play-count"]
 second_column = "comment"

@@ -62,7 +62,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         req = urllib.request.Request(
             TELEGRAM_URL, data=data, headers={"Content-Type": "application/json"}
         )
-        urllib.request.urlopen(req)
+        urllib.request.urlopen(req, timeout=5)
 
         self.send_response(200)
         self.end_headers()
@@ -72,4 +72,4 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    http.server.HTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
+    http.server.ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()

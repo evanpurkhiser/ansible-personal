@@ -1,7 +1,7 @@
 [Unit]
 Description=GitHub OIDC image deployment receiver
-Wants=network-online.target
-After=network-online.target
+Wants=network-online.target purkhiser-bot.service
+After=network-online.target purkhiser-bot.service
 
 [Service]
 Type=simple

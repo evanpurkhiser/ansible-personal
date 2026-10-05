@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+
+import json
+import shlex
+import sys
+import urllib.request
+
+NOTIFICATION_ENDPOINT = "http://127.0.0.1:9090/?channel=agent-auth"
+
+
+def escape_markdown(text: str, *, code: bool = False) -> str:
+    special = "\\`" if code else "\\_*[]()~`>#+-=|{}.!"
+    return "".join(
+        f"\\{character}" if character in special else character for character in text
+    )
+
+
+def main() -> None:
+    event = json.load(sys.stdin)
+    if event.get("version") != 1:
+        raise ValueError("unsupported notification event version")
+
+    reason = escape_markdown(event["reason"])
+    command = escape_markdown(shlex.join(event["command"]), code=True)
+    hostname = escape_markdown(event["hostname"], code=True)
+    route = escape_markdown(event["route"], code=True)
+    message = "\n\n".join(
+        (
+            f"🔐 {reason}",
+            f"```command\n{command}\n```",
+            rf"\(agent\-auth from `{hostname}` via `{route}`\)",
+        )
+    )
+    request = urllib.request.Request(
+        NOTIFICATION_ENDPOINT,
+        data=json.dumps({"text": message, "parse_mode": "MarkdownV2"}).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=2):
+        pass
+
+
+if __name__ == "__main__":
+    main()

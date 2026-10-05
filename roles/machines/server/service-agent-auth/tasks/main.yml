@@ -11,9 +11,41 @@
     owner: evan
     group: users
 
+- name: Ensure agent-auth configuration directory
+  ansible.builtin.file:
+    path: /etc/agent-auth
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install agent-auth notification script
+  ansible.builtin.copy:
+    src: agent-auth-notify
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Configure agent-auth notifications
+  ansible.builtin.copy:
+    src: config.toml
+    dest: /etc/agent-auth/config.toml
+    owner: root
+    group: root
+    mode: "0644"
+
 - name: Configure SSH agent proxy dependency on agent-witness
   ansible.builtin.copy:
     src: agent-witness.conf
+    dest: /etc/systemd/system/ssh-agent-proxy@.service.d/
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure SSH agent proxy dependency on Purkhiser Bot
+  ansible.builtin.copy:
+    src: purkhiser-bot.conf
     dest: /etc/systemd/system/ssh-agent-proxy@.service.d/
     owner: root
     group: root

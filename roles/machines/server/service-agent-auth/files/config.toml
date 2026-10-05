@@ -1,0 +1,3 @@
+[notification]
+command = ["/usr/local/bin/agent-auth-notify"]
+timeout = 3

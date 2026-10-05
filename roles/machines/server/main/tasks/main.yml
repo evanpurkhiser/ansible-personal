@@ -109,6 +109,10 @@
   ansible.builtin.import_tasks: pam-ssh-agent.yml
   tags: [pam-ssh-agent]
 
+- name: Import scratch tmpfs tasks
+  ansible.builtin.import_tasks: scratch.yml
+  tags: [scratch]
+
 # Services
 - name: Import podman-auto-update role
   tags: [podman-auto-update]

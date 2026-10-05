@@ -1,0 +1,17 @@
+- name: Ensure scratch mount point
+  ansible.builtin.file:
+    path: /home/evan/scratch
+    state: directory
+    owner: evan
+    group: users
+    mode: "0700"
+
+- name: Mount scratch tmpfs
+  ansible.posix.mount:
+    path: /home/evan/scratch
+    src: tmpfs
+    fstype: tmpfs
+    opts: size=8G,mode=0700,uid=1000,gid=984,nodev,nosuid,noswap
+    state: mounted
+    dump: "0"
+    passno: "0"

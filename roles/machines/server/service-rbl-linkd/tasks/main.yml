@@ -28,6 +28,7 @@
   notify: Restart rbl-linkd
   containers.podman.podman_container:
     name: rbl-linkd
+    hostname: server-linkd
     image: ghcr.io/evanpurkhiser/rbxport:latest
     authfile: /etc/containers/auth.json
     state: present

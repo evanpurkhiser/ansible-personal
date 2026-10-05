@@ -91,6 +91,57 @@ else
 	echo "📸 \[zrepl] Last snapshot ${snapshot_age}"
 fi
 
+# Offsite backup health
+offsite_online="$(tailscale status --json 2>/dev/null |
+	jq -r '[.Peer[] | select(.HostName == "offsite") | .Online] | first // false' || true)"
+
+zrepl_status="$(zrepl status --mode raw 2>/dev/null || true)"
+zrepl_error="$(jq -r '
+  .Jobs.push_documents_offsite.push |
+  .Replication.WaitReconnectError.Err //
+  .PruningReceiver.Error //
+  ([.Replication.Attempts[]?.PlanError.Err] | last) //
+  empty
+' <<<"$zrepl_status" 2>/dev/null || true)"
+pending_snapshots="$(jq -r '
+  [.Jobs.push_documents_offsite.push.PruningSender.Completed[]?.SnapshotList[]? |
+    select(.Replicated == false)] | length
+' <<<"$zrepl_status" 2>/dev/null || true)"
+oldest_pending="$(jq -r '
+  [.Jobs.push_documents_offsite.push.PruningSender.Completed[]?.SnapshotList[]? |
+    select(.Replicated == false) | .Date] | min // empty
+' <<<"$zrepl_status" 2>/dev/null || true)"
+
+oldest_pending_hours=0
+if [[ -n "$oldest_pending" ]]; then
+	oldest_pending_hours=$((($(date +%s) - $(date -d "$oldest_pending" +%s)) / 3600))
+fi
+
+snapshot_word="snapshots"
+if [[ "$pending_snapshots" == "1" ]]; then
+	snapshot_word="snapshot"
+fi
+
+if [[ -z "$zrepl_status" ]]; then
+	echo "🛰️ \[offsite] *STATUS UNKNOWN* ‼️ — unable to read zrepl status"
+elif [[ "$offsite_online" != "true" || -n "$zrepl_error" || $oldest_pending_hours -gt 6 ]]; then
+	if [[ -n "$oldest_pending" ]]; then
+		if [[ $oldest_pending_hours -lt 24 ]]; then
+			oldest_pending_age="${oldest_pending_hours} hours ago"
+		else
+			oldest_pending_age="$((oldest_pending_hours / 24)) days ago"
+		fi
+
+		echo "🛰️ \[offsite] *UNAVAILABLE* ‼️ — ${pending_snapshots} ${snapshot_word} behind; oldest ${oldest_pending_age}"
+	else
+		echo "🛰️ \[offsite] *UNAVAILABLE* ‼️ — receiver is unreachable"
+	fi
+elif [[ "$pending_snapshots" -gt 0 ]]; then
+	echo "🛰️ \[offsite] *OK* — ${pending_snapshots} ${snapshot_word} behind"
+else
+	echo "🛰️ \[offsite] *OK* — replication current"
+fi
+
 # Systemd service status
 services="$(systemctl list-units --type=service --output=json |
 	jq '{

@@ -5,6 +5,7 @@ import subprocess
 import threading
 import time
 import unittest
+import urllib.request
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -161,6 +162,7 @@ class DeploymentTests(unittest.TestCase):
                         deploy, "snapshot_images", side_effect=[before, after]
                     ),
                     patch.object(deploy.subprocess, "run", side_effect=error),
+                    patch.object(deploy, "notify_deployment") as notify,
                     self.assertLogs(level="INFO") as logs,
                 ):
                     deploy.update_images(request)
@@ -169,6 +171,56 @@ class DeploymentTests(unittest.TestCase):
                 self.assertEqual(report["before"], before)
                 self.assertEqual(report["after"], after)
                 self.assertEqual(report["update_service_succeeded"], error is None)
+                notify.assert_called_once_with(request, error is None)
+
+    def test_notifies_system_notices_with_github_run(self):
+        request = deploy.deployment_request(
+            {
+                "image": "ghcr.io/evanpurkhiser/waitress:latest",
+                "digest": "sha256:" + "a" * 64,
+            },
+            self.claims,
+        )
+        response = SimpleNamespace(close=lambda: None)
+        with patch.object(urllib.request, "urlopen", return_value=response) as urlopen:
+            deploy.notify_deployment(request, True)
+
+        notification = urlopen.call_args.args[0]
+        self.assertEqual(
+            notification.full_url,
+            "https://bot.prk.network/?channel=system-notices",
+        )
+        self.assertEqual(notification.headers["Content-type"], "application/json")
+        self.assertEqual(
+            json.loads(notification.data),
+            {
+                "text": (
+                    "Deployment finished: ghcr.io/evanpurkhiser/waitress:latest\n"
+                    "GitHub run: "
+                    "https://github.com/evanpurkhiser/waitress/actions/runs/1234"
+                ),
+                "disable_web_page_preview": True,
+            },
+        )
+        urlopen.assert_called_once_with(notification, timeout=5)
+
+    def test_notification_failure_does_not_stop_worker(self):
+        request = deploy.deployment_request(
+            {
+                "image": "ghcr.io/evanpurkhiser/waitress:latest",
+                "digest": "sha256:" + "a" * 64,
+            },
+            self.claims,
+        )
+        with (
+            patch.object(deploy, "snapshot_images", return_value={}),
+            patch.object(deploy.subprocess, "run"),
+            patch.object(deploy, "notify_deployment", side_effect=OSError),
+            self.assertLogs(level="ERROR") as logs,
+        ):
+            deploy.update_images(request)
+
+        self.assertIn("Could not send deployment notification", logs.output[-1])
 
     def test_authorization_requires_exact_configured_image(self):
         with patch.object(

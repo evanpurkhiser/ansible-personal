@@ -11,6 +11,7 @@ import queue
 import re
 import subprocess
 import threading
+import urllib.request
 from collections.abc import Mapping
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import NotRequired, TypedDict, cast
@@ -21,6 +22,7 @@ ISSUER = "https://token.actions.githubusercontent.com"
 AUDIENCE = "https://apis.evanpurkhiser.com/deploy-image"
 WORKFLOW = "evanpurkhiser/workflows/.github/workflows/deploy-image-personal.yml@refs/heads/main"
 MAX_BODY = 16384
+NOTIFICATION_URL = "https://bot.prk.network/?channel=system-notices"
 
 
 class IdentityClaims(TypedDict):
@@ -162,6 +164,25 @@ def snapshot_images(image: str) -> ImageSnapshots:
     return {c["name"]: c for c in containers if c["image"] == image}
 
 
+def notify_deployment(request: DeploymentRequest, succeeded: bool) -> None:
+    status = "finished" if succeeded else "failed"
+    run_url = (
+        f"https://github.com/{request['repository']}/actions/runs/{request['run_id']}"
+    )
+    payload = json.dumps(
+        {
+            "text": f"Deployment {status}: {request['image']}\nGitHub run: {run_url}",
+            "disable_web_page_preview": True,
+        }
+    ).encode()
+    notification = urllib.request.Request(
+        NOTIFICATION_URL,
+        data=payload,
+        headers={"Content-Type": "application/json"},
+    )
+    urllib.request.urlopen(notification, timeout=5).close()
+
+
 def update_images(request: DeploymentRequest) -> None:
     # The trigger digest is reporting context; deployment follows latest.
     # Auto-update checks every eligible container, while these snapshots cover
@@ -197,6 +218,11 @@ def update_images(request: DeploymentRequest) -> None:
         "after": after,
     }
     logging.info("Deployment result: %s", json.dumps(report))
+
+    try:
+        notify_deployment(request, succeeded)
+    except (OSError, ValueError):
+        logging.exception("Could not send deployment notification")
 
 
 def update_worker(pending: queue.Queue[DeploymentRequest]) -> None:

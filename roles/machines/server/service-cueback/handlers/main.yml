@@ -1,0 +1,5 @@
+- name: Restart cueback
+  ansible.builtin.systemd:
+    name: container-cueback
+    state: restarted
+    daemon_reload: true

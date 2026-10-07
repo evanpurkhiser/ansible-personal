@@ -164,6 +164,10 @@
   tags: [rbl-linkd]
   ansible.builtin.import_role: { name: machines/server/service-rbl-linkd }
 
+- name: Import cueback role
+  tags: [cueback]
+  ansible.builtin.import_role: { name: machines/server/service-cueback }
+
 - name: Import venmo-auto-cashout role
   tags: [venmo-auto-cashout]
   ansible.builtin.import_role:

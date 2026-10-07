@@ -1,0 +1,14 @@
+[storage]
+recordings_dir = "/recordings"
+
+[device]
+announcement_bind = "0.0.0.0:50000"
+announcement_timeout = "10s"
+pcm_port = 7355
+pcm_idle_timeout = "5s"
+reconnect_delay = "2s"
+
+[recording]
+silence_timeout = "5m"
+silence_threshold = 0
+ffmpeg = "ffmpeg"

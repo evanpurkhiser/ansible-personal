@@ -40,6 +40,25 @@
     owner: evan
     mode: "0700"
 
+- name: Generate codex app-server capability token
+  ansible.builtin.command:
+    cmd: >-
+      /usr/bin/openssl rand -hex
+      -out /home/evan/.config/codex/app-server-token 32
+    creates: /home/evan/.config/codex/app-server-token
+  become: true
+  become_user: evan
+  no_log: true
+  notify: Restart codex
+
+- name: Secure codex app-server capability token
+  ansible.builtin.file:
+    path: /home/evan/.config/codex/app-server-token
+    state: file
+    owner: evan
+    group: users
+    mode: "0600"
+
 - name: Install codex systemd user service
   ansible.builtin.copy:
     src: codex.service

@@ -7,6 +7,7 @@ TimeoutStartSec=30s
 ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/podman run \
   --rm \
+  --pull=newer \
   --env-file=/etc/venmo-lunchmoney-ai.conf \
   --env STATE_FILE=/var/lib/data/state.json \
   --volume /var/lib/venmo-lunchmoney-ai:/var/lib/data \

@@ -21,17 +21,10 @@
 - name: Build Home Assistant MCP image
   notify: Restart Home Assistant MCP tunnel
   containers.podman.podman_image:
-    name: "{{ mcp_home_assistant_image }}"
+    name: localhost/mcp-home-assistant:latest
     state: build
     path: /var/lib/mcp-home-assistant/build
     force: "{{ mcp_home_assistant_build_context.changed }}"
-    build:
-      force_rm: true
-      extra_args: >-
-        --build-arg
-        TUNNEL_CLIENT_VERSION={{ mcp_home_assistant_tunnel_client_version }}
-        --build-arg
-        TUNNEL_CLIENT_SHA256={{ mcp_home_assistant_tunnel_client_sha256 }}
 
 - name: Install Home Assistant MCP tunnel environment
   notify: Restart Home Assistant MCP tunnel
@@ -57,10 +50,9 @@
   notify: Restart Home Assistant MCP tunnel
   containers.podman.podman_container:
     name: mcp-home-assistant
-    image: "{{ mcp_home_assistant_image }}"
+    image: localhost/mcp-home-assistant:latest
     state: present
     network: host
-    user: "10001:10001"
     cap_drop: [ALL]
     read_only: true
     env_file:
@@ -68,11 +60,7 @@
     volume:
       - /etc/mcp-home-assistant/profile.yaml:/etc/tunnel-client/profile.yaml:ro
     healthcheck: >-
-      wget -qO- http://127.0.0.1:{{ mcp_home_assistant_health_port }}/readyz
-      >/dev/null || exit 1
-    healthcheck_interval: 30s
-    healthcheck_timeout: 5s
-    healthcheck_retries: 3
+      wget -qO- http://127.0.0.1:9585/readyz >/dev/null || exit 1
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always

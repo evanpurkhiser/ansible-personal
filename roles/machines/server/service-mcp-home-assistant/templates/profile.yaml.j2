@@ -1,16 +1,10 @@
 config_version: 1
 control_plane:
-  base_url: "https://api.openai.com"
-  tunnel_id: {{ mcp_home_assistant_tunnel_id | to_json }}
+  tunnel_id: {{ mcp_tunnels.home_assistant.tunnel_id | to_json }}
   api_key: "env:CONTROL_PLANE_API_KEY"
 health:
-  listen_addr: "127.0.0.1:{{ mcp_home_assistant_health_port }}"
-admin_ui:
-  open_browser: false
-log:
-  level: info
-  format: json
+  listen_addr: "127.0.0.1:9585"
 mcp:
   server_urls:
     - channel: main
-      url: {{ mcp_home_assistant_server_url | to_json }}
+      url: {{ mcp_tunnels.home_assistant.server_url | to_json }}

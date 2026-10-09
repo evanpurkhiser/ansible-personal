@@ -21,19 +21,10 @@
 - name: Build Jellyfin MCP image
   notify: Restart Jellyfin MCP tunnel
   containers.podman.podman_image:
-    name: "{{ mcp_jellyfin_image }}"
+    name: localhost/mcp-jellyfin:latest
     state: build
     path: /var/lib/mcp-jellyfin/build
     force: "{{ mcp_jellyfin_build_context.changed }}"
-    build:
-      force_rm: true
-      extra_args: >-
-        --build-arg JELLYFIN_MCP_VERSION={{ mcp_jellyfin_version }}
-        --build-arg JELLYFIN_MCP_SHA256={{ mcp_jellyfin_sha256 }}
-        --build-arg
-        TUNNEL_CLIENT_VERSION={{ mcp_jellyfin_tunnel_client_version }}
-        --build-arg
-        TUNNEL_CLIENT_SHA256={{ mcp_jellyfin_tunnel_client_sha256 }}
 
 - name: Install Jellyfin MCP tunnel environment
   notify: Restart Jellyfin MCP tunnel
@@ -59,10 +50,9 @@
   notify: Restart Jellyfin MCP tunnel
   containers.podman.podman_container:
     name: mcp-jellyfin
-    image: "{{ mcp_jellyfin_image }}"
+    image: localhost/mcp-jellyfin:latest
     state: present
     network: host
-    user: "10001:10001"
     cap_drop: [ALL]
     read_only: true
     env_file:
@@ -70,11 +60,7 @@
     volume:
       - /etc/mcp-jellyfin/profile.yaml:/etc/tunnel-client/profile.yaml:ro
     healthcheck: >-
-      wget -qO- http://127.0.0.1:{{ mcp_jellyfin_health_port }}/readyz
-      >/dev/null || exit 1
-    healthcheck_interval: 30s
-    healthcheck_timeout: 5s
-    healthcheck_retries: 3
+      wget -qO- http://127.0.0.1:9586/readyz >/dev/null || exit 1
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always

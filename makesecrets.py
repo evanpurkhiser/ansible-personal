@@ -48,6 +48,28 @@ SECRETS: Secrets = {
         "lunchmoney_token": "op://Private/iyur5zrspndy3j4uxifwa7mj4y/Venmo Lunchmoney AI API Key",
         "openai_token": "op://Private/fc4edctkopi57hlm476o6r46oq/Venmo Lunchmoney AI API Key",
     },
+    # Private MCP tunnels
+    "mcp_tunnels": {
+        "control_plane_api_key": "op://Private/MCP Tunnels/Control Plane API Key",
+        "home_assistant": {
+            "tunnel_id": "op://Private/MCP Tunnels/Home Assistant Tunnel ID",
+            "server_url": "op://Private/MCP Tunnels/Home Assistant MCP URL",
+        },
+        "lunchmoney": {
+            "evan": {
+                "tunnel_id": "op://Private/MCP Tunnels/Lunch Money Evan Tunnel ID",
+                "api_token": "op://Private/MCP Tunnels/Lunch Money Evan API Token",
+            },
+            "vivian": {
+                "tunnel_id": "op://Private/MCP Tunnels/Lunch Money Vivian Tunnel ID",
+                "api_token": "op://Private/MCP Tunnels/Lunch Money Vivian API Token",
+            },
+        },
+        "jellyfin": {
+            "tunnel_id": "op://Private/MCP Tunnels/Jellyfin Tunnel ID",
+            "api_key": "op://Private/MCP Tunnels/Jellyfin API Key",
+        },
+    },
     # Meal Log
     "meal_log": {
         "record_token": "op://Private/l7fle3v7rksnryvm3i2cax4eqe/Record Token",

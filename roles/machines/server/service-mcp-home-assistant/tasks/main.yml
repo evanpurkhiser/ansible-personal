@@ -1,0 +1,86 @@
+- name: Ensure Home Assistant MCP directories exist
+  loop:
+    - /var/lib/mcp-home-assistant/build
+    - /etc/mcp-home-assistant
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Home Assistant MCP image build context
+  register: mcp_home_assistant_build_context
+  ansible.builtin.copy:
+    src: build/
+    dest: /var/lib/mcp-home-assistant/build/
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Build Home Assistant MCP image
+  notify: Restart Home Assistant MCP tunnel
+  containers.podman.podman_image:
+    name: "{{ mcp_home_assistant_image }}"
+    state: build
+    path: /var/lib/mcp-home-assistant/build
+    force: "{{ mcp_home_assistant_build_context.changed }}"
+    build:
+      force_rm: true
+      extra_args: >-
+        --build-arg
+        TUNNEL_CLIENT_VERSION={{ mcp_home_assistant_tunnel_client_version }}
+        --build-arg
+        TUNNEL_CLIENT_SHA256={{ mcp_home_assistant_tunnel_client_sha256 }}
+
+- name: Install Home Assistant MCP tunnel environment
+  notify: Restart Home Assistant MCP tunnel
+  no_log: true
+  ansible.builtin.template:
+    src: environment.j2
+    dest: /etc/mcp-home-assistant/environment
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Install Home Assistant MCP tunnel profile
+  notify: Restart Home Assistant MCP tunnel
+  no_log: true
+  ansible.builtin.template:
+    src: profile.yaml.j2
+    dest: /etc/mcp-home-assistant/profile.yaml
+    owner: "10001"
+    group: "10001"
+    mode: "0400"
+
+- name: Ensure Home Assistant MCP tunnel container
+  notify: Restart Home Assistant MCP tunnel
+  containers.podman.podman_container:
+    name: mcp-home-assistant
+    image: "{{ mcp_home_assistant_image }}"
+    state: present
+    network: host
+    user: "10001:10001"
+    cap_drop: [ALL]
+    read_only: true
+    env_file:
+      - /etc/mcp-home-assistant/environment
+    volume:
+      - /etc/mcp-home-assistant/profile.yaml:/etc/tunnel-client/profile.yaml:ro
+    healthcheck: >-
+      wget -qO- http://127.0.0.1:{{ mcp_home_assistant_health_port }}/readyz
+      >/dev/null || exit 1
+    healthcheck_interval: 30s
+    healthcheck_timeout: 5s
+    healthcheck_retries: 3
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+
+- name: Ensure Home Assistant MCP tunnel is running
+  ansible.builtin.systemd:
+    name: container-mcp-home-assistant
+    state: started
+    enabled: true
+    daemon_reload: true

@@ -1,0 +1,10 @@
+mcp_home_assistant_tunnel_client_version: "0.0.16"
+mcp_home_assistant_tunnel_client_sha256: >-
+  d60cdba019bce451bcc3a15478cc5b9cb11270b049f5b56ea39a80b517f8b117
+mcp_home_assistant_image: >-
+  localhost/mcp-home-assistant:tunnel-{{ mcp_home_assistant_tunnel_client_version }}
+mcp_home_assistant_control_plane_api_key: >-
+  {{ mcp_tunnels.control_plane_api_key }}
+mcp_home_assistant_tunnel_id: "{{ mcp_tunnels.home_assistant.tunnel_id }}"
+mcp_home_assistant_server_url: "{{ mcp_tunnels.home_assistant.server_url }}"
+mcp_home_assistant_health_port: 9585

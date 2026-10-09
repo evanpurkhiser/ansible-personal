@@ -1,0 +1,110 @@
+- name: Validate Lunch Money MCP instances
+  loop: "{{ mcp_lunchmoney_instances }}"
+  loop_control:
+    label: "{{ item.name }}"
+  ansible.builtin.assert:
+    that:
+      - item.name is match('^[a-z][a-z0-9-]*$')
+      - item.tunnel_id | length > 0
+      - item.api_token | length > 0
+    quiet: true
+  no_log: true
+
+- name: Ensure Lunch Money MCP directories exist
+  loop:
+    - /var/lib/mcp-lunchmoney/build
+    - /etc/mcp-lunchmoney
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Lunch Money MCP image build context
+  register: mcp_lunchmoney_build_context
+  ansible.builtin.copy:
+    src: build/
+    dest: /var/lib/mcp-lunchmoney/build/
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Build Lunch Money MCP image
+  notify: Restart Lunch Money MCP tunnels
+  containers.podman.podman_image:
+    name: "{{ mcp_lunchmoney_image }}"
+    state: build
+    path: /var/lib/mcp-lunchmoney/build
+    force: "{{ mcp_lunchmoney_build_context.changed }}"
+    build:
+      force_rm: true
+      extra_args: >-
+        --build-arg LUNCHMONEY_MCP_VERSION={{ mcp_lunchmoney_version }}
+        --build-arg
+        TUNNEL_CLIENT_VERSION={{ mcp_lunchmoney_tunnel_client_version }}
+        --build-arg
+        TUNNEL_CLIENT_SHA256={{ mcp_lunchmoney_tunnel_client_sha256 }}
+
+- name: Install Lunch Money MCP tunnel environments
+  loop: "{{ mcp_lunchmoney_instances }}"
+  loop_control:
+    label: "{{ item.name }}"
+  notify: Restart Lunch Money MCP tunnels
+  no_log: true
+  ansible.builtin.template:
+    src: environment.j2
+    dest: "/etc/mcp-lunchmoney/{{ item.name }}.env"
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Install Lunch Money MCP tunnel profiles
+  loop: "{{ mcp_lunchmoney_instances }}"
+  loop_control:
+    label: "{{ item.name }}"
+  notify: Restart Lunch Money MCP tunnels
+  no_log: true
+  ansible.builtin.template:
+    src: profile.yaml.j2
+    dest: "/etc/mcp-lunchmoney/{{ item.name }}.yaml"
+    owner: "10001"
+    group: "10001"
+    mode: "0400"
+
+- name: Ensure Lunch Money MCP tunnel containers
+  loop: "{{ mcp_lunchmoney_instances }}"
+  loop_control:
+    label: "{{ item.name }}"
+  notify: Restart Lunch Money MCP tunnels
+  containers.podman.podman_container:
+    name: "mcp-lunchmoney-{{ item.name }}"
+    image: "{{ mcp_lunchmoney_image }}"
+    state: present
+    user: "10001:10001"
+    cap_drop: [ALL]
+    read_only: true
+    env_file:
+      - "/etc/mcp-lunchmoney/{{ item.name }}.env"
+    volume:
+      - >-
+        /etc/mcp-lunchmoney/{{ item.name }}.yaml:/etc/tunnel-client/profile.yaml:ro
+    healthcheck: >-
+      wget -qO- http://127.0.0.1:8080/readyz >/dev/null || exit 1
+    healthcheck_interval: 30s
+    healthcheck_timeout: 5s
+    healthcheck_retries: 3
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+
+- name: Ensure Lunch Money MCP tunnels are running
+  loop: "{{ mcp_lunchmoney_instances }}"
+  loop_control:
+    label: "{{ item.name }}"
+  ansible.builtin.systemd:
+    name: "container-mcp-lunchmoney-{{ item.name }}"
+    state: started
+    enabled: true
+    daemon_reload: true

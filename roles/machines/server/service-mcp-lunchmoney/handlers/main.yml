@@ -1,0 +1,8 @@
+- name: Restart Lunch Money MCP tunnels
+  loop: "{{ mcp_lunchmoney_instances }}"
+  loop_control:
+    label: "{{ item.name }}"
+  ansible.builtin.systemd:
+    name: "container-mcp-lunchmoney-{{ item.name }}"
+    state: restarted
+    daemon_reload: true

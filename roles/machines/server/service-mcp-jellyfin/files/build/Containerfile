@@ -1,0 +1,23 @@
+FROM docker.io/library/alpine:3.22
+
+ARG JELLYFIN_MCP_VERSION=2026.924.1
+ARG JELLYFIN_MCP_SHA256=77c2317e76a30b938cf8d7c4bbd7ae63fb47db9a683fabeaf23a989cf4914e8e
+ARG TUNNEL_CLIENT_VERSION=0.0.16
+ARG TUNNEL_CLIENT_SHA256=d60cdba019bce451bcc3a15478cc5b9cb11270b049f5b56ea39a80b517f8b117
+
+RUN apk add --no-cache ca-certificates tar unzip wget \
+    && wget -q -O /tmp/jellyfin-mcp.tar.gz \
+        "https://github.com/jaredtrent/jellyfin-mcp/releases/download/v${JELLYFIN_MCP_VERSION}/jellyfin-mcp_linux_x64.tar.gz" \
+    && echo "${JELLYFIN_MCP_SHA256}  /tmp/jellyfin-mcp.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/jellyfin-mcp.tar.gz -C /usr/local/bin jellyfin-mcp \
+    && wget -q -O /tmp/tunnel-client.zip \
+        "https://github.com/openai/tunnel-client/releases/download/v${TUNNEL_CLIENT_VERSION}/tunnel-client-v${TUNNEL_CLIENT_VERSION}-linux-amd64.zip" \
+    && echo "${TUNNEL_CLIENT_SHA256}  /tmp/tunnel-client.zip" | sha256sum -c - \
+    && unzip -q /tmp/tunnel-client.zip tunnel-client -d /usr/local/bin \
+    && chmod 0755 /usr/local/bin/jellyfin-mcp /usr/local/bin/tunnel-client \
+    && rm /tmp/jellyfin-mcp.tar.gz /tmp/tunnel-client.zip \
+    && adduser -D -H -u 10001 tunnel
+
+USER 10001:10001
+ENTRYPOINT ["/usr/local/bin/tunnel-client"]
+CMD ["run", "--profile-file", "/etc/tunnel-client/profile.yaml"]

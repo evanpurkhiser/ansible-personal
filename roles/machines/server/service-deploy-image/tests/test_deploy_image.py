@@ -155,7 +155,7 @@ class DeploymentTests(unittest.TestCase):
         )
         before = {"waitress": {"image_id": "old", "manifest_digest": "old-digest"}}
         after = {"waitress": {"image_id": "new", "manifest_digest": "new-digest"}}
-        for error in [None, subprocess.CalledProcessError(1, "systemctl")]:
+        for error in [None, subprocess.CalledProcessError(1, "podman")]:
             with self.subTest(error=error):
                 with (
                     patch.object(
@@ -221,6 +221,31 @@ class DeploymentTests(unittest.TestCase):
             deploy.update_images(request)
 
         self.assertIn("Could not send deployment notification", logs.output[-1])
+
+    def test_update_filters_to_requested_image(self):
+        request = deploy.deployment_request(
+            {
+                "image": "ghcr.io/evanpurkhiser/waitress:latest",
+                "digest": "sha256:" + "a" * 64,
+            },
+            self.claims,
+        )
+        with (
+            patch.object(deploy, "snapshot_images", return_value={}),
+            patch.object(deploy.subprocess, "run") as run,
+        ):
+            deploy.update_images(request)
+
+        run.assert_called_once_with(
+            [
+                "/usr/bin/podman",
+                "auto-update",
+                "--filter",
+                "ancestor=ghcr.io/evanpurkhiser/waitress:latest",
+                "--format=json",
+            ],
+            check=True,
+        )
 
     def test_authorization_requires_exact_configured_image(self):
         with patch.object(

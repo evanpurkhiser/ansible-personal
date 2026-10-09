@@ -1,8 +1,10 @@
 - name: Install Lunch Money MCP environment for {{ mcp_lunchmoney_profile }}
   notify: Restart Lunch Money MCP tunnels
   no_log: true
-  ansible.builtin.template:
-    src: environment.j2
+  ansible.builtin.copy:
+    content: |
+      CONTROL_PLANE_API_KEY={{ mcp_tunnels.control_plane_api_key }}
+      LUNCHMONEY_API_TOKEN={{ mcp_lunchmoney_api_token }}
     dest: "/etc/mcp-lunchmoney/{{ mcp_lunchmoney_profile }}.env"
     owner: root
     group: root
@@ -11,8 +13,16 @@
 - name: Install Lunch Money MCP profile for {{ mcp_lunchmoney_profile }}
   notify: Restart Lunch Money MCP tunnels
   no_log: true
-  ansible.builtin.template:
-    src: profile.yaml.j2
+  ansible.builtin.copy:
+    content: |
+      config_version: 1
+      control_plane:
+        tunnel_id: {{ mcp_lunchmoney_tunnel_id | to_json }}
+        api_key: "env:CONTROL_PLANE_API_KEY"
+      mcp:
+        commands:
+          - channel: main
+            command: "/usr/local/bin/lunchmoney-mcp"
     dest: "/etc/mcp-lunchmoney/{{ mcp_lunchmoney_profile }}.yaml"
     owner: "10001"
     group: "10001"

@@ -29,8 +29,9 @@
 - name: Install Home Assistant MCP tunnel environment
   notify: Restart Home Assistant MCP tunnel
   no_log: true
-  ansible.builtin.template:
-    src: environment.j2
+  ansible.builtin.copy:
+    content: |
+      CONTROL_PLANE_API_KEY={{ mcp_tunnels.control_plane_api_key }}
     dest: /etc/mcp-home-assistant/environment
     owner: root
     group: root
@@ -39,8 +40,18 @@
 - name: Install Home Assistant MCP tunnel profile
   notify: Restart Home Assistant MCP tunnel
   no_log: true
-  ansible.builtin.template:
-    src: profile.yaml.j2
+  ansible.builtin.copy:
+    content: |
+      config_version: 1
+      control_plane:
+        tunnel_id: {{ mcp_tunnels.home_assistant.tunnel_id | to_json }}
+        api_key: "env:CONTROL_PLANE_API_KEY"
+      health:
+        listen_addr: "127.0.0.1:9585"
+      mcp:
+        server_urls:
+          - channel: main
+            url: "http://127.0.0.1:9584/private_zbONmPV3vWR6PgcbZCKUHA"
     dest: /etc/mcp-home-assistant/profile.yaml
     owner: "10001"
     group: "10001"

@@ -1,8 +1,0 @@
-config_version: 1
-control_plane:
-  tunnel_id: {{ mcp_lunchmoney_tunnel_id | to_json }}
-  api_key: "env:CONTROL_PLANE_API_KEY"
-mcp:
-  commands:
-    - channel: main
-      command: "/usr/local/bin/lunchmoney-mcp"

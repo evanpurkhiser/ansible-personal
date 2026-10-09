@@ -29,8 +29,11 @@
 - name: Install Jellyfin MCP tunnel environment
   notify: Restart Jellyfin MCP tunnel
   no_log: true
-  ansible.builtin.template:
-    src: environment.j2
+  ansible.builtin.copy:
+    content: |
+      CONTROL_PLANE_API_KEY={{ mcp_tunnels.control_plane_api_key }}
+      JELLYFIN_URL=http://127.0.0.1:8096
+      JELLYFIN_API_KEY={{ mcp_tunnels.jellyfin.api_key }}
     dest: /etc/mcp-jellyfin/environment
     owner: root
     group: root
@@ -39,8 +42,18 @@
 - name: Install Jellyfin MCP tunnel profile
   notify: Restart Jellyfin MCP tunnel
   no_log: true
-  ansible.builtin.template:
-    src: profile.yaml.j2
+  ansible.builtin.copy:
+    content: |
+      config_version: 1
+      control_plane:
+        tunnel_id: {{ mcp_tunnels.jellyfin.tunnel_id | to_json }}
+        api_key: "env:CONTROL_PLANE_API_KEY"
+      health:
+        listen_addr: "127.0.0.1:9586"
+      mcp:
+        commands:
+          - channel: main
+            command: "/usr/local/bin/jellyfin-mcp"
     dest: /etc/mcp-jellyfin/profile.yaml
     owner: "10001"
     group: "10001"

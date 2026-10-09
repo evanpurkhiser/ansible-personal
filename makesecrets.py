@@ -50,7 +50,7 @@ SECRETS: Secrets = {
     },
     # Private MCP tunnels
     "mcp_tunnels": {
-        "control_plane_api_key": "TODO: add op:// reference",
+        "control_plane_api_key": "op://Private/fc4edctkopi57hlm476o6r46oq/add more/MCP tunnel API Key",
         "home_assistant": {
             "tunnel_id": "tunnel_6ac922b05efc81918336c0dd92138ab5",
         },

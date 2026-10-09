@@ -50,23 +50,23 @@ SECRETS: Secrets = {
     },
     # Private MCP tunnels
     "mcp_tunnels": {
-        "control_plane_api_key": "op://Private/MCP Tunnels/Control Plane API Key",
+        "control_plane_api_key": "TODO: add op:// reference",
         "home_assistant": {
-            "tunnel_id": "op://Private/MCP Tunnels/Home Assistant Tunnel ID",
+            "tunnel_id": "TODO",
         },
         "lunchmoney": {
             "evan": {
-                "tunnel_id": "op://Private/MCP Tunnels/Lunch Money Evan Tunnel ID",
-                "api_token": "op://Private/MCP Tunnels/Lunch Money Evan API Token",
+                "tunnel_id": "TODO",
+                "api_token": "TODO: add op:// reference",
             },
             "vivian": {
-                "tunnel_id": "op://Private/MCP Tunnels/Lunch Money Vivian Tunnel ID",
-                "api_token": "op://Private/MCP Tunnels/Lunch Money Vivian API Token",
+                "tunnel_id": "TODO",
+                "api_token": "TODO: add op:// reference",
             },
         },
         "jellyfin": {
-            "tunnel_id": "op://Private/MCP Tunnels/Jellyfin Tunnel ID",
-            "api_key": "op://Private/MCP Tunnels/Jellyfin API Key",
+            "tunnel_id": "TODO",
+            "api_key": "TODO: add op:// reference",
         },
     },
     # Meal Log

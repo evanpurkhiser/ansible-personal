@@ -42,7 +42,7 @@
       - >-
         /etc/mcp-lunchmoney/{{ mcp_lunchmoney_profile }}.yaml:/etc/tunnel-client/profile.yaml:ro
     healthcheck: >-
-      wget -qO- http://127.0.0.1:8080/readyz >/dev/null || exit 1
+      curl --fail --silent http://127.0.0.1:8080/readyz >/dev/null
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always

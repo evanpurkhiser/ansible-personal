@@ -57,11 +57,11 @@ SECRETS: Secrets = {
         "lunchmoney": {
             "evan": {
                 "tunnel_id": "tunnel_6ac86199595c81918ee0c4245738b61b",
-                "api_token": "TODO: add op:// reference",
+                "api_token": "op://Private/iyur5zrspndy3j4uxifwa7mj4y/f54yx6atytdesy4k5b3koy7ori/MCP API Key",
             },
             "vivian": {
                 "tunnel_id": "tunnel_6ac861b6d3d88191b1ebe04e111c6cf2",
-                "api_token": "TODO: add op:// reference",
+                "api_token": "op://Private/iyur5zrspndy3j4uxifwa7mj4y/vpcsaxvlv6wsgsoy3t26ofoyky/MCP API Key",
             },
         },
         "jellyfin": {

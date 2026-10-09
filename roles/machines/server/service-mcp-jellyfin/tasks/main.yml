@@ -1,0 +1,87 @@
+- name: Ensure Jellyfin MCP directories exist
+  loop:
+    - /var/lib/mcp-jellyfin/build
+    - /etc/mcp-jellyfin
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Jellyfin MCP image build context
+  register: mcp_jellyfin_build_context
+  ansible.builtin.copy:
+    src: build/
+    dest: /var/lib/mcp-jellyfin/build/
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Build Jellyfin MCP image
+  notify: Restart Jellyfin MCP tunnel
+  containers.podman.podman_image:
+    name: localhost/mcp-jellyfin:latest
+    state: build
+    path: /var/lib/mcp-jellyfin/build
+    force: "{{ mcp_jellyfin_build_context.changed }}"
+
+- name: Install Jellyfin MCP tunnel environment
+  notify: Restart Jellyfin MCP tunnel
+  no_log: true
+  ansible.builtin.copy:
+    content: |
+      CONTROL_PLANE_API_KEY={{ mcp_tunnels.control_plane_api_key }}
+      JELLYFIN_URL=http://127.0.0.1:8096
+      JELLYFIN_API_KEY={{ mcp_tunnels.jellyfin.api_key }}
+    dest: /etc/mcp-jellyfin/environment
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Install Jellyfin MCP tunnel profile
+  notify: Restart Jellyfin MCP tunnel
+  no_log: true
+  ansible.builtin.copy:
+    content: |
+      config_version: 1
+      control_plane:
+        tunnel_id: {{ mcp_tunnels.jellyfin.tunnel_id | to_json }}
+        api_key: "env:CONTROL_PLANE_API_KEY"
+      health:
+        listen_addr: "127.0.0.1:9586"
+      mcp:
+        commands:
+          - channel: main
+            command: "/usr/local/bin/jellyfin-mcp"
+    dest: /etc/mcp-jellyfin/profile.yaml
+    owner: "10001"
+    group: "10001"
+    mode: "0400"
+
+- name: Ensure Jellyfin MCP tunnel container
+  notify: Restart Jellyfin MCP tunnel
+  containers.podman.podman_container:
+    name: mcp-jellyfin
+    image: localhost/mcp-jellyfin:latest
+    state: present
+    network: host
+    cap_drop: [ALL]
+    read_only: true
+    env_file:
+      - /etc/mcp-jellyfin/environment
+    volume:
+      - /etc/mcp-jellyfin/profile.yaml:/etc/tunnel-client/profile.yaml:ro
+    healthcheck: >-
+      curl --fail --silent http://127.0.0.1:9586/readyz >/dev/null
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+
+- name: Ensure Jellyfin MCP tunnel is running
+  ansible.builtin.systemd:
+    name: container-mcp-jellyfin
+    state: started
+    enabled: true
+    daemon_reload: true

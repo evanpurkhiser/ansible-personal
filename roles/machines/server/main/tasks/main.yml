@@ -147,6 +147,21 @@
   tags: [jellyfin]
   ansible.builtin.import_role: { name: machines/server/service-jellyfin }
 
+- name: Import Home Assistant MCP role
+  tags: [mcp, mcp-home-assistant]
+  ansible.builtin.import_role:
+    { name: machines/server/service-mcp-home-assistant }
+
+- name: Import Lunch Money MCP role
+  tags: [mcp, mcp-lunchmoney]
+  ansible.builtin.import_role:
+    { name: machines/server/service-mcp-lunchmoney }
+
+- name: Import Jellyfin MCP role
+  tags: [mcp, mcp-jellyfin]
+  ansible.builtin.import_role:
+    { name: machines/server/service-mcp-jellyfin }
+
 - name: Import waitress role
   tags: [waitress]
   ansible.builtin.import_role: { name: machines/server/service-waitress }

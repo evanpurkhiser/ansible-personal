@@ -52,20 +52,20 @@ SECRETS: Secrets = {
     "mcp_tunnels": {
         "control_plane_api_key": "TODO: add op:// reference",
         "home_assistant": {
-            "tunnel_id": "TODO",
+            "tunnel_id": "tunnel_6ac922b05efc81918336c0dd92138ab5",
         },
         "lunchmoney": {
             "evan": {
-                "tunnel_id": "TODO",
+                "tunnel_id": "tunnel_6ac86199595c81918ee0c4245738b61b",
                 "api_token": "TODO: add op:// reference",
             },
             "vivian": {
-                "tunnel_id": "TODO",
+                "tunnel_id": "tunnel_6ac861b6d3d88191b1ebe04e111c6cf2",
                 "api_token": "TODO: add op:// reference",
             },
         },
         "jellyfin": {
-            "tunnel_id": "TODO",
+            "tunnel_id": "tunnel_6ac861c36cb08191ab60e96fb362a8fd",
             "api_key": "TODO: add op:// reference",
         },
     },

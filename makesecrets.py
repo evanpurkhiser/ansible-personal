@@ -66,7 +66,7 @@ SECRETS: Secrets = {
         },
         "jellyfin": {
             "tunnel_id": "tunnel_6ac861c36cb08191ab60e96fb362a8fd",
-            "api_key": "TODO: add op:// reference",
+            "api_key": "op://Private/rqftumfisqlyhmf4ppoklzm7d4/add more/MCP API Key",
         },
     },
     # Meal Log

@@ -53,7 +53,6 @@ SECRETS: Secrets = {
         "control_plane_api_key": "op://Private/MCP Tunnels/Control Plane API Key",
         "home_assistant": {
             "tunnel_id": "op://Private/MCP Tunnels/Home Assistant Tunnel ID",
-            "server_url": "op://Private/MCP Tunnels/Home Assistant MCP URL",
         },
         "lunchmoney": {
             "evan": {

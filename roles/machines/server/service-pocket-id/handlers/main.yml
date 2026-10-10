@@ -1,0 +1,5 @@
+- name: Restart Pocket ID
+  ansible.builtin.systemd:
+    name: container-pocket-id
+    state: restarted
+    daemon_reload: true

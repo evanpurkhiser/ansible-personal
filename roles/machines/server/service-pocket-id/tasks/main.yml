@@ -1,0 +1,62 @@
+- name: Ensure Pocket ID directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - path: /etc/pocket-id
+      mode: "0755"
+    - path: /var/lib/pocket-id
+      mode: "0700"
+
+- name: Install Pocket ID encryption key
+  no_log: true
+  ansible.builtin.copy:
+    content: "{{ pocket_id.encryption_key }}"
+    dest: /etc/pocket-id/encryption-key
+    owner: root
+    group: root
+    mode: "0400"
+  notify: Restart Pocket ID
+
+- name: Install Pocket ID nginx configuration
+  ansible.builtin.copy:
+    src: nginx.conf
+    dest: /etc/nginx/public-sites.d/pocket-id.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload nginx
+
+- name: Ensure Pocket ID container
+  containers.podman.podman_container:
+    name: pocket-id
+    image: ghcr.io/pocket-id/pocket-id:latest
+    state: present
+    env:
+      APP_URL: https://id.evanpurkhiser.com
+      ENCRYPTION_KEY_FILE: /run/secrets/encryption-key
+      PGID: "0"
+      PUID: "0"
+      TRUST_PROXY: "true"
+    publish:
+      - "127.0.0.1:1411:1411"
+    volume:
+      - /var/lib/pocket-id:/app/data
+      - /etc/pocket-id/encryption-key:/run/secrets/encryption-key:ro
+    label:
+      io.containers.autoupdate: registry
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+  notify: Restart Pocket ID
+
+- name: Ensure Pocket ID is running
+  ansible.builtin.systemd:
+    name: container-pocket-id
+    state: started
+    enabled: true
+    daemon_reload: true

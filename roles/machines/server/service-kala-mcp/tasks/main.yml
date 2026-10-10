@@ -1,0 +1,138 @@
+- name: Ensure Kala MCP directories
+  ansible.builtin.file:
+    path: "/var/lib/kala-mcp/{{ item.path }}"
+    state: directory
+    owner: root
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - path: build
+      mode: "0755"
+    - path: charts
+      mode: "0755"
+    - path: output
+      mode: "0755"
+    - path: run
+      group: "65532"
+      mode: "2770"
+    - path: state
+      mode: "0700"
+
+- name: Ensure Kala MCP configuration directory
+  ansible.builtin.file:
+    path: /etc/kala-mcp
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Kala MCP tunnel image build context
+  register: kala_mcp_tunnel_build_context
+  ansible.builtin.copy:
+    src: build/
+    dest: /var/lib/kala-mcp/build/
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Build Kala MCP tunnel image
+  notify: Restart Kala MCP
+  containers.podman.podman_image:
+    name: localhost/kala-mcp-tunnel:latest
+    state: build
+    path: /var/lib/kala-mcp/build
+    force: "{{ kala_mcp_tunnel_build_context.changed }}"
+
+- name: Install Kala MCP tunnel environment
+  notify: Restart Kala MCP
+  no_log: true
+  ansible.builtin.copy:
+    dest: /etc/kala-mcp/environment
+    owner: root
+    group: root
+    mode: "0600"
+    content: |
+      CONTROL_PLANE_API_KEY={{ mcp_tunnels.control_plane_api_key }}
+
+- name: Install Kala MCP tunnel profile
+  notify: Restart Kala MCP
+  no_log: true
+  ansible.builtin.copy:
+    dest: /etc/kala-mcp/profile.yaml
+    owner: "10001"
+    group: "10001"
+    mode: "0400"
+    content: |
+      config_version: 1
+      control_plane:
+        tunnel_id: {{ mcp_tunnels.kala.tunnel_id | to_json }}
+        api_key: "env:CONTROL_PLANE_API_KEY"
+      health:
+        listen_addr: "0.0.0.0:8080"
+      mcp:
+        startup_wait_timeout: 2m
+        server_urls:
+          - channel: main
+            url: "http://localhost/kala-mcp"
+            unix_socket: /run/kala-mcp/kala-mcp.sock
+
+- name: Ensure Kala tunnel container
+  notify: Restart Kala MCP
+  containers.podman.podman_container:
+    name: kala-tunnel
+    image: localhost/kala-mcp-tunnel:latest
+    state: present
+    cap_drop:
+      - ALL
+    read_only: true
+    group_add:
+      - "65532"
+    env_file:
+      - /etc/kala-mcp/environment
+    publish:
+      - "127.0.0.1:9587:8080"
+    volume:
+      - /etc/kala-mcp/profile.yaml:/etc/tunnel-client/profile.yaml:ro
+      - /var/lib/kala-mcp/run:/run/kala-mcp:ro
+    healthcheck: >-
+      curl --fail --silent http://127.0.0.1:8080/readyz >/dev/null
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      restart_sec: 5
+      new: true
+      after:
+        - container-kala-appliance.service
+
+- name: Ensure Kala appliance container
+  notify: Restart Kala MCP
+  containers.podman.podman_container:
+    name: kala-appliance
+    image: ghcr.io/evanpurkhiser/kala-mcp:latest
+    authfile: /etc/containers/auth.json
+    state: present
+    network: none
+    volume:
+      - /var/lib/kala-mcp/charts:/charts
+      - /var/lib/kala-mcp/output:/output
+      - /var/lib/kala-mcp/run:/run/kala-mcp
+      - /var/lib/kala-mcp/state:/state
+    stop_timeout: 30
+    label:
+      io.containers.autoupdate: registry
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      restart_sec: 5
+      stop_timeout: 40
+      new: true
+
+- name: Ensure Kala MCP services are running
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+    daemon_reload: true
+  loop:
+    - container-kala-appliance
+    - container-kala-tunnel

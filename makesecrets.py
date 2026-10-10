@@ -68,6 +68,9 @@ SECRETS: Secrets = {
             "tunnel_id": "tunnel_6ac861c36cb08191ab60e96fb362a8fd",
             "api_key": "op://Private/rqftumfisqlyhmf4ppoklzm7d4/add more/MCP API Key",
         },
+        "kala": {
+            "tunnel_id": "tunnel_6aca572486008191876e4ab136308c73",
+        },
     },
     # Meal Log
     "meal_log": {

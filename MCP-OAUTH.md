@@ -15,8 +15,17 @@ Backend credentials stay in the service's root-readable environment file.
 Create an administrative Pocket ID API key, save it in the Private vault's
 Pocket ID item as `API key`, and regenerate the local Ansible secrets. Create
 `mcp-admin` containing Evan and `mcp-shared` containing Evan and Vivian. The
-Vivian Lunch Money endpoint allows `mcp-shared`; the other endpoints allow
+Lunch Money endpoint allows `mcp-shared`; the other endpoints allow
 `mcp-admin`.
+
+Services can set `mcp_proxy_user_backends` keyed by Pocket ID username. Ansible
+resolves usernames to stable user IDs and merges each entry with
+`mcp_proxy_backend`. The proxy selects a backend from the verified token's
+subject and denies unmapped users. Each request opens an isolated backend
+session; stdio processes receive only their selected credentials.
+
+Lunch Money uses `/mcp/lunchmoney/` for both users, with `evan` and `vivian`
+selecting their respective API tokens.
 
 Home Assistant's backend remains on its existing loopback endpoint at port 9584.
 Jellyfin and Lunch Money launch their stdio backends in the proxy container.

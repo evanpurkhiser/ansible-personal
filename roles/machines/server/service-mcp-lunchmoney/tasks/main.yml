@@ -19,26 +19,19 @@
     force: "{{ mcp_proxy_build_context.changed or mcp_lunchmoney_build_context.changed }}"
 
 - name: Expose Lunch Money MCP
-  ansible.builtin.include_role:
+  ansible.builtin.import_role:
     name: machines/server/service-mcp-proxy
-    apply:
-      tags: [mcp, mcp-lunchmoney]
   vars:
-    mcp_proxy_name: "lunchmoney-{{ item.name }}"
-    mcp_proxy_port: "{{ item.port }}"
+    mcp_proxy_name: lunchmoney
+    mcp_proxy_port: 9591
     mcp_proxy_image: localhost/mcp-lunchmoney:latest
     mcp_proxy_backend:
       command: /usr/local/bin/lunchmoney-mcp
-    mcp_proxy_environment:
-      LUNCHMONEY_API_TOKEN: "{{ item.token }}"
-    mcp_proxy_allowed_groups: "{{ item.groups }}"
-  no_log: true
-  loop:
-    - name: evan
-      port: 9591
-      token: "{{ mcp.api_token_evan }}"
-      groups: [mcp-admin]
-    - name: vivian
-      port: 9592
-      token: "{{ mcp.api_token_vivian }}"
-      groups: [mcp-shared]
+    mcp_proxy_user_backends:
+      evan:
+        env:
+          LUNCHMONEY_API_TOKEN: "{{ mcp.api_token_evan }}"
+      vivian:
+        env:
+          LUNCHMONEY_API_TOKEN: "{{ mcp.api_token_vivian }}"
+    mcp_proxy_allowed_groups: [mcp-shared]

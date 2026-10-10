@@ -19,6 +19,11 @@
   ansible.builtin.import_tasks: oidc.yml
 
 - name: Install MCP proxy environment
+  vars:
+    mcp_proxy_user_ids: >-
+      {{ dict(mcp_proxy_users.json.data | map(attribute='username') |
+              zip(mcp_proxy_users.json.data | map(attribute='id')))
+         if mcp_proxy_user_backends | length > 0 else {} }}
   no_log: true
   register: mcp_proxy_config
   ansible.builtin.template:

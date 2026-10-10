@@ -12,11 +12,9 @@ Backend credentials stay in the service's root-readable environment file.
 
 ## Deployment prerequisites
 
-Create an administrative Pocket ID API key, save it in the Private vault's
-Pocket ID item as `API key`, and regenerate the local Ansible secrets. Create
-`mcp-admin` containing Evan and `mcp-shared` containing Evan and Vivian. The
-Lunch Money endpoint allows `mcp-shared`; the other endpoints allow
-`mcp-admin`.
+Pocket ID generates a persistent administrative API key at
+`/etc/pocket-id/api-key`. MCP roles read it on the server when registering their
+OIDC clients. Apply with `--tags nginx,pocket-id,mcp`.
 
 Services can set `mcp_proxy_user_backends` keyed by Pocket ID username. Each
 entry merges with `mcp_proxy_backend`. The proxy requests the `profile` scope
@@ -35,8 +33,7 @@ and signing key together.
 
 ## Migration
 
-Before applying, validate the client registration and passkey login against the
-installed Pocket ID version, including restart persistence, refresh, tool calls,
-and rejection of a token from another MCP endpoint. Then stop and remove the
-old tunnel containers, generated units, images, and tunnel configuration files
-as a one-time migration operation.
+During cutover, stop and remove the old tunnel containers, generated units,
+images, and tunnel configuration files. After applying, validate passkey login,
+refresh, tool calls, restart persistence, and rejection of a token from another
+MCP endpoint.

@@ -57,7 +57,6 @@ SECRETS: Secrets = {
     # Pocket ID
     "pocket_id": {
         "encryption_key": "op://Private/Pocket ID/encryption key",
-        "api_key": "op://Private/Pocket ID/API key",
     },
     # Meal Log
     "meal_log": {

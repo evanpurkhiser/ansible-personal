@@ -34,4 +34,3 @@
       vivian:
         env:
           LUNCHMONEY_API_TOKEN: "{{ mcp.api_token_vivian }}"
-    mcp_proxy_allowed_groups: [mcp-shared]

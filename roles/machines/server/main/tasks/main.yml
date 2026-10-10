@@ -206,6 +206,10 @@
   tags: [places]
   ansible.builtin.import_role: { name: machines/server/service-places }
 
+- name: Import Kala MCP role
+  tags: [kala-mcp]
+  ansible.builtin.import_role: { name: machines/server/service-kala-mcp }
+
 - name: Import zrepl role
   tags: [zrepl]
   ansible.builtin.import_role: { name: machines/server/service-zrepl }

@@ -1,0 +1,8 @@
+- name: Restart Kala MCP
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - container-kala-appliance
+    - container-kala-tunnel

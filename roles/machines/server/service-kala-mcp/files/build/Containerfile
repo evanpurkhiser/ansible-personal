@@ -1,0 +1,17 @@
+FROM docker.io/library/alpine:3.22
+
+ARG TUNNEL_CLIENT_VERSION=0.0.16
+ARG TUNNEL_CLIENT_SHA256=d60cdba019bce451bcc3a15478cc5b9cb11270b049f5b56ea39a80b517f8b117
+
+RUN apk add --no-cache ca-certificates curl unzip \
+    && curl --fail --location --silent --show-error --output /tmp/tunnel-client.zip \
+        "https://github.com/openai/tunnel-client/releases/download/v${TUNNEL_CLIENT_VERSION}/tunnel-client-v${TUNNEL_CLIENT_VERSION}-linux-amd64.zip" \
+    && echo "${TUNNEL_CLIENT_SHA256}  /tmp/tunnel-client.zip" | sha256sum -c - \
+    && unzip -q /tmp/tunnel-client.zip tunnel-client -d /usr/local/bin \
+    && chmod 0755 /usr/local/bin/tunnel-client \
+    && rm /tmp/tunnel-client.zip \
+    && adduser -D -H -u 10001 tunnel
+
+USER 10001:10001
+ENTRYPOINT ["/usr/local/bin/tunnel-client"]
+CMD ["run", "--profile-file", "/etc/tunnel-client/profile.yaml"]

@@ -1,0 +1,66 @@
+- name: Ensure MCP proxy directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  loop:
+    - "/etc/mcp-{{ mcp_proxy_name }}"
+    - "/var/lib/mcp-{{ mcp_proxy_name }}"
+
+- name: Ensure MCP proxy signing key
+  no_log: true
+  ansible.builtin.shell:
+    cmd: "umask 077; openssl rand -hex 32 > /etc/mcp-{{ mcp_proxy_name }}/signing-key"
+    creates: "/etc/mcp-{{ mcp_proxy_name }}/signing-key"
+
+- name: Configure Pocket ID client
+  ansible.builtin.import_tasks: oidc.yml
+
+- name: Install MCP proxy environment
+  no_log: true
+  register: mcp_proxy_config
+  ansible.builtin.template:
+    src: environment.j2
+    dest: "/etc/mcp-{{ mcp_proxy_name }}/environment"
+    mode: "0600"
+
+- name: Ensure MCP proxy container
+  register: mcp_proxy_container
+  containers.podman.podman_container:
+    name: "mcp-{{ mcp_proxy_name }}"
+    image: "{{ mcp_proxy_image }}"
+    state: present
+    recreate: "{{ mcp_proxy_config.changed or mcp_proxy_build_context.changed }}"
+    network: host
+    env_file: ["/etc/mcp-{{ mcp_proxy_name }}/environment"]
+    env:
+      FASTMCP_HOME: /data
+    volume:
+      - "/var/lib/mcp-{{ mcp_proxy_name }}:/data"
+      - "/etc/mcp-{{ mcp_proxy_name }}/signing-key:/run/secrets/signing-key:ro"
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+
+- name: Ensure MCP proxy is running
+  ansible.builtin.systemd:
+    name: "container-mcp-{{ mcp_proxy_name }}"
+    state: "{{ 'restarted' if mcp_proxy_container.changed else 'started' }}"
+    enabled: true
+    daemon_reload: true
+
+- name: Ensure MCP nginx directory
+  ansible.builtin.file:
+    path: /etc/nginx/mcp-services.d
+    state: directory
+    mode: "0755"
+
+- name: Install MCP nginx configuration
+  notify: Reload nginx
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/mcp-services.d/{{ mcp_proxy_name }}.conf"
+    mode: "0644"

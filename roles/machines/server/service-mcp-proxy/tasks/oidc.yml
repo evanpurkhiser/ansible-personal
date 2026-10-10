@@ -1,0 +1,59 @@
+- name: Read Pocket ID groups
+  no_log: true
+  register: mcp_proxy_groups
+  ansible.builtin.uri:
+    url: "{{ mcp_proxy_issuer }}/api/user-groups?pagination[limit]=100"
+    headers:
+      X-API-KEY: "{{ pocket_id.api_key }}"
+
+- name: Ensure MCP access groups exist
+  ansible.builtin.assert:
+    that:
+      - mcp_proxy_groups.json.pagination.totalPages <= 1
+      - mcp_proxy_allowed_groups | difference(mcp_proxy_groups.json.data | map(attribute='name')) | length == 0
+    fail_msg: "Create the requested access groups in Pocket ID before deploying MCP services."
+
+- name: Read Pocket ID client
+  no_log: true
+  register: mcp_proxy_existing_client
+  ansible.builtin.uri:
+    url: "{{ mcp_proxy_issuer }}/api/oidc/clients/{{ mcp_proxy_client.id }}"
+    headers:
+      X-API-KEY: "{{ pocket_id.api_key }}"
+    status_code: [200, 404]
+
+- name: Ensure Pocket ID client
+  no_log: true
+  when: >-
+    mcp_proxy_existing_client.status == 404 or
+    mcp_proxy_existing_client.json | dict2items |
+    selectattr('key', 'in', mcp_proxy_client.keys()) | items2dict != mcp_proxy_client
+  changed_when: true
+  ansible.builtin.uri:
+    url: >-
+      {{ mcp_proxy_issuer }}/api/oidc/clients{{
+      '' if mcp_proxy_existing_client.status == 404 else '/' ~ mcp_proxy_client.id }}
+    method: "{{ 'POST' if mcp_proxy_existing_client.status == 404 else 'PUT' }}"
+    headers:
+      X-API-KEY: "{{ pocket_id.api_key }}"
+    body_format: json
+    body: "{{ mcp_proxy_client }}"
+    status_code: [200, 201]
+
+- name: Set Pocket ID client access groups
+  no_log: true
+  when: >-
+    mcp_proxy_existing_client.status == 404 or
+    (mcp_proxy_existing_client.json.allowedUserGroups | map(attribute='name') | sort) !=
+    (mcp_proxy_allowed_groups | sort)
+  changed_when: true
+  ansible.builtin.uri:
+    url: "{{ mcp_proxy_issuer }}/api/oidc/clients/{{ mcp_proxy_client.id }}/allowed-user-groups"
+    method: PUT
+    headers:
+      X-API-KEY: "{{ pocket_id.api_key }}"
+    body_format: json
+    body:
+      userGroupIds: >-
+        {{ mcp_proxy_groups.json.data | selectattr('name', 'in', mcp_proxy_allowed_groups) |
+           map(attribute='id') | list }}

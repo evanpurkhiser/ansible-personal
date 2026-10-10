@@ -1,0 +1,19 @@
+- name: Ensure MCP proxy build directory
+  ansible.builtin.file:
+    path: /var/lib/mcp-proxy/build
+    state: directory
+    mode: "0755"
+
+- name: Install MCP proxy build context
+  register: mcp_proxy_build_context
+  ansible.builtin.copy:
+    src: build/
+    dest: /var/lib/mcp-proxy/build/
+    mode: "0644"
+
+- name: Build MCP proxy image
+  containers.podman.podman_image:
+    name: localhost/mcp-proxy:latest
+    state: build
+    path: /var/lib/mcp-proxy/build
+    force: "{{ mcp_proxy_build_context.changed }}"

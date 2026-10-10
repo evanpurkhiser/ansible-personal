@@ -1,0 +1,5 @@
+- name: Restart Jellyfin MCP tunnel
+  ansible.builtin.systemd:
+    name: container-mcp-jellyfin
+    state: restarted
+    daemon_reload: true

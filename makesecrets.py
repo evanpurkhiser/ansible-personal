@@ -48,6 +48,27 @@ SECRETS: Secrets = {
         "lunchmoney_token": "op://Private/iyur5zrspndy3j4uxifwa7mj4y/Venmo Lunchmoney AI API Key",
         "openai_token": "op://Private/fc4edctkopi57hlm476o6r46oq/Venmo Lunchmoney AI API Key",
     },
+    # Private MCP tunnels
+    "mcp_tunnels": {
+        "control_plane_api_key": "op://Private/fc4edctkopi57hlm476o6r46oq/add more/MCP tunnel API Key",
+        "home_assistant": {
+            "tunnel_id": "tunnel_6ac922b05efc81918336c0dd92138ab5",
+        },
+        "lunchmoney": {
+            "evan": {
+                "tunnel_id": "tunnel_6ac86199595c81918ee0c4245738b61b",
+                "api_token": "op://Private/iyur5zrspndy3j4uxifwa7mj4y/f54yx6atytdesy4k5b3koy7ori/MCP API Key",
+            },
+            "vivian": {
+                "tunnel_id": "tunnel_6ac861b6d3d88191b1ebe04e111c6cf2",
+                "api_token": "op://Private/iyur5zrspndy3j4uxifwa7mj4y/vpcsaxvlv6wsgsoy3t26ofoyky/MCP API Key",
+            },
+        },
+        "jellyfin": {
+            "tunnel_id": "tunnel_6ac861c36cb08191ab60e96fb362a8fd",
+            "api_key": "op://Private/rqftumfisqlyhmf4ppoklzm7d4/add more/MCP API Key",
+        },
+    },
     # Meal Log
     "meal_log": {
         "record_token": "op://Private/l7fle3v7rksnryvm3i2cax4eqe/Record Token",

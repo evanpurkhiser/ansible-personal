@@ -1,0 +1,13 @@
+- name: Restart Evan's Lunch Money MCP tunnel
+  listen: Restart Lunch Money MCP tunnels
+  ansible.builtin.systemd:
+    name: container-mcp-lunchmoney-evan
+    state: restarted
+    daemon_reload: true
+
+- name: Restart Vivian's Lunch Money MCP tunnel
+  listen: Restart Lunch Money MCP tunnels
+  ansible.builtin.systemd:
+    name: container-mcp-lunchmoney-vivian
+    state: restarted
+    daemon_reload: true

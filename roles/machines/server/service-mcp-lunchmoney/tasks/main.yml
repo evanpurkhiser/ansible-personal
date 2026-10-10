@@ -1,0 +1,41 @@
+- name: Ensure Lunch Money MCP directories exist
+  loop:
+    - /var/lib/mcp-lunchmoney/build
+    - /etc/mcp-lunchmoney
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Lunch Money MCP image build context
+  register: mcp_lunchmoney_build_context
+  ansible.builtin.copy:
+    src: build/
+    dest: /var/lib/mcp-lunchmoney/build/
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Build Lunch Money MCP image
+  notify: Restart Lunch Money MCP tunnels
+  containers.podman.podman_image:
+    name: localhost/mcp-lunchmoney:latest
+    state: build
+    path: /var/lib/mcp-lunchmoney/build
+    force: "{{ mcp_lunchmoney_build_context.changed }}"
+
+- name: Configure Evan's Lunch Money MCP tunnel
+  ansible.builtin.include_tasks: instance.yml
+  vars:
+    mcp_lunchmoney_profile: evan
+    mcp_lunchmoney_tunnel_id: "{{ mcp_tunnels.lunchmoney.evan.tunnel_id }}"
+    mcp_lunchmoney_api_token: "{{ mcp_tunnels.lunchmoney.evan.api_token }}"
+
+- name: Configure Vivian's Lunch Money MCP tunnel
+  ansible.builtin.include_tasks: instance.yml
+  vars:
+    mcp_lunchmoney_profile: vivian
+    mcp_lunchmoney_tunnel_id: "{{ mcp_tunnels.lunchmoney.vivian.tunnel_id }}"
+    mcp_lunchmoney_api_token: "{{ mcp_tunnels.lunchmoney.vivian.api_token }}"

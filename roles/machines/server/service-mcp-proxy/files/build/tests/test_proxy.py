@@ -92,7 +92,7 @@ def test_users_route_to_their_own_backend(server, monkeypatch):
     from fastmcp.server.providers.proxy import ProxyClient
 
     backends = {}
-    for subject in ["evan-id", "vivian-id"]:
+    for subject in ["evan", "vivian"]:
         backend = fastmcp.FastMCP(subject)
         backend.tool(lambda account=subject: account, name="account")
         backend.tool(lambda: "private", name=f"private_{subject}")
@@ -110,13 +110,14 @@ def test_users_route_to_their_own_backend(server, monkeypatch):
     routed = proxy.create_server()
 
     async def load_access_token(token):
-        if token not in {"evan-id", "vivian-id", "unmapped-id"}:
+        if token not in {"evan", "vivian", "unmapped", "missing-username"}:
             return None
         return AccessToken(
             token=token,
             client_id="test",
-            scopes=["openid", "offline_access"],
-            subject=token,
+            scopes=["openid", "offline_access", "profile"],
+            subject=f"id-{token}",
+            claims={"preferred_username": token} if token != "missing-username" else {},
         )
 
     monkeypatch.setattr(routed.auth, "load_access_token", load_access_token)
@@ -139,7 +140,7 @@ def test_users_route_to_their_own_backend(server, monkeypatch):
                 },
             )
 
-        for subject in ["evan-id", "vivian-id", "evan-id"]:
+        for subject in ["evan", "vivian", "evan"]:
             listing = client.post(
                 "/",
                 headers={
@@ -156,6 +157,7 @@ def test_users_route_to_their_own_backend(server, monkeypatch):
             assert response.status_code == 200
             assert response.json()["result"]["content"][0]["text"] == subject
 
-        denied = call("unmapped-id").json()
-        assert "result" not in denied or denied["result"].get("isError")
+        for username in ["unmapped", "missing-username"]:
+            denied = call(username).json()
+            assert "result" not in denied or denied["result"].get("isError")
         assert call("invalid-token").status_code == 401

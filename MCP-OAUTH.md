@@ -18,10 +18,10 @@ Pocket ID item as `API key`, and regenerate the local Ansible secrets. Create
 Lunch Money endpoint allows `mcp-shared`; the other endpoints allow
 `mcp-admin`.
 
-Services can set `mcp_proxy_user_backends` keyed by Pocket ID username. Ansible
-resolves usernames to stable user IDs and merges each entry with
-`mcp_proxy_backend`. The proxy selects a backend from the verified token's
-subject and denies unmapped users. Each request opens an isolated backend
+Services can set `mcp_proxy_user_backends` keyed by Pocket ID username. Each
+entry merges with `mcp_proxy_backend`. The proxy requests the `profile` scope
+and selects a backend from the verified token's `preferred_username` claim.
+Missing or unmapped usernames are denied. Each request opens an isolated backend
 session; stdio processes receive only their selected credentials.
 
 Lunch Money uses `/mcp/lunchmoney/` for both users, with `evan` and `vivian`

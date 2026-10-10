@@ -1,7 +1,7 @@
 MCP_NAME={{ mcp_proxy_name }}
 MCP_PUBLIC_URL={{ mcp_proxy_public_url }}
 MCP_BACKEND={{ mcp_proxy_backend | to_json }}
-MCP_USER_BACKENDS={ {% for username, backend in mcp_proxy_user_backends.items() %}{{ mcp_proxy_user_ids[username] | to_json }}: {{ mcp_proxy_backend | combine(backend, recursive=true) | to_json }}{{ ', ' if not loop.last else '' }}{% endfor %} }
+MCP_USER_BACKENDS={ {% for username, backend in mcp_proxy_user_backends.items() %}{{ username | to_json }}: {{ mcp_proxy_backend | combine(backend, recursive=true) | to_json }}{{ ', ' if not loop.last else '' }}{% endfor %} }
 OIDC_ISSUER={{ mcp_proxy_issuer }}
 PORT={{ mcp_proxy_port }}
 {% for key, value in mcp_proxy_environment.items() %}

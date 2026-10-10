@@ -33,7 +33,8 @@ def backend_client(backend):
 def user_client_factory(backends):
     def client():
         token = get_access_token()
-        backend = backends.get(token.subject) if token else None
+        username = token.claims.get("preferred_username") if token else None
+        backend = backends.get(username)
         if backend is None:
             raise MCPError(
                 ErrorData(code=-32000, message="No MCP backend for this user")
@@ -55,7 +56,8 @@ def create_server():
         base_url=os.environ["MCP_PUBLIC_URL"],
         jwt_signing_key=Path("/run/secrets/signing-key").read_bytes(),
         token_endpoint_auth_method="none",
-        required_scopes=["openid", "offline_access"],
+        required_scopes=["openid", "offline_access"]
+        + (["profile"] if user_backends else []),
         verify_id_token=True,
         forward_resource=False,
     )

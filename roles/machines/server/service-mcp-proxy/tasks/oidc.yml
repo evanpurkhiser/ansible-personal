@@ -1,20 +1,3 @@
-- name: Read Pocket ID users
-  when: mcp_proxy_user_backends | length > 0
-  no_log: true
-  register: mcp_proxy_users
-  ansible.builtin.uri:
-    url: "{{ mcp_proxy_issuer }}/api/users?pagination[limit]=100"
-    headers:
-      X-API-KEY: "{{ pocket_id.api_key }}"
-
-- name: Ensure MCP users exist
-  when: mcp_proxy_user_backends | length > 0
-  ansible.builtin.assert:
-    that:
-      - mcp_proxy_users.json.pagination.totalPages <= 1
-      - mcp_proxy_user_backends.keys() | difference(mcp_proxy_users.json.data | map(attribute='username')) | length == 0
-    fail_msg: "Create the configured MCP users in Pocket ID before deploying."
-
 - name: Read Pocket ID groups
   no_log: true
   register: mcp_proxy_groups

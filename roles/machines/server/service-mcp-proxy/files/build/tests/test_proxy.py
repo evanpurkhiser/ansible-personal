@@ -161,3 +161,40 @@ def test_users_route_to_their_own_backend(server, monkeypatch):
             denied = call(username).json()
             assert "result" not in denied or denied["result"].get("isError")
         assert call("invalid-token").status_code == 401
+
+
+def test_unix_socket_backend(monkeypatch, tmp_path):
+    import asyncio
+    import socket
+
+    import uvicorn
+
+    monkeypatch.setenv("MCP_NAME", "kala")
+    socket_path = str(tmp_path / "mcp.sock")
+    backend = fastmcp.FastMCP("kala")
+    backend.tool(lambda: "kala", name="account")
+
+    async def check():
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as listener:
+            listener.bind(socket_path)
+            server = uvicorn.Server(
+                uvicorn.Config(backend.http_app(path="/kala-mcp"), log_level="error")
+            )
+            task = asyncio.create_task(server.serve(sockets=[listener]))
+            try:
+                while not server.started:
+                    await asyncio.sleep(0.01)
+
+                async with proxy.backend_client(
+                    {"url": "http://localhost/kala-mcp", "socket_path": socket_path}
+                ) as client:
+                    assert {tool.name for tool in await client.list_tools()} == {
+                        "account"
+                    }
+                    result = await client.call_tool("account", {})
+                    assert result.content[0].text == "kala"
+            finally:
+                server.should_exit = True
+                await task
+
+    asyncio.run(asyncio.wait_for(check(), timeout=15))

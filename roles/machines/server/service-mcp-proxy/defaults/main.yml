@@ -11,3 +11,4 @@ mcp_proxy_client:
   isPublic: true
   pkceEnabled: true
   isGroupRestricted: false
+mcp_proxy_volumes: []

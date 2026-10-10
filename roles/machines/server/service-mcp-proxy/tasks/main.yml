@@ -32,14 +32,16 @@
     name: "mcp-{{ mcp_proxy_name }}"
     image: "{{ mcp_proxy_image }}"
     state: present
+    image_strict: true
     recreate: "{{ mcp_proxy_config.changed or mcp_proxy_build_context.changed }}"
     network: host
     env_file: ["/etc/mcp-{{ mcp_proxy_name }}/environment"]
     env:
       FASTMCP_HOME: /data
-    volume:
-      - "/var/lib/mcp-{{ mcp_proxy_name }}:/data"
-      - "/etc/mcp-{{ mcp_proxy_name }}/signing-key:/run/secrets/signing-key:ro"
+    volume: >-
+      {{ ['/var/lib/mcp-' ~ mcp_proxy_name ~ ':/data',
+          '/etc/mcp-' ~ mcp_proxy_name ~ '/signing-key:/run/secrets/signing-key:ro']
+         + mcp_proxy_volumes }}
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always

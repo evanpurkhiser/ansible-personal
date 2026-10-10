@@ -149,7 +149,7 @@
   ansible.builtin.import_role: { name: machines/server/service-jellyfin }
 
 - name: Build MCP proxy image
-  tags: [mcp, mcp-home-assistant, mcp-jellyfin, mcp-lunchmoney]
+  tags: [mcp, mcp-home-assistant, mcp-jellyfin, mcp-lunchmoney, mcp-kala]
   ansible.builtin.import_role:
     name: machines/server/service-mcp-proxy
     tasks_from: image
@@ -212,6 +212,10 @@
 - name: Import Places role
   tags: [places]
   ansible.builtin.import_role: { name: machines/server/service-places }
+
+- name: Import Kala MCP role
+  tags: [mcp, mcp-kala]
+  ansible.builtin.import_role: { name: machines/server/service-mcp-kala }
 
 - name: Import zrepl role
   tags: [zrepl]

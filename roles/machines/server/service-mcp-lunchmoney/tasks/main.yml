@@ -1,41 +1,36 @@
-- name: Ensure Lunch Money MCP directories exist
-  loop:
-    - /var/lib/mcp-lunchmoney/build
-    - /etc/mcp-lunchmoney
+- name: Ensure lunchmoney MCP build directory
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: /var/lib/mcp-lunchmoney/build
     state: directory
-    owner: root
-    group: root
     mode: "0755"
 
-- name: Install Lunch Money MCP image build context
+- name: Install lunchmoney MCP build context
   register: mcp_lunchmoney_build_context
   ansible.builtin.copy:
     src: build/
     dest: /var/lib/mcp-lunchmoney/build/
-    owner: root
-    group: root
     mode: "0644"
 
-- name: Build Lunch Money MCP image
-  notify: Restart Lunch Money MCP tunnels
+- name: Build lunchmoney MCP image
   containers.podman.podman_image:
     name: localhost/mcp-lunchmoney:latest
     state: build
     path: /var/lib/mcp-lunchmoney/build
-    force: "{{ mcp_lunchmoney_build_context.changed }}"
+    force: "{{ mcp_proxy_build_context.changed or mcp_lunchmoney_build_context.changed }}"
 
-- name: Configure Evan's Lunch Money MCP tunnel
-  ansible.builtin.include_tasks: instance.yml
+- name: Expose Lunch Money MCP
+  ansible.builtin.import_role:
+    name: machines/server/service-mcp-proxy
   vars:
-    mcp_lunchmoney_profile: evan
-    mcp_lunchmoney_tunnel_id: "{{ mcp_tunnels.lunchmoney.evan.tunnel_id }}"
-    mcp_lunchmoney_api_token: "{{ mcp_tunnels.lunchmoney.evan.api_token }}"
-
-- name: Configure Vivian's Lunch Money MCP tunnel
-  ansible.builtin.include_tasks: instance.yml
-  vars:
-    mcp_lunchmoney_profile: vivian
-    mcp_lunchmoney_tunnel_id: "{{ mcp_tunnels.lunchmoney.vivian.tunnel_id }}"
-    mcp_lunchmoney_api_token: "{{ mcp_tunnels.lunchmoney.vivian.api_token }}"
+    mcp_proxy_name: lunchmoney
+    mcp_proxy_port: 9591
+    mcp_proxy_image: localhost/mcp-lunchmoney:latest
+    mcp_proxy_backend:
+      command: /usr/local/bin/lunchmoney-mcp
+    mcp_proxy_user_backends:
+      evan:
+        env:
+          LUNCHMONEY_API_TOKEN: "{{ mcp.api_token_evan }}"
+      vivian:
+        env:
+          LUNCHMONEY_API_TOKEN: "{{ mcp.api_token_vivian }}"

@@ -1,0 +1,13 @@
+mcp_proxy_image: localhost/mcp-proxy:latest
+mcp_proxy_public_url: "https://apis.evanpurkhiser.com/mcp/{{ mcp_proxy_name }}"
+mcp_proxy_issuer: https://id.evanpurkhiser.com
+mcp_proxy_environment: {}
+mcp_proxy_backend: {}
+mcp_proxy_user_backends: {}
+mcp_proxy_client:
+  id: "mcp-{{ mcp_proxy_name }}"
+  name: "MCP {{ mcp_proxy_name }}"
+  callbackURLs: ["{{ mcp_proxy_public_url }}/auth/callback"]
+  isPublic: true
+  pkceEnabled: true
+  isGroupRestricted: false

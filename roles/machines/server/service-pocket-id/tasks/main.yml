@@ -21,6 +21,12 @@
     mode: "0400"
   notify: Restart Pocket ID
 
+- name: Ensure Pocket ID API key
+  no_log: true
+  ansible.builtin.shell:
+    cmd: "umask 077; openssl rand -hex 32 > /etc/pocket-id/api-key"
+    creates: /etc/pocket-id/api-key
+
 - name: Install Pocket ID nginx configuration
   ansible.builtin.copy:
     src: nginx.conf
@@ -31,6 +37,7 @@
   notify: Reload nginx
 
 - name: Ensure Pocket ID container
+  register: pocket_id_container
   containers.podman.podman_container:
     name: pocket-id
     image: ghcr.io/pocket-id/pocket-id:latest
@@ -38,6 +45,7 @@
     env:
       APP_URL: https://id.evanpurkhiser.com
       ENCRYPTION_KEY_FILE: /run/secrets/encryption-key
+      STATIC_API_KEY_FILE: /run/secrets/api-key
       PGID: "0"
       PUID: "0"
       TRUST_PROXY: "true"
@@ -46,17 +54,17 @@
     volume:
       - /var/lib/pocket-id:/app/data
       - /etc/pocket-id/encryption-key:/run/secrets/encryption-key:ro
+      - /etc/pocket-id/api-key:/run/secrets/api-key:ro
     label:
       io.containers.autoupdate: registry
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always
       new: true
-  notify: Restart Pocket ID
 
 - name: Ensure Pocket ID is running
   ansible.builtin.systemd:
     name: container-pocket-id
-    state: started
+    state: "{{ 'restarted' if pocket_id_container.changed else 'started' }}"
     enabled: true
     daemon_reload: true

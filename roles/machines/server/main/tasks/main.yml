@@ -148,6 +148,12 @@
   tags: [jellyfin]
   ansible.builtin.import_role: { name: machines/server/service-jellyfin }
 
+- name: Build MCP proxy image
+  tags: [mcp, mcp-home-assistant, mcp-jellyfin, mcp-lunchmoney]
+  ansible.builtin.import_role:
+    name: machines/server/service-mcp-proxy
+    tasks_from: image
+
 - name: Import Home Assistant MCP role
   tags: [mcp, mcp-home-assistant]
   ansible.builtin.import_role:

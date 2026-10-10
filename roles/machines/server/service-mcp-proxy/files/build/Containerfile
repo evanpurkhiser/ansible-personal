@@ -1,0 +1,7 @@
+FROM ghcr.io/astral-sh/uv:0.11.28-python3.13-alpine
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
+COPY proxy.py ./
+ENV PATH=/app/.venv/bin:$PATH
+ENTRYPOINT ["python", "/app/proxy.py"]

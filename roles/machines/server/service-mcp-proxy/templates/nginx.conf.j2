@@ -1,0 +1,24 @@
+location = /mcp/{{ mcp_proxy_name }} {
+    return 308 /mcp/{{ mcp_proxy_name }}/;
+}
+
+location /mcp/{{ mcp_proxy_name }}/ {
+    proxy_pass http://127.0.0.1:{{ mcp_proxy_port }}/;
+    proxy_http_version 1.1;
+    proxy_buffering off;
+    proxy_read_timeout 300s;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+}
+
+{% for endpoint in ['oauth-authorization-server', 'openid-configuration'] %}
+location = /.well-known/{{ endpoint }}/mcp/{{ mcp_proxy_name }} {
+    proxy_pass http://127.0.0.1:{{ mcp_proxy_port }}/.well-known/oauth-authorization-server;
+}
+
+{% endfor %}
+location = /.well-known/oauth-protected-resource/mcp/{{ mcp_proxy_name }}/ {
+    proxy_pass http://127.0.0.1:{{ mcp_proxy_port }};
+}

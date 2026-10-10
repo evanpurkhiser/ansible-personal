@@ -69,6 +69,10 @@ SECRETS: Secrets = {
             "api_key": "op://Private/rqftumfisqlyhmf4ppoklzm7d4/add more/MCP API Key",
         },
     },
+    # Pocket ID
+    "pocket_id": {
+        "encryption_key": "op://Private/Pocket ID/encryption key",
+    },
     # Meal Log
     "meal_log": {
         "record_token": "op://Private/l7fle3v7rksnryvm3i2cax4eqe/Record Token",

@@ -128,6 +128,10 @@
   tags: [nginx]
   ansible.builtin.import_role: { name: machines/server/service-nginx }
 
+- name: Import Pocket ID role
+  tags: [pocket-id]
+  ansible.builtin.import_role: { name: machines/server/service-pocket-id }
+
 - name: Import transmission role
   tags: [transmission]
   ansible.builtin.import_role: { name: machines/server/service-transmission }

@@ -147,6 +147,7 @@
     - mcp-jellyfin
     - mcp-lunchmoney
     - mcp-kala
+    - mcp-telegram
     - mcp-wilhelm-archive
     - wilhelm-archive
   ansible.builtin.import_role:
@@ -170,6 +171,11 @@
   tags: [mcp, mcp-jellyfin]
   ansible.builtin.import_role:
     { name: machines/server/service-mcp-jellyfin }
+
+- name: Import Telegram MCP role
+  tags: [mcp, mcp-telegram]
+  ansible.builtin.import_role:
+    { name: machines/server/service-mcp-telegram }
 
 - name: Import waitress role
   tags: [waitress]

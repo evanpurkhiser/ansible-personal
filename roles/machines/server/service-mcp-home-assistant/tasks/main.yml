@@ -1,8 +1,0 @@
-- name: Expose Home Assistant MCP
-  ansible.builtin.import_role:
-    name: machines/server/service-mcp-proxy
-  vars:
-    mcp_proxy_name: home-assistant
-    mcp_proxy_port: 9594
-    mcp_proxy_backend:
-      url: http://127.0.0.1:9584/private_zbONmPV3vWR6PgcbZCKUHA

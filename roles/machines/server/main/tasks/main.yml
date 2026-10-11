@@ -141,7 +141,14 @@
   ansible.builtin.import_role: { name: machines/server/service-things3-server }
 
 - name: Build MCP proxy image
-  tags: [mcp, hass, mcp-jellyfin, mcp-lunchmoney, mcp-kala]
+  tags:
+    - mcp
+    - hass
+    - mcp-jellyfin
+    - mcp-lunchmoney
+    - mcp-kala
+    - mcp-wilhelm-archive
+    - wilhelm-archive
   ansible.builtin.import_role:
     name: machines/server/service-mcp-proxy
     tasks_from: image
@@ -211,6 +218,11 @@
 - name: Import Kala MCP role
   tags: [mcp, mcp-kala]
   ansible.builtin.import_role: { name: machines/server/service-mcp-kala }
+
+- name: Import Wilhelm Archive role
+  tags: [mcp, mcp-wilhelm-archive, wilhelm-archive]
+  ansible.builtin.import_role:
+    { name: machines/server/service-wilhelm-archive }
 
 - name: Import zrepl role
   tags: [zrepl]

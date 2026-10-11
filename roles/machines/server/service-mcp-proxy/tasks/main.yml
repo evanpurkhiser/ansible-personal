@@ -47,10 +47,34 @@
       restart_policy: always
       new: true
 
+- name: Ensure MCP proxy systemd override directory
+  when: mcp_proxy_upstream_units | length > 0
+  ansible.builtin.file:
+    path: "/etc/systemd/system/container-mcp-{{ mcp_proxy_name }}.service.d"
+    state: directory
+    mode: "0755"
+
+- name: Install MCP proxy upstream dependencies
+  when: mcp_proxy_upstream_units | length > 0
+  register: mcp_proxy_systemd_dependencies
+  ansible.builtin.copy:
+    dest: >-
+      /etc/systemd/system/container-mcp-{{ mcp_proxy_name }}.service.d/upstream.conf
+    mode: "0644"
+    content: |
+      [Unit]
+      Requires={{ mcp_proxy_upstream_units | join(' ') }}
+      After={{ mcp_proxy_upstream_units | join(' ') }}
+      PartOf={{ mcp_proxy_upstream_units | join(' ') }}
+
 - name: Ensure MCP proxy is running
   ansible.builtin.systemd:
     name: "container-mcp-{{ mcp_proxy_name }}"
-    state: "{{ 'restarted' if mcp_proxy_container.changed else 'started' }}"
+    state: >-
+      {{ 'restarted'
+         if mcp_proxy_container.changed or
+            mcp_proxy_systemd_dependencies.changed | default(false)
+         else 'started' }}
     enabled: true
     daemon_reload: true
 

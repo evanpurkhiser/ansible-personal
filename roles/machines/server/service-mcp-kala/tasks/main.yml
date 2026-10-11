@@ -48,3 +48,5 @@
       socket_path: /run/kala-mcp/kala-mcp.sock
     mcp_proxy_volumes:
       - /var/lib/kala-mcp/run:/run/kala-mcp:ro
+    mcp_proxy_upstream_units:
+      - container-kala-appliance.service

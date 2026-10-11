@@ -91,7 +91,7 @@
     local_port: 8123
 
 - name: Expose Home Assistant MCP
-  tags: [mcp, mcp-home-assistant]
+  tags: [mcp]
   ansible.builtin.import_role:
     name: machines/server/service-mcp-proxy
   vars:

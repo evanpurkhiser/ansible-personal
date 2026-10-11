@@ -141,7 +141,7 @@
   ansible.builtin.import_role: { name: machines/server/service-things3-server }
 
 - name: Build MCP proxy image
-  tags: [mcp, hass, mcp-home-assistant, mcp-jellyfin, mcp-lunchmoney, mcp-kala]
+  tags: [mcp, hass, mcp-jellyfin, mcp-lunchmoney, mcp-kala]
   ansible.builtin.import_role:
     name: machines/server/service-mcp-proxy
     tasks_from: image

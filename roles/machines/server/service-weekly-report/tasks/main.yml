@@ -4,6 +4,23 @@
     dest: /usr/local/bin/
     mode: "0755"
 
+- name: Ensure weekly-report state directory
+  ansible.builtin.file:
+    path: /home/evan/.local/state/weekly-report/runs
+    state: directory
+    owner: evan
+    group: users
+    mode: "0700"
+
+- name: Install weekly-report Codex configuration
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/{{ item }}"
+    mode: "0644"
+  loop:
+    - weekly-report.prompt
+    - weekly-report-codex.json
+
 - name: Install weekly-report timer and service
   notify: Systemd daemon-reload
   with_items: [timer, service]

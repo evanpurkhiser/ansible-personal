@@ -1,8 +1,12 @@
 import json
 import os
+from functools import partial
 from pathlib import Path
 
+import httpx2
+
 from fastmcp import FastMCP
+from fastmcp.client.transports import StreamableHttpTransport
 from fastmcp.server import create_proxy
 from fastmcp.server.auth.oidc_proxy import OIDCProxy
 from fastmcp.server.dependencies import get_access_token
@@ -12,6 +16,16 @@ from mcp.types import ErrorData
 
 
 def backend_client(backend):
+    if "socket_path" in backend:
+        transport = StreamableHttpTransport(
+            backend["url"],
+            httpx_client_factory=partial(
+                httpx2.AsyncClient,
+                transport=httpx2.AsyncHTTPTransport(uds=backend["socket_path"]),
+            ),
+        )
+        return ProxyClient(transport, forward_incoming_headers=False)
+
     if "command" in backend:
         # The child process receives only its selected account's credentials.
         environment = {

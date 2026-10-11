@@ -1,0 +1,52 @@
+- name: Ensure Kala MCP directories
+  ansible.builtin.file:
+    path: "/var/lib/kala-mcp/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  loop: [charts, output, run, state]
+
+- name: Ensure Kala appliance container
+  register: mcp_kala_container
+  containers.podman.podman_container:
+    name: kala-appliance
+    image: ghcr.io/evanpurkhiser/kala-mcp:latest
+    authfile: /etc/containers/auth.json
+    state: present
+    network: none
+    volume:
+      - /var/lib/kala-mcp/charts:/charts
+      - /var/lib/kala-mcp/output:/output
+      - /var/lib/kala-mcp/run:/run/kala-mcp
+      - /var/lib/kala-mcp/state:/state
+    stop_timeout: 30
+    label:
+      io.containers.autoupdate: registry
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      restart_sec: 5
+      stop_timeout: 40
+      new: true
+
+- name: Ensure Kala appliance is running
+  ansible.builtin.systemd:
+    name: container-kala-appliance
+    state: "{{ 'restarted' if mcp_kala_container.changed else 'started' }}"
+    enabled: true
+    daemon_reload: true
+
+- name: Expose Kala MCP
+  ansible.builtin.import_role:
+    name: machines/server/service-mcp-proxy
+  vars:
+    mcp_proxy_name: kala
+    mcp_proxy_port: 9595
+    mcp_proxy_backend:
+      url: http://localhost/kala-mcp
+      socket_path: /run/kala-mcp/kala-mcp.sock
+    mcp_proxy_volumes:
+      - /var/lib/kala-mcp/run:/run/kala-mcp:ro
+    mcp_proxy_upstream_units:
+      - container-kala-appliance.service

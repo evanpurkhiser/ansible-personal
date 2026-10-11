@@ -630,6 +630,7 @@ version = "0"
 source = { virtual = "." }
 dependencies = [
     { name = "fastmcp" },
+    { name = "httpx2" },
 ]
 
 [package.dev-dependencies]
@@ -639,7 +640,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "fastmcp", specifier = "==4.1.0" }]
+requires-dist = [
+    { name = "fastmcp", specifier = "==4.1.0" },
+    { name = "httpx2", specifier = ">=2.5" },
+]
 
 [package.metadata.requires-dev]
 dev = [

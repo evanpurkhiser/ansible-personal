@@ -1,0 +1,54 @@
+- name: Ensure Wilhelm Archive state directory
+  ansible.builtin.file:
+    path: /var/lib/wilhelm-archive
+    state: directory
+    owner: evan
+    group: users
+    mode: "0700"
+
+- name: Ensure Wilhelm Archive container
+  register: wilhelm_archive_container
+  containers.podman.podman_container:
+    name: wilhelm-archive
+    image: ghcr.io/evanpurkhiser/wilhelm-archive:latest
+    authfile: /etc/containers/auth.json
+    state: present
+    publish:
+      - "127.0.0.1:9008:4100"
+    volume:
+      - /mnt/documents/multimedia/videos/astrology-videos:/library:ro
+      - /var/lib/wilhelm-archive:/state
+    env:
+      WILHELM_ARCHIVE_PUBLIC_URL: https://astro-vids.prk.network
+    label:
+      io.containers.autoupdate: registry
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+      after: mnt-documents.mount
+
+- name: Ensure Wilhelm Archive is running
+  ansible.builtin.systemd:
+    name: container-wilhelm-archive
+    state: "{{ 'restarted' if wilhelm_archive_container.changed else 'started' }}"
+    enabled: true
+    daemon_reload: true
+
+- name: Expose Wilhelm Archive internally
+  notify: Reload nginx
+  internal_service:
+    name: wilhelm-archive
+    domain: astro-vids
+    local_port: 9008
+
+- name: Expose Wilhelm Archive MCP
+  ansible.builtin.import_role:
+    name: machines/server/service-mcp-proxy
+  vars:
+    mcp_proxy_name: wilhelm-archive
+    mcp_proxy_port: 9596
+    mcp_proxy_backend:
+      url: http://127.0.0.1:9008/mcp
+    mcp_proxy_upstream_units:
+      - container-wilhelm-archive.service

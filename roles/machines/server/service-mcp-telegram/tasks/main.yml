@@ -14,66 +14,27 @@
       owner: evan
       group: users
       mode: "0700"
-    - path: /var/lib/mcp-telegram/build
+    - path: /var/lib/mcp-telegram
       owner: root
       group: root
       mode: "0755"
 
-- name: Install Telegram MCP build context
-  register: mcp_telegram_build_context
-  ansible.builtin.copy:
-    src: build/
-    dest: /var/lib/mcp-telegram/build/
-    mode: "0644"
+- name: Check out Telegram MCP source
+  register: mcp_telegram_source
+  ansible.builtin.git:
+    repo: https://github.com/chigwell/telegram-mcp.git
+    dest: /var/lib/mcp-telegram/source
+    version: 0910170285526d289420acb413b2f741ff2ae0bb
+    force: true
 
 - name: Build Telegram MCP image
   containers.podman.podman_image:
     name: localhost/telegram-mcp:latest
     state: build
-    path: /var/lib/mcp-telegram/build
-    force: "{{ mcp_telegram_build_context.changed }}"
-
-- name: Check for Telegram MCP session
-  register: mcp_telegram_session
-  ansible.builtin.stat:
-    path: /var/lib/telegram-mcp/session.session
-
-- name: Install Telegram MCP bootstrap environment
-  when: not mcp_telegram_session.stat.exists
-  no_log: true
-  ansible.builtin.copy:
-    dest: /etc/telegram-mcp/bootstrap-environment
-    owner: root
-    group: root
-    mode: "0600"
-    content: |
-      TELEGRAM_API_ID={{ mcp.telegram_api_id }}
-      TELEGRAM_API_HASH={{ mcp.telegram_api_hash }}
-      TELEGRAM_SESSION_STRING={{ mcp.telegram_session_string }}
-
-- name: Migrate Telegram MCP session
-  when: not mcp_telegram_session.stat.exists
-  no_log: true
-  ansible.builtin.command:
-    argv:
-      - podman
-      - run
-      - --rm
-      - --env-file
-      - /etc/telegram-mcp/bootstrap-environment
-      - --volume
-      - /var/lib/telegram-mcp:/data
-      - --entrypoint
-      - telegram-mcp-migrate-session
-      - localhost/telegram-mcp:latest
-      - --target
-      - /data/session
-    creates: /var/lib/telegram-mcp/session.session
-
-- name: Remove Telegram MCP bootstrap environment
-  ansible.builtin.file:
-    path: /etc/telegram-mcp/bootstrap-environment
-    state: absent
+    path: /var/lib/mcp-telegram/source
+    build:
+      target: production
+    force: "{{ mcp_telegram_source.changed }}"
 
 - name: Install Telegram MCP environment
   no_log: true
@@ -86,7 +47,7 @@
     content: |
       TELEGRAM_API_ID={{ mcp.telegram_api_id }}
       TELEGRAM_API_HASH={{ mcp.telegram_api_hash }}
-      TELEGRAM_SESSION_NAME=/data/session
+      TELEGRAM_SESSION_STRING={{ mcp.telegram_session_string }}
       TELEGRAM_EXPECTED_USERNAME={{ mcp.telegram_expected_username }}
       TELEGRAM_DEVICE_MODEL=Telegram MCP
       TELEGRAM_EXPOSED_TOOLS=all
@@ -104,7 +65,7 @@
     image: localhost/telegram-mcp:latest
     state: present
     image_strict: true
-    recreate: "{{ mcp_telegram_config.changed or mcp_telegram_build_context.changed }}"
+    recreate: "{{ mcp_telegram_config.changed or mcp_telegram_source.changed }}"
     network: host
     env_file: [/etc/telegram-mcp/environment]
     volume:

@@ -148,6 +148,7 @@
     - mcp-lunchmoney
     - mcp-kala
     - mcp-wilhelm-archive
+    - places
     - wilhelm-archive
   ansible.builtin.import_role:
     name: machines/server/service-mcp-proxy

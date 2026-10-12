@@ -241,6 +241,10 @@
   tags: [weekly-report]
   ansible.builtin.import_role: { name: machines/server/service-weekly-report }
 
+- name: Import Checkmk role
+  tags: [checkmk]
+  ansible.builtin.import_role: { name: machines/server/service-checkmk }
+
 - name: Import speedtest-monitor role
   tags: [speedtest-monitor]
   ansible.builtin.import_role:

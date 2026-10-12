@@ -7,3 +7,9 @@ PORT={{ mcp_proxy_port }}
 {% for key, value in mcp_proxy_environment.items() %}
 {{ key }}={{ value }}
 {% endfor %}
+MCP_WEBSITE_URL={{ mcp_proxy_website_url }}
+MCP_INSTRUCTIONS={{ mcp_proxy_instructions | to_json }}
+{% set mime_types = {'.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.webp': 'image/webp'} %}
+MCP_ICONS=[{% for icon in mcp_proxy_icon_files.results %}
+{% set mime_type = icon.item.mimeType if icon.item.mimeType is defined else mime_types[icon.item.src | splitext | last | lower] %}
+{{ icon.item | combine({'src': 'data:' ~ mime_type ~ ';base64,' ~ icon.content, 'mimeType': mime_type}) | to_json }}{{ ', ' if not loop.last else '' }}{% endfor %}]

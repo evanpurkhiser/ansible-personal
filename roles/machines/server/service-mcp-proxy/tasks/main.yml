@@ -18,6 +18,14 @@
 - name: Configure Pocket ID client
   ansible.builtin.import_tasks: oidc.yml
 
+- name: Read MCP icons on the Ansible controller
+  ansible.builtin.slurp:
+    src: "{{ lookup('ansible.builtin.first_found', item.src) }}"
+  delegate_to: localhost
+  become: false
+  loop: "{{ mcp_proxy_icons }}"
+  register: mcp_proxy_icon_files
+
 - name: Install MCP proxy environment
   no_log: true
   register: mcp_proxy_config

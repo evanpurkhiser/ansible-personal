@@ -116,3 +116,14 @@
   internal_service:
     name: places
     local_port: 5188
+
+- name: Expose Places MCP
+  ansible.builtin.import_role:
+    name: machines/server/service-mcp-proxy
+  vars:
+    mcp_proxy_name: places
+    mcp_proxy_port: 9597
+    mcp_proxy_backend:
+      url: http://127.0.0.1:5188/mcp
+    mcp_proxy_upstream_units:
+      - container-places-server.service

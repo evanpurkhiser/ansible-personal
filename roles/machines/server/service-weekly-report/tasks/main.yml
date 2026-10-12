@@ -12,14 +12,11 @@
     group: users
     mode: "0700"
 
-- name: Install weekly-report Codex configuration
+- name: Install weekly-report instructions
   ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "/etc/{{ item }}"
+    src: weekly-report.prompt
+    dest: /etc/weekly-report.prompt
     mode: "0644"
-  loop:
-    - weekly-report.prompt
-    - weekly-report-codex.json
 
 - name: Install weekly-report timer and service
   notify: Systemd daemon-reload

@@ -163,19 +163,19 @@ EOF
 	section "Local service probes"
 	run bash -o pipefail -c '
 		for probe in \
-			"home-assistant http://127.0.0.1:8123/" \
-			"jellyfin http://127.0.0.1:8096/health" \
-			"atuin http://127.0.0.1:7070/health" \
-			"atuin-abacus http://127.0.0.1:7071/" \
-			"things3 http://127.0.0.1:8765/" \
-			"places http://127.0.0.1:5188/health" \
-			"meal-log http://127.0.0.1:9006/" \
-			"waitress http://127.0.0.1:9005/" \
-			"purkhiser-bot http://127.0.0.1:9090/" \
-			"mcp-lunchmoney http://127.0.0.1:9591/" \
-			"mcp-jellyfin http://127.0.0.1:9593/" \
-			"mcp-home-assistant http://127.0.0.1:9594/" \
-			"mcp-kala http://127.0.0.1:9595/"; do
+			"home-assistant http://127.0.0.1:10343/" \
+			"jellyfin http://127.0.0.1:10453/health" \
+			"atuin http://127.0.0.1:10870/health" \
+			"atuin-abacus http://127.0.0.1:9297/" \
+			"things3 http://127.0.0.1:9014/" \
+			"places http://127.0.0.1:9031/health" \
+			"meal-log http://127.0.0.1:9082/" \
+			"waitress http://127.0.0.1:9134/" \
+			"purkhiser-bot http://127.0.0.1:9028/" \
+			"mcp-lunchmoney http://127.0.0.1:9685/" \
+			"mcp-jellyfin http://127.0.0.1:9641/" \
+			"mcp-home-assistant http://127.0.0.1:9638/" \
+			"mcp-kala http://127.0.0.1:9670/"; do
 			read -r name url <<<"$probe"
 			printf "%s\t" "$name"
 			curl --silent --show-error --output /dev/null \

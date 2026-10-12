@@ -33,4 +33,4 @@
   notify: Reload nginx
   internal_service:
     name: agent-witness
-    local_port: 9345
+    local_port: "{{ ports.agent_witness }}"

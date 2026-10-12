@@ -286,9 +286,6 @@ if ! codex_result=$(runuser -u evan -- env \
 	--thread-name "${thread_name}" \
 	--prompt-file "${run_file}" \
 	--developer-instructions-file /etc/weekly-report.prompt \
-	--config-json /etc/weekly-report-codex.json \
-	--sandbox workspace-write \
-	--approval-policy never \
 	--wait-for-reply \
 	--timeout 900 \
 	--json); then
@@ -298,8 +295,9 @@ fi
 
 reply=$(jq -r '.reply // empty' <<<"${codex_result}")
 thread_id=$(jq -r '.thread_id // empty' <<<"${codex_result}")
+delivery_marker=$(tail -n 1 <<<"${reply}")
 
-if [[ "${reply}" != "DELIVERED" ]]; then
+if [[ "${delivery_marker}" != "[WEEKLY_REPORT_DELIVERED]" ]]; then
 	printf 'weekly-report: Codex did not confirm delivery (thread %s):\n%s\n' \
 		"${thread_id:-unknown}" "${reply:-no reply}"
 	exit 1

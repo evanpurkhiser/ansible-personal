@@ -51,7 +51,7 @@ EOF
 	run cat /proc/loadavg
 	run free --human --si
 	run df --human-readable --output=source,fstype,size,used,avail,pcent,target
-	run df --inodes --output=source,itotal,iused,iavail,ipcent,target
+	run df --output=source,itotal,iused,iavail,ipcent,target
 	run sensors
 	run bash -o pipefail -c '
 		for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do

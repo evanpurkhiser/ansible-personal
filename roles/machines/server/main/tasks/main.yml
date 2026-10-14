@@ -56,8 +56,11 @@
       - zip
       - wrangler
 
-      # Other tools
+      # Hardware
+      - intel-ucode
       - lm_sensors
+
+      # Other tools
       - speedtest-cli
 
       # Services

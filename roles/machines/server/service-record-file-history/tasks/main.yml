@@ -10,7 +10,7 @@
   ansible.builtin.copy:
     src: record-file-history.{{ item }}
     dest: /etc/systemd/system/
-    mode: "0755"
+    mode: "0644"
 
 - name: Enable record-file-history timer service
   ansible.builtin.service:

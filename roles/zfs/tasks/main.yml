@@ -42,6 +42,12 @@
     state: started
     enabled: true
 
+- name: Enable monthly scrub for documents pool
+  ansible.builtin.systemd:
+    name: zfs-scrub-monthly@documents.timer
+    state: started
+    enabled: true
+
 - name: Create zfs-list.cache/documents
   ansible.builtin.file:
     path: /etc/zfs/zfs-list.cache/documents

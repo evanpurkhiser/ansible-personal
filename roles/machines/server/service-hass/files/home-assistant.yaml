@@ -85,9 +85,6 @@ rest:
             | list
             | count
           }}
-        json_attributes:
-          - transactions
-
   - resource: https://www.googleapis.com/youtube/v3/playlistItems
     method: GET
     scan_interval: 1800

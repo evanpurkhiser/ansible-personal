@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 import pytest
@@ -15,6 +16,10 @@ def server(monkeypatch, tmp_path):
     monkeypatch.setattr(proxy, "Path", lambda _: key)
     monkeypatch.setattr(fastmcp.settings, "home", tmp_path)
     monkeypatch.setenv("MCP_USER_BACKENDS", "{}")
+
+    for variable in ["MCP_ICONS", "MCP_INSTRUCTIONS", "MCP_WEBSITE_URL"]:
+        monkeypatch.delenv(variable, raising=False)
+
     monkeypatch.setenv("MCP_NAME", "example")
     monkeypatch.setenv("MCP_PUBLIC_URL", "https://apis.example.com/mcp/example")
     monkeypatch.setenv("OIDC_ISSUER", "https://id.example.com")
@@ -30,6 +35,58 @@ def server(monkeypatch, tmp_path):
     )
     monkeypatch.setattr(OIDCProxy, "get_oidc_configuration", lambda *a, **k: config)
     return proxy.create_server()
+
+
+@pytest.mark.parametrize(
+    "user_backends", [{}, {"evan": {"url": "http://localhost/mcp"}}]
+)
+@pytest.mark.parametrize("mode", ["legacy", "auto"])
+def test_clients_receive_proxy_metadata(server, monkeypatch, user_backends, mode):
+    icons = [
+        {
+            "src": (
+                "data:image/png;base64,"
+                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwC"
+                "AAAAC0lEQVR42mP8/x8AAwMCAO+a0uoAAAAASUVORK5CYII="
+            ),
+            "mimeType": "image/png",
+            "sizes": ["1x1"],
+            "theme": theme,
+        }
+        for theme in ["light", "dark"]
+    ]
+    instructions = "Search before fetching an item.\nUse its returned ID."
+    monkeypatch.setenv("MCP_USER_BACKENDS", json.dumps(user_backends))
+    monkeypatch.setenv("MCP_ICONS", json.dumps(icons))
+    monkeypatch.setenv("MCP_INSTRUCTIONS", json.dumps(instructions))
+    monkeypatch.setenv("MCP_WEBSITE_URL", "https://example.com")
+    configured = proxy.create_server()
+
+    async def check():
+        async with fastmcp.Client(configured, mode=mode) as client:
+            assert client.session.protocol_version == (
+                "2025-11-25" if mode == "legacy" else "2026-07-28"
+            )
+            info = client.server_info.model_dump(by_alias=True, exclude_none=True)
+            assert info["icons"] == icons
+            assert info["websiteUrl"] == "https://example.com"
+            assert client.instructions == instructions
+
+    asyncio.run(check())
+
+
+def test_proxy_metadata_defaults(server):
+    assert server.icons == []
+    assert server.website_url is None
+    assert server.instructions is None
+
+
+def test_invalid_icon_metadata_fails_at_startup(server, monkeypatch):
+    from pydantic import ValidationError
+
+    monkeypatch.setenv("MCP_ICONS", '[{"mimeType": "image/png"}]')
+    with pytest.raises(ValidationError):
+        proxy.create_server()
 
 
 def test_unauthenticated_requests_advertise_the_resource(server):

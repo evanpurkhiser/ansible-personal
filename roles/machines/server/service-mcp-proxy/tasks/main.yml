@@ -16,6 +16,7 @@
     creates: "/etc/mcp-{{ mcp_proxy_name }}/signing-key"
 
 - name: Configure Pocket ID client
+  when: not ansible_check_mode
   ansible.builtin.import_tasks: oidc.yml
 
 - name: Install MCP proxy environment

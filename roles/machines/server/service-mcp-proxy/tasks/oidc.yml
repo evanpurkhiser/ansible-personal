@@ -7,6 +7,9 @@
 - name: Read Pocket ID client
   no_log: true
   register: mcp_proxy_existing_client
+  until: mcp_proxy_existing_client.status | default(0) in [200, 404]
+  retries: 10
+  delay: 1
   ansible.builtin.uri:
     url: "http://127.0.0.1:1411/api/oidc/clients/{{ mcp_proxy_client.id }}"
     headers:

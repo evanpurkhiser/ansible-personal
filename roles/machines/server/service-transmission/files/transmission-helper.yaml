@@ -1,5 +1,5 @@
 transmission:
-  baseUrl: http://localhost:9091/
+  baseUrl: http://localhost:10247/
 telegram:
   chatId: "-722956237"
 moveCompleteDir: /mnt/documents/downloads/torrents-seeding/other

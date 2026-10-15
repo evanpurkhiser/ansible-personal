@@ -325,7 +325,7 @@ class DeploymentServer(HTTPServer):
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     keys = jwt.PyJWKClient(f"{ISSUER}/.well-known/jwks", timeout=10)
-    server = DeploymentServer(("127.0.0.1", 19090), keys)
+    server = DeploymentServer(("127.0.0.1", 19961), keys)
     threading.Thread(target=update_worker, args=(server.pending,), daemon=True).start()
     server.serve_forever()
 

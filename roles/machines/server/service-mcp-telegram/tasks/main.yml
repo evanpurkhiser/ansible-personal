@@ -11,8 +11,8 @@
       group: root
       mode: "0700"
     - path: /var/lib/telegram-mcp
-      owner: evan
-      group: users
+      owner: root
+      group: root
       mode: "0700"
     - path: /var/lib/mcp-telegram
       owner: root
@@ -69,7 +69,7 @@
     network: host
     env_file: [/etc/telegram-mcp/environment]
     volume:
-      - /var/lib/telegram-mcp:/data
+      - "/var/lib/telegram-mcp:/data:idmap=uids=0-1000-1;gids=0-1000-1"
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always

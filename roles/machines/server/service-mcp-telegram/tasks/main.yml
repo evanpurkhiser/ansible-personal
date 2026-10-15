@@ -1,0 +1,96 @@
+- name: Ensure Telegram MCP directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - path: /etc/telegram-mcp
+      owner: root
+      group: root
+      mode: "0700"
+    - path: /var/lib/telegram-mcp
+      owner: root
+      group: root
+      mode: "0700"
+    - path: /var/lib/mcp-telegram
+      owner: root
+      group: root
+      mode: "0755"
+
+- name: Check out Telegram MCP source
+  register: mcp_telegram_source
+  ansible.builtin.git:
+    repo: https://github.com/chigwell/telegram-mcp.git
+    dest: /var/lib/mcp-telegram/source
+    version: 0910170285526d289420acb413b2f741ff2ae0bb
+    force: true
+
+- name: Build Telegram MCP image
+  containers.podman.podman_image:
+    name: localhost/telegram-mcp:latest
+    state: build
+    path: /var/lib/mcp-telegram/source
+    build:
+      target: production
+    force: "{{ mcp_telegram_source.changed }}"
+
+- name: Install Telegram MCP environment
+  no_log: true
+  register: mcp_telegram_config
+  ansible.builtin.copy:
+    dest: /etc/telegram-mcp/environment
+    owner: root
+    group: root
+    mode: "0600"
+    content: |
+      TELEGRAM_API_ID={{ mcp.telegram_api_id }}
+      TELEGRAM_API_HASH={{ mcp.telegram_api_hash }}
+      TELEGRAM_SESSION_STRING={{ mcp.telegram_session_string }}
+      TELEGRAM_EXPECTED_USERNAME={{ mcp.telegram_expected_username }}
+      TELEGRAM_DEVICE_MODEL=Telegram MCP
+      TELEGRAM_EXPOSED_TOOLS=all
+      TELEGRAM_TRANSCRIBE=off
+      TELEGRAM_TRANSCRIPT_CACHE_DIR=/data/transcripts
+      XDG_STATE_HOME=/data/state
+      MCP_TRANSPORT=http
+      MCP_HOST=127.0.0.1
+      MCP_PORT=8765
+
+- name: Ensure Telegram MCP container
+  register: mcp_telegram_container
+  containers.podman.podman_container:
+    name: telegram-mcp-server
+    image: localhost/telegram-mcp:latest
+    state: present
+    image_strict: true
+    recreate: "{{ mcp_telegram_config.changed or mcp_telegram_source.changed }}"
+    network: host
+    env_file: [/etc/telegram-mcp/environment]
+    volume:
+      - "/var/lib/telegram-mcp:/data:idmap=uids=0-1000-1;gids=0-1000-1"
+    generate_systemd:
+      path: /etc/systemd/system/
+      restart_policy: always
+      new: true
+
+- name: Ensure Telegram MCP is running
+  ansible.builtin.systemd:
+    name: container-telegram-mcp-server
+    state: "{{ 'restarted' if mcp_telegram_container.changed else 'started' }}"
+    enabled: true
+    daemon_reload: true
+
+- name: Expose Telegram MCP
+  ansible.builtin.import_role:
+    name: machines/server/service-mcp-proxy
+  vars:
+    mcp_proxy_name: telegram
+    mcp_proxy_port: 9597
+    mcp_proxy_backend:
+      url: http://127.0.0.1:8765/mcp
+    mcp_proxy_user_backends:
+      evan: {}
+    mcp_proxy_upstream_units:
+      - container-telegram-mcp-server.service

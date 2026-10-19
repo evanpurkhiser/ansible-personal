@@ -89,7 +89,7 @@
     name: machines/server/service-mcp-proxy
   vars:
     mcp_proxy_name: telegram
-    mcp_proxy_port: 9597
+    mcp_proxy_port: 9598
     mcp_proxy_backend:
       url: http://127.0.0.1:8766/mcp
     mcp_proxy_user_backends:

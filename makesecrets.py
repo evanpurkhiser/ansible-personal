@@ -55,7 +55,7 @@ SECRETS: Secrets = {
         "jellyfin_api_key": "op://Private/rqftumfisqlyhmf4ppoklzm7d4/add more/MCP API Key",
         "telegram_api_id": "op://Private/Telegram/Custom Client/app_id",
         "telegram_api_hash": "op://Private/Telegram/Custom Client/api_hash",
-        "telegram_session_string": "op://Private/Telegram MCP/Session String",
+        "telegram_session_string": "op://Private/Telegram/Custom Client/session string",
         "telegram_expected_username": "op://Private/Telegram MCP/Username",
     },
     # Pocket ID

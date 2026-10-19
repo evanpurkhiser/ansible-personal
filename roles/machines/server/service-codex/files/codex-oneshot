@@ -179,10 +179,15 @@ def create_parser() -> argparse.ArgumentParser:
         help="JSON object containing per-thread Codex configuration overrides",
     )
     parser.add_argument(
-        "--socket",
+        "--url",
+        default="ws://127.0.0.1:4500",
+        help="app-server WebSocket URL",
+    )
+    parser.add_argument(
+        "--token-file",
         type=Path,
-        default=default_socket_path(),
-        help="app-server Unix socket",
+        default=default_token_path(),
+        help="app-server capability-token file",
     )
     parser.add_argument(
         "--wait-for-reply",
@@ -204,9 +209,9 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def default_socket_path() -> Path:
+def default_token_path() -> Path:
     codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".config" / "codex"))
-    return codex_home / "app-server-control" / "app-server-control.sock"
+    return codex_home / "app-server-token"
 
 
 def positive_float(value: str) -> float:
@@ -343,16 +348,19 @@ async def wait_for_turn(
 
 async def run(args: argparse.Namespace, prompt: str) -> RunResult:
     try:
-        from websockets.asyncio.client import unix_connect
+        from websockets.asyncio.client import connect
     except ImportError as error:
         raise AppServerError("the python-websockets package is required") from error
 
     developer_instructions = load_developer_instructions(args)
     config = load_config(args.config_json)
+    token = args.token_file.read_text().strip()
+    if not token:
+        raise AppServerError("app-server capability-token file is empty")
 
-    async with unix_connect(
-        path=str(args.socket),
-        uri="ws://localhost/",
+    async with connect(
+        args.url,
+        additional_headers={"Authorization": f"Bearer {token}"},
         compression=None,
         close_timeout=1,
         max_size=MAX_MESSAGE_SIZE,
@@ -391,12 +399,12 @@ async def run(args: argparse.Namespace, prompt: str) -> RunResult:
 
 def validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) -> None:
     args.working_dir = args.working_dir.expanduser().resolve()
-    args.socket = args.socket.expanduser().resolve()
+    args.token_file = args.token_file.expanduser().resolve()
 
     if not args.working_dir.is_dir():
         parser.error(f"working directory does not exist: {args.working_dir}")
-    if not args.socket.exists():
-        parser.error(f"app-server socket does not exist: {args.socket}")
+    if not args.token_file.is_file():
+        parser.error(f"app-server token file does not exist: {args.token_file}")
 
 
 def print_result(result: RunResult, as_json: bool) -> None:

@@ -25,6 +25,8 @@
     repo: https://github.com/chigwell/telegram-mcp.git
     dest: /var/lib/mcp-telegram/source
     version: 0910170285526d289420acb413b2f741ff2ae0bb
+    depth: 1
+    refspec: 0910170285526d289420acb413b2f741ff2ae0bb
     force: true
 
 - name: Build Telegram MCP image

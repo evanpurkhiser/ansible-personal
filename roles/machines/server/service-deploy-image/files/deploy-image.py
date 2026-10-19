@@ -185,24 +185,26 @@ def notify_deployment(request: DeploymentRequest, succeeded: bool) -> None:
 
 def update_images(request: DeploymentRequest) -> None:
     # The trigger digest is reporting context; deployment follows latest.
-    # Auto-update checks every eligible container, while these snapshots cover
-    # containers using the requested image. A successful systemd invocation
-    # reports service completion; application readiness and rollback depend on
-    # Podman's readiness and rollback configuration.
+    # A successful invocation reports command completion; application readiness
+    # and rollback depend on Podman's readiness and rollback configuration.
     before = snapshot_images(request["image"])
     logging.info("Deployment starting: %s", json.dumps(request | {"before": before}))
     succeeded = False
 
     try:
-        # Both the timer and webhook start the same unit; systemd joins
-        # concurrent starts of the auto-update service.
         subprocess.run(
-            ["/usr/bin/systemctl", "start", "podman-auto-update.service"],
+            [
+                "/usr/bin/podman",
+                "auto-update",
+                "--filter",
+                f"ancestor={request['image']}",
+                "--format=json",
+            ],
             check=True,
         )
         succeeded = True
     except (subprocess.SubprocessError, OSError):
-        logging.exception("Podman auto-update failed; see its service journal")
+        logging.exception("Podman auto-update failed")
 
     after: ImageSnapshots | None
     try:

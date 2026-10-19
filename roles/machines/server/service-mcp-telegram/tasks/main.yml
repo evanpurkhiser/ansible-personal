@@ -58,7 +58,7 @@
       XDG_STATE_HOME=/data/state
       MCP_TRANSPORT=http
       MCP_HOST=127.0.0.1
-      MCP_PORT=8765
+      MCP_PORT=8766
 
 - name: Ensure Telegram MCP container
   register: mcp_telegram_container
@@ -91,7 +91,7 @@
     mcp_proxy_name: telegram
     mcp_proxy_port: 9597
     mcp_proxy_backend:
-      url: http://127.0.0.1:8765/mcp
+      url: http://127.0.0.1:8766/mcp
     mcp_proxy_user_backends:
       evan: {}
     mcp_proxy_upstream_units:

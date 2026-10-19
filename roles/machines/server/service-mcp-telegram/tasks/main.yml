@@ -2,21 +2,13 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    owner: "{{ item.owner }}"
-    group: "{{ item.group }}"
     mode: "{{ item.mode }}"
   loop:
     - path: /etc/telegram-mcp
-      owner: root
-      group: root
       mode: "0700"
     - path: /var/lib/telegram-mcp
-      owner: root
-      group: root
       mode: "0700"
     - path: /var/lib/mcp-telegram
-      owner: root
-      group: root
       mode: "0755"
 
 - name: Check out Telegram MCP source

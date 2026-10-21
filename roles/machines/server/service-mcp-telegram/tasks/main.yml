@@ -10,6 +10,8 @@
       mode: "0700"
     - path: /var/lib/mcp-telegram
       mode: "0755"
+    - path: /var/lib/mcp-telegram/build
+      mode: "0755"
 
 - name: Check out Telegram MCP source
   register: mcp_telegram_source
@@ -21,14 +23,31 @@
     refspec: 0910170285526d289420acb413b2f741ff2ae0bb
     force: true
 
-- name: Build Telegram MCP image
+- name: Install Telegram MCP build context
+  register: mcp_telegram_build_context
+  ansible.builtin.copy:
+    src: build/
+    dest: /var/lib/mcp-telegram/build/
+    mode: "0644"
+
+- name: Build upstream Telegram MCP image
   containers.podman.podman_image:
-    name: localhost/telegram-mcp:latest
+    name: localhost/telegram-mcp-upstream:latest
     state: build
     path: /var/lib/mcp-telegram/source
     build:
       target: production
     force: "{{ mcp_telegram_source.changed }}"
+
+- name: Build Telegram MCP image
+  register: mcp_telegram_image
+  containers.podman.podman_image:
+    name: localhost/telegram-mcp:latest
+    state: build
+    path: /var/lib/mcp-telegram/build
+    force: >-
+      {{ mcp_telegram_source.changed or
+         mcp_telegram_build_context.changed }}
 
 - name: Install Telegram MCP environment
   no_log: true
@@ -59,7 +78,7 @@
     image: localhost/telegram-mcp:latest
     state: present
     image_strict: true
-    recreate: "{{ mcp_telegram_config.changed or mcp_telegram_source.changed }}"
+    recreate: "{{ mcp_telegram_config.changed or mcp_telegram_image.changed }}"
     network: host
     env_file: [/etc/telegram-mcp/environment]
     volume:

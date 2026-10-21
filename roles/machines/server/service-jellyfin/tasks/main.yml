@@ -17,7 +17,7 @@
     state: present
     user: "1000:984"
     publish:
-      - "127.0.0.1:{{ ports.jellyfin }}:8096"
+      - "127.0.0.1:8096:8096"
     volume:
       - "/var/lib/jellyfin/config:/config"
       - "/var/lib/jellyfin/cache:/cache"
@@ -44,4 +44,4 @@
   notify: Reload nginx
   internal_service:
     name: jellyfin
-    local_port: "{{ ports.jellyfin }}"
+    local_port: 8096

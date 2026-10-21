@@ -42,7 +42,7 @@
     name: machines/server/service-mcp-proxy
   vars:
     mcp_proxy_name: kala
-    mcp_proxy_port: "{{ ports.mcp_kala }}"
+    mcp_proxy_port: 9595
     mcp_proxy_backend:
       url: http://localhost/kala-mcp
       socket_path: /run/kala-mcp/kala-mcp.sock

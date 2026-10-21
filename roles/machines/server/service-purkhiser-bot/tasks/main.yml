@@ -9,7 +9,7 @@
       TELEGRAM_CHANNEL_APARTMENT=-5529186296
       TELEGRAM_CHANNEL_AGENT_AUTH=-5139292558
       TELEGRAM_CHANNEL_SYSTEM_NOTICES=-722956237
-      PURKHISER_BOT_PORT={{ ports.purkhiser_bot }}
+      PURKHISER_BOT_PORT=9090
 
 - name: Install purkhiser-bot.sh script
   ansible.builtin.copy:
@@ -47,4 +47,4 @@
   internal_service:
     name: purkhiser-bot
     domain: bot
-    local_port: "{{ ports.purkhiser_bot }}"
+    local_port: 9090

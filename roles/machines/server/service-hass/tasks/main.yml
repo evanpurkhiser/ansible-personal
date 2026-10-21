@@ -88,7 +88,7 @@
   internal_service:
     name: hass
     domain: ha
-    local_port: "{{ ports.home_assistant }}"
+    local_port: 8123
 
 - name: Expose Home Assistant MCP
   tags: [mcp]
@@ -96,8 +96,6 @@
     name: machines/server/service-mcp-proxy
   vars:
     mcp_proxy_name: home-assistant
-    mcp_proxy_port: "{{ ports.mcp_home_assistant }}"
+    mcp_proxy_port: 9594
     mcp_proxy_backend:
-      url: >-
-        http://127.0.0.1:{{ ports.mcp_home_assistant_backend
-        }}/private_zbONmPV3vWR6PgcbZCKUHA
+      url: http://127.0.0.1:9584/private_zbONmPV3vWR6PgcbZCKUHA

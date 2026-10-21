@@ -22,7 +22,7 @@
     infra_name: places-infra
     exit_policy: continue
     ports:
-      - "127.0.0.1:{{ ports.places }}:{{ ports.places }}"
+      - "127.0.0.1:5188:5188"
 
 - name: Ensure Places database container
   notify: Restart Places
@@ -55,8 +55,7 @@
     volume:
       - /etc/places.yaml:/etc/places.yaml:ro
     sdnotify: healthy
-    healthcheck: >-
-      curl --fail --silent http://127.0.0.1:{{ ports.places }}/health
+    healthcheck: curl --fail --silent http://127.0.0.1:5188/health
     healthcheck_interval: 2s
     healthcheck_timeout: 2s
     # Server updates restart the dependent worker using the same image.
@@ -116,15 +115,15 @@
   notify: Reload nginx
   internal_service:
     name: places
-    local_port: "{{ ports.places }}"
+    local_port: 5188
 
 - name: Expose Places MCP
   ansible.builtin.import_role:
     name: machines/server/service-mcp-proxy
   vars:
     mcp_proxy_name: places
-    mcp_proxy_port: "{{ ports.mcp_places }}"
+    mcp_proxy_port: 9597
     mcp_proxy_backend:
-      url: "http://127.0.0.1:{{ ports.places }}/mcp"
+      url: http://127.0.0.1:5188/mcp
     mcp_proxy_upstream_units:
       - container-places-server.service

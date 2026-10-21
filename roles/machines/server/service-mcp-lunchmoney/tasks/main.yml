@@ -23,7 +23,7 @@
     name: machines/server/service-mcp-proxy
   vars:
     mcp_proxy_name: lunchmoney
-    mcp_proxy_port: "{{ ports.mcp_lunchmoney }}"
+    mcp_proxy_port: 9591
     mcp_proxy_image: localhost/mcp-lunchmoney:latest
     mcp_proxy_backend:
       command: /usr/local/bin/lunchmoney-mcp

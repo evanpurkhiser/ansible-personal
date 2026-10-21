@@ -2,7 +2,7 @@
 
 # Send a message to my telegram via purkhiser-bot
 channel="${1:-}"
-url="http://localhost:9028"
+url="http://localhost:9090"
 
 if [ -n "${channel}" ]; then
 	url="${url}?channel=${channel}"

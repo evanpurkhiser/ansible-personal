@@ -13,23 +13,6 @@
     owner: root
     group: root
 
-- name: Ensure Things3 systemd override directory
-  ansible.builtin.file:
-    path: /etc/systemd/system/things3-server.service.d
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Install Things3 port override
-  notify: Restart things3-server
-  ansible.builtin.copy:
-    src: port.conf
-    dest: /etc/systemd/system/things3-server.service.d/port.conf
-    owner: root
-    group: root
-    mode: "0644"
-
 - name: Enable things3 server service
   ansible.builtin.service:
     name: things3-server.service

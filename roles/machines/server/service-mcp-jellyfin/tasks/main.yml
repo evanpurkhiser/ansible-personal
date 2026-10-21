@@ -23,10 +23,10 @@
     name: machines/server/service-mcp-proxy
   vars:
     mcp_proxy_name: jellyfin
-    mcp_proxy_port: "{{ ports.mcp_jellyfin }}"
+    mcp_proxy_port: 9593
     mcp_proxy_image: localhost/mcp-jellyfin:latest
     mcp_proxy_backend:
       command: /usr/local/bin/jellyfin-mcp
     mcp_proxy_environment:
-      JELLYFIN_URL: "http://127.0.0.1:{{ ports.jellyfin }}"
+      JELLYFIN_URL: http://127.0.0.1:8096
       JELLYFIN_API_KEY: "{{ mcp.jellyfin_api_key }}"

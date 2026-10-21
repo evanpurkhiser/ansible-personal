@@ -85,4 +85,4 @@
   internal_service:
     name: transmission
     domain: tx
-    local_port: "{{ ports.transmission_rpc }}"
+    local_port: 9091

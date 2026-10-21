@@ -1,0 +1,37 @@
+# Source of truth for ports allocated by this role. Choose unused ports
+# non-sequentially within each range. Static configuration may intentionally
+# duplicate values, so search the repository for the old port and update every
+# consumer when changing an allocation.
+ports: # noqa var-naming[no-role-prefix]
+  # Third-party applications: 10000-10999
+  pocket_id: 10865
+  atuin: 10870
+  transmission_rpc: 10247
+  jellyfin: 10453
+  home_assistant: 10343
+
+  # First-party applications and HTTP APIs: 9000-9299
+  places: 9031
+  atuin_abacus: 9297
+  things3: 9014
+  waitress: 9134
+  meal_log: 9082
+  wilhelm_archive: 9178
+  purkhiser_bot: 9028
+
+  # Host management and control-plane services: 9300-9499
+  agent_witness: 9413
+
+  # MCP backends: 9500-9599
+  mcp_home_assistant_backend: 9584
+
+  # Pocket ID-authenticated MCP gateways: 9600-9699
+  mcp_lunchmoney: 9685
+  mcp_jellyfin: 9641
+  mcp_home_assistant: 9638
+  mcp_kala: 9670
+  mcp_wilhelm_archive: 9651
+  mcp_places: 9626
+
+  # Webhook and deployment receivers: 19000-19999
+  deploy_image: 19961

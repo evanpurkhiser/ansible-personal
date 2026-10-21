@@ -25,6 +25,9 @@ homeassistant:
         - brightness
         - color_temp
       color_mode: brightness
+http:
+  server_port: 10343
+
 zha:
   custom_quirks_path: /config/custom_zha_quirks
 
@@ -50,7 +53,7 @@ rest_command:
     payload: "{{ message }}"
 
   things3_run:
-    url: "http://127.0.0.1:8765/"
+    url: "http://127.0.0.1:9014/"
     method: POST
     content_type: application/json
     payload: >-

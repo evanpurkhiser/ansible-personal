@@ -7,7 +7,7 @@
 - name: Wait for Pocket ID API
   ansible.builtin.wait_for:
     host: 127.0.0.1
-    port: 1411
+    port: "{{ ports.pocket_id }}"
     timeout: 60
 
 - name: Read Pocket ID client
@@ -17,7 +17,9 @@
   retries: 10
   delay: 1
   ansible.builtin.uri:
-    url: "http://127.0.0.1:1411/api/oidc/clients/{{ mcp_proxy_client.id }}"
+    url: >-
+      http://127.0.0.1:{{ ports.pocket_id
+      }}/api/oidc/clients/{{ mcp_proxy_client.id }}
     headers:
       X-API-KEY: "{{ mcp_proxy_api_key.content | b64decode | trim }}"
     status_code: [200, 404]
@@ -31,7 +33,7 @@
   changed_when: true
   ansible.builtin.uri:
     url: >-
-      http://127.0.0.1:1411/api/oidc/clients{{
+      http://127.0.0.1:{{ ports.pocket_id }}/api/oidc/clients{{
       '' if mcp_proxy_existing_client.status == 404 else '/' ~ mcp_proxy_client.id }}
     method: "{{ 'POST' if mcp_proxy_existing_client.status == 404 else 'PUT' }}"
     headers:

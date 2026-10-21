@@ -5,7 +5,7 @@ import shlex
 import sys
 import urllib.request
 
-NOTIFICATION_ENDPOINT = "http://127.0.0.1:9090/?channel=agent-auth"
+NOTIFICATION_ENDPOINT = "http://127.0.0.1:9028/?channel=agent-auth"
 
 
 def escape_markdown(text: str, *, code: bool = False) -> str:

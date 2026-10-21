@@ -50,7 +50,7 @@
       PUID: "0"
       TRUST_PROXY: "true"
     publish:
-      - "127.0.0.1:1411:1411"
+      - "127.0.0.1:{{ ports.pocket_id }}:1411"
     volume:
       - /var/lib/pocket-id:/app/data
       - /etc/pocket-id/encryption-key:/run/secrets/encryption-key:ro

@@ -18,6 +18,13 @@
     mode: "0644"
   notify: Reload nginx
 
+- name: Ensure nginx upstream configuration
+  ansible.builtin.template:
+    src: upstreams.conf.j2
+    dest: /etc/nginx/upstreams.conf
+    mode: "0644"
+  notify: Reload nginx
+
 - name: Ensure public nginx site configurations
   ansible.builtin.copy:
     src: public-sites.d/

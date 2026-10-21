@@ -32,7 +32,7 @@ EXAMPLES = r"""
   internal_service:
     name: purkhiser-bot
     domain: bot
-    local_port: 9090
+    local_port: "{{ ports.purkhiser_bot }}"
 """
 
 RETURN = r"""

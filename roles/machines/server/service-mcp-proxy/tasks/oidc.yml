@@ -4,6 +4,12 @@
   ansible.builtin.slurp:
     src: /etc/pocket-id/api-key
 
+- name: Wait for Pocket ID API
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: "{{ ports.pocket_id }}"
+    timeout: 60
+
 - name: Read Pocket ID client
   no_log: true
   register: mcp_proxy_existing_client

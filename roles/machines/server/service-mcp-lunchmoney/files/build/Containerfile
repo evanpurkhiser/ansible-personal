@@ -1,7 +1,11 @@
+FROM docker.io/library/node:24.22.1-alpine AS node
+
 FROM localhost/mcp-proxy:latest
 
 ARG LUNCHMONEY_MCP_VERSION=3.0.0
 
-RUN apk add --no-cache nodejs npm \
+COPY --from=node /usr/local/ /usr/local/
+
+RUN apk add --no-cache libstdc++ \
     && npm install --global --prefix /usr/local "@akutishevsky/lunchmoney-mcp@${LUNCHMONEY_MCP_VERSION}" \
     && npm cache clean --force

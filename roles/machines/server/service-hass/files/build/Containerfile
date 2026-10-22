@@ -1,3 +1,0 @@
-FROM ghcr.io/home-assistant/home-assistant:latest
-RUN apk upgrade --no-cache ca-certificates \
-    && uv pip install --system --no-cache certifi==2026.10.19

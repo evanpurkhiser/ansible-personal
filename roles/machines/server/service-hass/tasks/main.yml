@@ -4,34 +4,6 @@
     state: directory
     mode: "0755"
 
-- name: Ensure hass build directory exists
-  ansible.builtin.file:
-    path: /var/lib/hass/build
-    state: directory
-    mode: "0755"
-
-- name: Install hass build context
-  register: hass_build_context
-  ansible.builtin.copy:
-    src: build/
-    dest: /var/lib/hass/build/
-    mode: "0644"
-
-- name: Pull upstream hass image
-  register: hass_upstream_image
-  containers.podman.podman_image:
-    name: ghcr.io/home-assistant/home-assistant:latest
-    force: true
-
-- name: Build hass image
-  register: hass_image
-  containers.podman.podman_image:
-    name: localhost/home-assistant:latest
-    state: build
-    path: /var/lib/hass/build
-    force: >-
-      {{ hass_upstream_image.changed or hass_build_context.changed }}
-
 # HA's built-in backups land here. Living on the documents ZFS pool means
 # zrepl picks them up in the hourly snapshot and replicates them offsite
 # with the same retention as the rest of the pool.
@@ -82,13 +54,10 @@
     mode: "0644"
 
 - name: Ensure hass podman container
-  register: hass_container
   containers.podman.podman_container:
     name: home-assistant
-    image: localhost/home-assistant:latest
+    image: ghcr.io/home-assistant/home-assistant:latest
     state: present
-    image_strict: true
-    recreate: "{{ hass_image.changed }}"
     network: host
     volume:
       - "/var/lib/hass:/config"
@@ -98,7 +67,7 @@
       - "/dev/zwave:/dev/zwave"
       - "/dev/zigbee:/dev/zigbee"
     label:
-      io.containers.autoupdate: local
+      io.containers.autoupdate: registry
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always
@@ -110,7 +79,7 @@
 - name: Ensure hass container is running
   ansible.builtin.systemd:
     name: container-home-assistant
-    state: "{{ 'restarted' if hass_container.changed else 'started' }}"
+    state: started
     enabled: true
     daemon_reload: true
 

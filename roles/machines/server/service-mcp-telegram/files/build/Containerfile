@@ -1,4 +1,0 @@
-FROM localhost/telegram-mcp-upstream:latest
-USER root
-RUN apk upgrade --no-cache ca-certificates
-USER appuser

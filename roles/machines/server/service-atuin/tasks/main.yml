@@ -23,12 +23,9 @@
     ports:
       - "127.0.0.1:7070:8888"
       - "127.0.0.1:7071:8000"
-    generate_systemd:
-      path: /etc/systemd/system/
-      restart_policy: always
-      new: true
 
 - name: Ensure atuin postgres container
+  notify: Restart atuin
   containers.podman.podman_container:
     name: atuin-postgres
     image: docker.io/postgres:14
@@ -42,12 +39,13 @@
       POSTGRES_DB: atuin
 
 - name: Ensure atuin server container
+  notify: Restart atuin
   containers.podman.podman_container:
     name: atuin-server
-    image: ghcr.io/atuinsh/atuin:18.4.0
+    image: ghcr.io/atuinsh/atuin:18.24.2
     state: present
     pod: atuin
-    command: server start
+    command: start
     volumes:
       - "/var/lib/atuin/config:/config"
     env:
@@ -57,6 +55,7 @@
       ATUIN_DB_URI: "postgres://atuin:atuin@localhost/atuin"
 
 - name: Ensure atuin-abacus container
+  notify: Restart atuin
   containers.podman.podman_container:
     name: atuin-abacus
     image: ghcr.io/evanpurkhiser/atuin-abacus:latest
@@ -68,6 +67,15 @@
       CACHE_TTL_SECONDS: "300"
     label:
       io.containers.autoupdate: registry
+
+- name: Generate atuin systemd services
+  notify: Restart atuin
+  containers.podman.podman_generate_systemd:
+    name: atuin
+    dest: /etc/systemd/system
+    new: true
+    no_header: true
+    restart_policy: always
 
 - name: Ensure atuin pod is running
   ansible.builtin.systemd:

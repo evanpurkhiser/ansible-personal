@@ -9,7 +9,7 @@
     - path: /var/lib/telegram-mcp
       mode: "0700"
     - path: /var/lib/mcp-telegram
-      mode: "0755"
+      mode: "0700"
 
 - name: Check out Telegram MCP source
   register: mcp_telegram_source

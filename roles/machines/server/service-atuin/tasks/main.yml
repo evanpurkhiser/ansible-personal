@@ -42,7 +42,7 @@
   notify: Restart atuin
   containers.podman.podman_container:
     name: atuin-server
-    image: ghcr.io/atuinsh/atuin:18.24.2
+    image: ghcr.io/atuinsh/atuin:18.24.2-1
     state: present
     pod: atuin
     command: start

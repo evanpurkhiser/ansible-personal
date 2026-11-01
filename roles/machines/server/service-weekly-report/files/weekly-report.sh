@@ -295,12 +295,26 @@ fi
 
 reply=$(jq -r '.reply // empty' <<<"${codex_result}")
 thread_id=$(jq -r '.thread_id // empty' <<<"${codex_result}")
-delivery_marker=$(tail -n 1 <<<"${reply}")
+ready_marker=$(tail -n 1 <<<"${reply}")
 
-if [[ "${delivery_marker}" != "[WEEKLY_REPORT_DELIVERED]" ]]; then
-	printf 'weekly-report: Codex did not confirm delivery (thread %s):\n%s\n' \
+if [[ "${ready_marker}" != "[WEEKLY_REPORT_READY]" ]]; then
+	printf 'weekly-report: Codex did not produce a ready report (thread %s):\n%s\n' \
 		"${thread_id:-unknown}" "${reply:-no reply}"
 	exit 1
 fi
 
-printf 'weekly-report: delivered by Codex thread %s\n' "${thread_id:-unknown}"
+report=${reply%$'\n[WEEKLY_REPORT_READY]'}
+if [[ -z "${report//[[:space:]]/}" ]]; then
+	printf 'weekly-report: Codex produced an empty report (thread %s)\n' \
+		"${thread_id:-unknown}"
+	exit 1
+fi
+
+if ! printf '%s\n' "${report}" | /usr/local/bin/purkhiser-bot.sh system-notices; then
+	printf 'weekly-report: Telegram delivery failed (thread %s)\n' \
+		"${thread_id:-unknown}"
+	exit 1
+fi
+
+printf 'weekly-report: delivered report from Codex thread %s\n' \
+	"${thread_id:-unknown}"

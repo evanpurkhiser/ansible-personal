@@ -1,0 +1,194 @@
+- name: Install Checkmk host monitoring dependencies
+  community.general.pacman:
+    name:
+      - freeipmi
+      - smartmontools
+
+- name: Ensure Checkmk directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - path: /etc/checkmk
+      mode: "0700"
+    - path: /var/lib/checkmk
+      owner: "1000"
+      group: "1000"
+      mode: "0750"
+    - path: /var/lib/check_mk_agent
+      mode: "0755"
+    - path: /var/lib/check_mk_agent/cache
+      mode: "0755"
+    - path: /var/lib/check_mk_agent/spool
+      mode: "0755"
+    - path: /usr/lib/check_mk_agent/plugins
+      mode: "0755"
+    - path: /usr/lib/check_mk_agent/plugins/300
+      mode: "0755"
+
+- name: Install Checkmk container environment
+  notify: Restart Checkmk
+  no_log: true
+  ansible.builtin.copy:
+    dest: /etc/checkmk/container.env
+    mode: "0600"
+    content: |
+      CMK_PASSWORD={{ checkmk.admin_password }}
+      CMK_SITE_ID=monitoring
+      TZ=America/New_York
+
+- name: Ensure Checkmk container
+  notify: Restart Checkmk
+  containers.podman.podman_container:
+    name: checkmk
+    image: docker.io/checkmk/check-mk-community:2.5.0-latest
+    state: present
+    publish:
+      - "127.0.0.1:9009:5000"
+    volume:
+      - /var/lib/checkmk:/omd/sites
+    tmpfs:
+      /opt/omd/sites/monitoring/tmp: rw,uid=1000,gid=1000
+    env_file:
+      - /etc/checkmk/container.env
+    etc_hosts:
+      host.containers.internal: 10.88.0.1
+    label:
+      io.containers.autoupdate: registry
+    sdnotify: healthy
+    healthcheck: >-
+      curl --fail --silent --output /dev/null
+      http://127.0.0.1:5000/monitoring/
+    healthcheck_interval: 10s
+    healthcheck_timeout: 5s
+    healthcheck_retries: 18
+
+- name: Generate Checkmk systemd service
+  notify: Restart Checkmk
+  containers.podman.podman_generate_systemd:
+    name: checkmk
+    dest: /etc/systemd/system
+    new: true
+    no_header: true
+    restart_policy: always
+    restart_sec: 5
+    start_timeout: 180
+
+- name: Enable Checkmk service
+  ansible.builtin.systemd:
+    name: container-checkmk.service
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Wait for Checkmk web service
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 9009
+    timeout: 180
+
+- name: Install Checkmk agent from the monitoring site
+  containers.podman.podman_container_copy:
+    container: checkmk
+    src: /omd/sites/monitoring/share/check_mk/agents/check_mk_agent.linux
+    dest: /usr/local/bin/check_mk_agent
+    from_container: true
+    archive: false
+
+- name: Make Checkmk agent executable
+  ansible.builtin.file:
+    path: /usr/local/bin/check_mk_agent
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Checkmk SMART plugin
+  containers.podman.podman_container_copy:
+    container: checkmk
+    src: /omd/sites/monitoring/share/check_mk/agents/plugins/smart
+    dest: /usr/lib/check_mk_agent/plugins/300/smart
+    from_container: true
+    archive: false
+
+- name: Make Checkmk SMART plugin executable
+  ansible.builtin.file:
+    path: /usr/lib/check_mk_agent/plugins/300/smart
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Checkmk agent systemd units
+  notify: Restart Checkmk agent socket
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - src: check-mk-agent@.service
+      dest: /etc/systemd/system/check-mk-agent@.service
+    - src: check-mk-agent.socket
+      dest: /etc/systemd/system/check-mk-agent.socket
+
+- name: Enable Checkmk agent socket
+  ansible.builtin.systemd:
+    name: check-mk-agent.socket
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Allow Checkmk container to query the host agent
+  community.general.ufw:
+    rule: allow
+    direction: in
+    interface_in: podman0
+    proto: tcp
+    port: "6556"
+
+- name: Allow Checkmk notifications to reach Purkhiser Bot
+  community.general.ufw:
+    rule: allow
+    direction: in
+    interface_in: podman0
+    proto: tcp
+    port: "9090"
+
+- name: Install Checkmk notification transport
+  ansible.builtin.copy:
+    src: purkhiser_bot
+    dest: /tmp/checkmk-purkhiser-bot
+    mode: "0755"
+
+- name: Copy notification transport into Checkmk
+  containers.podman.podman_container_copy:
+    container: checkmk
+    src: /tmp/checkmk-purkhiser-bot
+    dest: /omd/sites/monitoring/local/share/check_mk/notifications/purkhiser_bot
+    archive: false
+
+- name: Remove staged Checkmk notification transport
+  ansible.builtin.file:
+    path: /tmp/checkmk-purkhiser-bot
+    state: absent
+
+- name: Install Checkmk bootstrap helper
+  ansible.builtin.copy:
+    src: checkmk-bootstrap.py
+    dest: /usr/local/lib/checkmk-bootstrap.py
+    mode: "0700"
+
+- name: Bootstrap server monitoring
+  no_log: true
+  ansible.builtin.command: /usr/local/lib/checkmk-bootstrap.py
+  args:
+    creates: /var/lib/checkmk/.server-bootstrapped
+  environment:
+    CHECKMK_PASSWORD: "{{ checkmk.admin_password }}"
+
+- name: Expose Checkmk internally
+  notify: Reload nginx
+  internal_service:
+    name: checkmk
+    local_port: 9009

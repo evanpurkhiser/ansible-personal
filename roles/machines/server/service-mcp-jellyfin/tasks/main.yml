@@ -23,6 +23,10 @@
     name: machines/server/service-mcp-proxy
   vars:
     mcp_proxy_name: jellyfin
+    mcp_proxy_website_url: https://jellyfin.org
+    mcp_proxy_icons:
+      - src: icon.png
+        sizes: ["144x144"]
     mcp_proxy_port: 9593
     mcp_proxy_image: localhost/mcp-jellyfin:latest
     mcp_proxy_backend:

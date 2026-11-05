@@ -146,6 +146,7 @@
 - name: Build MCP proxy image
   tags:
     - mcp
+    - mcp-build-tools
     - hass
     - mcp-jellyfin
     - mcp-lunchmoney
@@ -180,6 +181,11 @@
   tags: [mcp, mcp-telegram]
   ansible.builtin.import_role:
     { name: machines/server/service-mcp-telegram }
+
+- name: Import Build Tools MCP role
+  tags: [mcp, mcp-build-tools]
+  ansible.builtin.import_role:
+    { name: machines/server/service-mcp-build-tools }
 
 - name: Import waitress role
   tags: [waitress]

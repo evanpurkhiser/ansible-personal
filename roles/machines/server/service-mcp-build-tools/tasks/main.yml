@@ -1,0 +1,10 @@
+- name: Expose Build Tools MCP
+  ansible.builtin.include_role:
+    name: machines/server/service-mcp-proxy
+  vars:
+    mcp_proxy_name: build-tools
+    mcp_proxy_port: 9599
+    mcp_proxy_backend:
+      url: https://buildtools.pro/api/mcp
+      headers:
+        Authorization: "Bearer {{ mcp.build_tools_api_token }}"

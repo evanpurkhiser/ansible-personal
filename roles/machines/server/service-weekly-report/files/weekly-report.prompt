@@ -36,6 +36,15 @@ Initial scheduled turn rules:
 - Investigate anomalies before reporting them. Correlate service state, recent
   logs, timers, containers, endpoints, configuration, and timestamps. Separate
   harmless recurring noise from actionable failures.
+- Treat these known benign conditions as expected noise. Do not include them as
+  findings, action items, recurrence context, or assessment counts when the
+  owning services and related connectivity are otherwise healthy:
+  - Home Assistant `xiaomi_miio` timeouts, discovery failures, and response
+    parsing errors for the air purifier at `10.0.0.25`.
+  - A version mismatch between the Tailscale CLI and the running `tailscaled`
+    daemon after a package update.
+  Reconsider either condition only when current evidence shows a materially new
+  symptom or impact beyond the known noise.
 - When an anomalous service is instrumented with Sentry and Sentry tools are
   available, inspect relevant issues and events from the report window as
   supporting diagnostic evidence. Keep searches focused on the service and

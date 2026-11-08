@@ -11,6 +11,14 @@
     - path: /var/lib/mcp-telegram
       mode: "0700"
 
+- name: Ensure Telegram MCP exchange directory
+  ansible.builtin.file:
+    path: /home/evan/.cache/telegram-mcp
+    state: directory
+    owner: evan
+    group: users
+    mode: "0700"
+
 - name: Check out Telegram MCP source
   register: mcp_telegram_source
   ansible.builtin.git:
@@ -45,6 +53,8 @@
       TELEGRAM_EXPECTED_USERNAME={{ mcp.telegram_expected_username }}
       TELEGRAM_DEVICE_MODEL=Telegram MCP
       TELEGRAM_EXPOSED_TOOLS=all
+      TELEGRAM_ALLOWED_ROOTS=/exchange
+      TELEGRAM_SERVER_ROOTS_ONLY=1
       TELEGRAM_TRANSCRIBE=off
       TELEGRAM_TRANSCRIPT_CACHE_DIR=/data/transcripts
       XDG_STATE_HOME=/data/state
@@ -64,6 +74,7 @@
     env_file: [/etc/telegram-mcp/environment]
     volume:
       - "/var/lib/telegram-mcp:/data:idmap=uids=0-1000-1;gids=0-1000-1"
+      - "/home/evan/.cache/telegram-mcp:/exchange"
     generate_systemd:
       path: /etc/systemd/system/
       restart_policy: always

@@ -1,0 +1,7 @@
+[Unit]
+Description=Checkmk agent
+
+[Service]
+ExecStart=/usr/local/bin/check_mk_agent
+StandardInput=socket
+StandardOutput=socket

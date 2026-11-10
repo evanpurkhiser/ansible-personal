@@ -1,0 +1,9 @@
+[Unit]
+Description=Checkmk agent socket
+
+[Socket]
+ListenStream=10.88.0.1:6556
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

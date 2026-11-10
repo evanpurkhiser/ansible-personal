@@ -12,7 +12,7 @@ from fastmcp.server.auth.oidc_proxy import OIDCProxy
 from fastmcp.server.dependencies import get_access_token
 from fastmcp.server.providers.proxy import ProxyClient, ProxyProvider
 from mcp import MCPError
-from mcp.types import ErrorData
+from mcp.types import ErrorData, Icon
 
 
 def backend_client(backend):
@@ -63,6 +63,15 @@ def create_server():
     backend = json.loads(os.environ["MCP_BACKEND"])
     user_backends = json.loads(os.environ.get("MCP_USER_BACKENDS", "{}"))
 
+    metadata = {
+        "icons": [
+            Icon.model_validate(icon)
+            for icon in json.loads(os.environ.get("MCP_ICONS", "[]"))
+        ],
+        "instructions": json.loads(os.environ.get("MCP_INSTRUCTIONS", '""')) or None,
+        "website_url": os.environ.get("MCP_WEBSITE_URL") or None,
+    }
+
     # Pocket ID authenticates the user; FastMCP issues audience-bound MCP tokens.
     auth = OIDCProxy(
         config_url=f"{os.environ['OIDC_ISSUER']}/.well-known/openid-configuration",
@@ -79,6 +88,7 @@ def create_server():
         return FastMCP(
             name=os.environ["MCP_NAME"],
             auth=auth,
+            **metadata,
             # Backend catalogs can differ by user; do not share cached listings.
             providers=[ProxyProvider(user_client_factory(user_backends), cache_ttl=0)],
         )
@@ -87,6 +97,7 @@ def create_server():
         backend_client(backend),
         name=os.environ["MCP_NAME"],
         auth=auth,
+        **metadata,
     )
 
 

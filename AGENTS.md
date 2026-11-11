@@ -4,17 +4,21 @@
 
 Commits follow a scoped format:
 
-```
+```text
 scope(service): short description
 ```
 
-- **scope**: the top-level role or area being changed (e.g. `server`, `common`, `paccache`, `aur`, `sudo`, `dots-manager`, `makesecrets`)
-- **service**: the specific sub-component being changed (e.g. `hass`, `nginx`, `rclone`, `zfs`, `podman`, `transmission`, `atuin`); omit only when the change is generalized across the entire scope
+- **scope**: the top-level role or area being changed
+  (e.g. `server`, `common`, `paccache`, `aur`, `sudo`, `dots-manager`,
+  `makesecrets`)
+- **service**: the specific sub-component being changed
+  (e.g. `hass`, `nginx`, `rclone`, `zfs`, `podman`, `transmission`, `atuin`);
+  omit only when the change is generalized across the entire scope
 - **description**: imperative phrase, capitalized first word, no trailing period
 
 ### Examples
 
-```
+```text
 server(hass): Add lunchmoney unreviewed sensor
 server(nginx): Switch from public proxy to Tailscale-only access
 server(zrepl): Push hourly snapshots to offsite NAS with tiered retention
@@ -26,20 +30,24 @@ paccache: Add paccache role
 
 ### Rules
 
-- Omit `(service)` only when the change is generalized across the entire scope, not targeting a specific sub-component
+- Omit `(service)` only when the change is generalized across the entire scope,
+  not targeting a specific sub-component
 - Keep the description concise — one short phrase
-- Use imperative mood ("Add", "Fix", "Remove", "Update", "Switch", not "Added" or "Adds")
-- Capitalize the first word of the description; the rest follows normal sentence case
+- Use imperative mood ("Add", "Fix", "Remove", "Update", "Switch",
+  not "Added" or "Adds")
+- Capitalize the first word of the description;
+  the rest follows normal sentence case
 
 ---
 
 ## Applying the Playbook
 
-Always run Ansible commands normally as the current user, exactly as shown
-below, and never with `sudo` or local-connection overrides. The playbook uses
-the `ansible-personal` SSH key automatically and handles remote-user access and
-privileges itself. Running Ansible under `sudo` hides the current user's
-installed collections and configuration.
+Always run Ansible commands normally as the current user,
+exactly as shown below, and never with `sudo` or local-connection overrides.
+The playbook uses the `ansible-personal` SSH key automatically
+and handles remote-user access and privileges itself.
+Running Ansible under `sudo` hides the current user's installed collections
+and configuration.
 
 Install Galaxy dependencies (one-time):
 
@@ -53,26 +61,36 @@ Apply the full playbook:
 ansible-playbook -i inventory play-server.yml
 ```
 
-Apply only a specific service using tags (preferred when changing a single role):
+Apply only a specific service using tags
+(preferred when changing a single role):
 
 ```sh
 ansible-playbook -i inventory play-server.yml --tags hass
 ansible-playbook -i inventory play-server.yml --tags nginx,zrepl
 ```
 
-Available tags: `zfs`, `packages`, `pacsync`, `sshd`, `network`, `hardware`, `pam-ssh-agent`, `nfs`, `tailscale`, `nginx`, `transmission`, `hass`, `things3-server`, `waitress`, `agent-witness`, `meal-log`, `places`, `mcp-kala`, `mcp-wilhelm-archive`, `wilhelm-archive`, `rbl-linkd`, `cueback`, `venmo-auto-cashout`, `venmo-lunchmoney-ai`, `atuin`, `podman-auto-update`, `zrepl`, `record-file-history`, `purkhiser-bot`, `weekly-report`, `speedtest-monitor`, `auto-system-update`, `agent-auth`, `agents-common`, `codex`, `clean-macfiles`, `iptorrents-keepalive`
+Available tags: `zfs`, `packages`, `pacsync`, `sshd`, `network`, `hardware`,
+`pam-ssh-agent`, `nfs`, `tailscale`, `nginx`, `transmission`, `hass`,
+`things3-server`, `waitress`, `agent-witness`, `meal-log`, `places`, `mcp-kala`,
+`mcp-wilhelm-archive`, `wilhelm-archive`, `rbl-linkd`, `cueback`,
+`venmo-auto-cashout`, `venmo-lunchmoney-ai`, `atuin`, `podman-auto-update`,
+`zrepl`, `record-file-history`, `purkhiser-bot`, `weekly-report`,
+`speedtest-monitor`, `auto-system-update`, `agent-auth`, `agents-common`,
+`codex`, `clean-macfiles`, `iptorrents-keepalive`
 
 ---
 
 ## Secrets
 
-Secrets live in `vars/secrets.yml`, which is gitignored and never committed. Generate it by running:
+Secrets live in `vars/secrets.yml`, which is gitignored and never committed.
+Generate it by running:
 
 ```sh
 ./makesecrets.py
 ```
 
-This requires the 1Password CLI (`op`) to be authenticated. The `common` role will run this automatically if the file doesn't exist yet.
+This requires the 1Password CLI (`op`) to be authenticated.
+The `common` role will run this automatically if the file doesn't exist yet.
 
 ---
 
@@ -80,22 +98,28 @@ This requires the 1Password CLI (`op`) to be authenticated. The `common` role wi
 
 ### Desired state
 
-Service roles describe a clean installation's desired state. Perform one-time
-removal of obsolete files, units, listeners, and other historical artifacts
-manually during the migration instead of encoding cleanup tasks in the role.
+Service roles describe a clean installation's desired state.
+Perform one-time removal of obsolete files, units, listeners,
+and other historical artifacts manually during the migration instead of encoding
+cleanup tasks in the role.
 
 ### Task conventions
 
 - Every task must have a `name:` field
-- Task names use natural language sentence style: `"Ensure hass configuration"`, `"Install venmo-auto-cashout config"`, `"Enable pacsync timer service"`
-- Common name verbs: `Ensure`, `Install`, `Enable`, `Add`, `Create`, `Configure`, `Set`, `Override`
-- Always use fully qualified collection names (FQCN): `ansible.builtin.copy`, `community.general.pacman`, `containers.podman.podman_container`, `kewlfft.aur.aur`, etc. ansible-lint enforces this.
+- Task names use natural language sentence style: `"Ensure hass configuration"`,
+  `"Install venmo-auto-cashout config"`, `"Enable pacsync timer service"`
+- Common name verbs: `Ensure`, `Install`, `Enable`, `Add`, `Create`,
+  `Configure`, `Set`, `Override`
+- Always use fully qualified collection names (FQCN): `ansible.builtin.copy`,
+  `community.general.pacman`, `containers.podman.podman_container`,
+  `kewlfft.aur.aur`, etc. ansible-lint enforces this.
 
 ### Service role layout
 
-New service roles go under `roles/machines/server/service-<name>/` and follow this structure:
+New service roles go under `roles/machines/server/service-<name>/`
+and follow this structure:
 
-```
+```text
 service-<name>/
 ├── tasks/
 │   └── main.yml        # Required
@@ -105,12 +129,18 @@ service-<name>/
     └── main.yml        # Service restart/reload handlers
 ```
 
-The role must be imported with a tag in `roles/machines/server/main/tasks/main.yml`.
+The role must be imported with a tag in
+`roles/machines/server/main/tasks/main.yml`.
 
 ### Config file pattern
 
-Services that need secrets write a `/etc/<service-name>.conf` env file (mode `0600`) sourced by systemd, using Jinja2 to inject secret values.
+Services that need secrets write a `/etc/<service-name>.conf` env file
+(mode `0600`) sourced by systemd, using Jinja2 to inject secret values.
 
 ### Podman container pattern
 
-Use `containers.podman.podman_container` with `generate_systemd:` to emit a systemd unit, and `label: io.containers.autoupdate: registry` for auto-update eligibility. Follow with an `ansible.builtin.systemd` task to start and enable `container-<name>`.
+Use `containers.podman.podman_container` with `generate_systemd:` to emit a
+systemd unit, and `label: io.containers.autoupdate: registry` for auto-update
+eligibility.
+Follow with an `ansible.builtin.systemd` task to start
+and enable `container-<name>`.

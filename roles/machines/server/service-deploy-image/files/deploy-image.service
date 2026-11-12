@@ -7,6 +7,7 @@ After=network-online.target purkhiser-bot.service
 Type=simple
 StateDirectory=deploy-image
 Environment=UV_CACHE_DIR=/var/lib/deploy-image/uv
+Environment=REGISTRY_AUTH_FILE=/etc/containers/auth.json
 ExecStart=/usr/bin/uv run --python /usr/bin/python3 --script /usr/local/lib/deploy-image.py
 Restart=on-failure
 RestartSec=5

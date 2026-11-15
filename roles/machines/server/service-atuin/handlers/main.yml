@@ -11,4 +11,3 @@
     - pod-atuin
     - container-atuin-postgres
     - container-atuin-server
-    - container-atuin-abacus

@@ -32,6 +32,12 @@ SECRETS: Secrets = {
         "username": "evanpurkhiser",
         "token": "op://Private/7z4zpikg5rg7fn57gd6bedkmwi/Private GHCR classic PAT",
     },
+    # Atuin Abacus sync client
+    "atuin_abacus": {
+        "username": "op://Private/ku3agbahdarxc26anepiqph6ou/username",
+        "password": "op://Private/ku3agbahdarxc26anepiqph6ou/password",
+        "encryption_key": "op://Private/ku3agbahdarxc26anepiqph6ou/key",
+    },
     # nginx config
     "nginx": {
         "cloudflare_cert": "op://Private/z7qz2rxy6rb4xphfzmktsnauv4/Origin Certificate",

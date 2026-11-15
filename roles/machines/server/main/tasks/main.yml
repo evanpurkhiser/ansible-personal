@@ -213,8 +213,12 @@
     { name: machines/server/service-venmo-lunchmoney-ai }
 
 - name: Import atuin role
-  tags: [atuin]
+  tags: [atuin, atuin-abacus]
   ansible.builtin.import_role: { name: machines/server/service-atuin }
+
+- name: Import atuin-abacus role
+  tags: [atuin-abacus]
+  ansible.builtin.import_role: { name: machines/server/service-atuin-abacus }
 
 - name: Import image deployment receiver role
   tags: [deploy-image]

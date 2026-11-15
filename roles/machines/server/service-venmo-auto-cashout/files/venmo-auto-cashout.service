@@ -7,6 +7,8 @@ TimeoutStartSec=30s
 ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/podman run \
   --rm \
+  --name venmo-auto-cashout \
+  --replace \
   --pull=newer \
   --env-file=/etc/venmo-auto-cashout.conf \
   --env TRANSACTION_DB=/var/lib/db/transactions.db \

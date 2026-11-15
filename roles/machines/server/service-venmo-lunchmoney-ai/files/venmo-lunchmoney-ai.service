@@ -14,6 +14,8 @@ ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   --env STATE_FILE=/var/lib/data/state.json \
   --volume /var/lib/venmo-lunchmoney-ai:/var/lib/data \
   ghcr.io/evanpurkhiser/venmo-lunchmoney-ai
+# Ensure timed-out runs cannot block the next timer invocation.
+ExecStopPost=/usr/bin/podman rm --force --ignore venmo-lunchmoney-ai
 
 # Report runs to sentry monitors.
 Environment=SENTRY_MONITOR_SLUG=venmo-lunchmoney-ai

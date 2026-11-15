@@ -14,6 +14,8 @@ ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   --env TRANSACTION_DB=/var/lib/db/transactions.db \
   --volume /var/lib/venmo-auto-cashout:/var/lib/db \
   ghcr.io/evanpurkhiser/venmo-auto-cashout
+# Ensure timed-out runs cannot block the next timer invocation.
+ExecStopPost=/usr/bin/podman rm --force --ignore venmo-auto-cashout
 
 # Report runs to sentry monitors.
 Environment=SENTRY_MONITOR_SLUG=venmo-auto-cashout

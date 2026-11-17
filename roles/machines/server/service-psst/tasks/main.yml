@@ -1,3 +1,7 @@
+- name: Refresh pacman package cache
+  community.general.pacman:
+    update_cache: true
+
 - name: Install psst from evanpurkhiser pacman repo
   notify: Restart psst
   community.general.pacman:

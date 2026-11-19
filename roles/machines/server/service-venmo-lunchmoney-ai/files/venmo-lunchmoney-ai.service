@@ -3,6 +3,8 @@ Description=Automatic venmo Reconciliation in lunchmoney
 
 [Service]
 Type=oneshot
+StateDirectory=venmo-lunchmoney-ai
+StateDirectoryMode=0755
 TimeoutStartSec=30s
 ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \
   /usr/bin/podman run \

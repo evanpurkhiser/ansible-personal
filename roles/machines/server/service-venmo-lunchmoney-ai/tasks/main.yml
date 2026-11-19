@@ -1,9 +1,3 @@
-- name: Ensure venmo-lunchmoney-ai data directory exists
-  ansible.builtin.file:
-    path: /var/lib/venmo-lunchmoney-ai
-    state: directory
-    mode: "0755"
-
 - name: Install venmo-lunchmoney-ai config
   ansible.builtin.copy:
     dest: /etc/venmo-lunchmoney-ai.conf

@@ -139,8 +139,10 @@ Services that need secrets write a `/etc/<service-name>.conf` env file
 
 ### Podman container pattern
 
-Use `containers.podman.podman_container` with `generate_systemd:` to emit a
-systemd unit, and `label: io.containers.autoupdate: registry` for auto-update
-eligibility.
-Follow with an `ansible.builtin.systemd` task to start
-and enable `container-<name>`.
+Store Podman Quadlets in the service role
+and install them under `/etc/containers/systemd/`.
+Set `WantedBy=multi-user.target` in `[Install]` for boot activation
+and use `ansible.builtin.systemd` to reload the manager
+and start the generated service.
+Set `AutoUpdate=registry` in `[Container]`
+for images tracked by the Podman auto-update timer.

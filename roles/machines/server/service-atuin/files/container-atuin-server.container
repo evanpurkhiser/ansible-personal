@@ -1,0 +1,17 @@
+[Unit]
+PartOf=pod-atuin.service
+
+[Container]
+Image=ghcr.io/atuinsh/atuin:18.24.2-1
+ContainerName=atuin-server
+Volume=/var/lib/atuin/config:/config
+Exec=start
+Environment=ATUIN_HOST=0.0.0.0
+Environment=ATUIN_PORT=8888
+Environment=ATUIN_OPEN_REGISTRATION=false
+Environment=ATUIN_DB_URI=postgres://atuin:atuin@localhost/atuin
+Pod=atuin.pod
+CgroupsMode=no-conmon
+
+[Service]
+Restart=always

@@ -1,0 +1,11 @@
+[Pod]
+PodName=places
+ServiceName=pod-places
+PublishPort=127.0.0.1:5188:5188
+ExitPolicy=continue
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

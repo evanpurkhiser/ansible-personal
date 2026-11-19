@@ -1,0 +1,11 @@
+[Pod]
+PodName=atuin
+ServiceName=pod-atuin
+PublishPort=127.0.0.1:7070:8888
+ExitPolicy=continue
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

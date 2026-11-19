@@ -1,0 +1,13 @@
+[Container]
+Image=localhost/telegram-mcp:latest
+ContainerName=telegram-mcp-server
+Volume=/var/lib/telegram-mcp:/data:idmap=uids=0-1000-1;gids=0-1000-1
+Volume=/home/evan/.cache/telegram-mcp:/exchange
+EnvironmentFile=/etc/telegram-mcp/environment
+Network=host
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

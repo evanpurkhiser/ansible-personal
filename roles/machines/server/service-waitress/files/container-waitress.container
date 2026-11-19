@@ -1,0 +1,16 @@
+[Unit]
+After=mnt-documents.mount
+
+[Container]
+Image=ghcr.io/evanpurkhiser/waitress:latest
+ContainerName=waitress
+PublishPort=127.0.0.1:9005:80
+Volume=/mnt/documents:/mnt/documents
+Environment=DATA_PATH=/mnt/documents/public-share
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

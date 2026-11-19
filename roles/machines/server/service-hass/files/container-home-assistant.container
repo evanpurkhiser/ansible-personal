@@ -1,0 +1,19 @@
+[Unit]
+After=dev-zwave.device dev-zigbee.device
+
+[Container]
+Image=ghcr.io/home-assistant/home-assistant:latest
+ContainerName=home-assistant
+Volume=/var/lib/hass:/config
+Volume=/mnt/documents/backups/home-assistant:/config/backups
+Volume=/etc/localtime:/etc/localtime:ro
+AddDevice=/dev/zwave:/dev/zwave
+AddDevice=/dev/zigbee:/dev/zigbee
+Network=host
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+[Unit]
+PartOf=pod-atuin.service
+
+[Container]
+Image=docker.io/postgres:14
+ContainerName=atuin-postgres
+Volume=/var/lib/atuin/data:/var/lib/postgresql/data
+Environment=POSTGRES_USER=atuin
+Environment=POSTGRES_PASSWORD=atuin
+Environment=POSTGRES_DB=atuin
+Pod=atuin.pod
+CgroupsMode=no-conmon
+
+[Service]
+Restart=always

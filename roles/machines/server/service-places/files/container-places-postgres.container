@@ -1,0 +1,22 @@
+[Unit]
+PartOf=pod-places.service
+
+[Container]
+Image=docker.io/postgis/postgis:17-3.5
+ContainerName=places-postgres
+Volume=/var/lib/places/data:/var/lib/postgresql/data
+Exec=postgres -c listen_addresses=127.0.0.1
+Notify=healthy
+HealthCmd=pg_isready -h 127.0.0.1 -U places -d places
+HealthInterval=2s
+HealthTimeout=2s
+Environment=POSTGRES_USER=places
+Environment=POSTGRES_PASSWORD=places
+Environment=POSTGRES_DB=places
+Pod=places.pod
+CgroupsMode=no-conmon
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=180

@@ -36,35 +36,15 @@
     mode: "0644"
   notify: Reload nginx
 
-- name: Ensure Pocket ID container
-  register: pocket_id_container
-  containers.podman.podman_container:
-    name: pocket-id
-    image: ghcr.io/pocket-id/pocket-id:latest
-    state: present
-    env:
-      APP_URL: https://id.evanpurkhiser.com
-      ENCRYPTION_KEY_FILE: /run/secrets/encryption-key
-      STATIC_API_KEY_FILE: /run/secrets/api-key
-      PGID: "0"
-      PUID: "0"
-      TRUST_PROXY: "true"
-    publish:
-      - "127.0.0.1:1411:1411"
-    volume:
-      - /var/lib/pocket-id:/app/data
-      - /etc/pocket-id/encryption-key:/run/secrets/encryption-key:ro
-      - /etc/pocket-id/api-key:/run/secrets/api-key:ro
-    label:
-      io.containers.autoupdate: registry
-    generate_systemd:
-      path: /etc/systemd/system/
-      restart_policy: always
-      new: true
+- name: Install pocket-id Quadlet
+  register: pocket_id_quadlet
+  ansible.builtin.copy:
+    src: container-pocket-id.container
+    dest: /etc/containers/systemd/
+    mode: "0644"
 
 - name: Ensure Pocket ID is running
   ansible.builtin.systemd:
     name: container-pocket-id
-    state: "{{ 'restarted' if pocket_id_container.changed else 'started' }}"
-    enabled: true
+    state: "{{ 'restarted' if pocket_id_quadlet.changed else 'started' }}"
     daemon_reload: true

@@ -1,0 +1,7 @@
+[Network]
+NetworkName=cueback
+Driver=macvlan
+InterfaceName=lan0
+Subnet=10.0.0.0/24
+Gateway=10.0.0.1
+DisableDNS=true

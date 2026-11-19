@@ -4,7 +4,6 @@ Description=Run IPTorrents keepalive every two weeks
 [Timer]
 OnBootSec=10m
 OnUnitActiveSec=2w
-Persistent=true
 
 [Install]
 WantedBy=timers.target

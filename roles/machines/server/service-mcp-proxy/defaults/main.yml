@@ -13,3 +13,6 @@ mcp_proxy_client:
   isGroupRestricted: false
 mcp_proxy_volumes: []
 mcp_proxy_upstream_units: []
+mcp_proxy_icons: []
+mcp_proxy_instructions: ""
+mcp_proxy_website_url: ""

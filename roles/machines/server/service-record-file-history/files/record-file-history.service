@@ -1,5 +1,6 @@
 [Unit]
 Description=Record the name of all documents
+RequiresMountsFor=/mnt/documents
 
 [Service]
 ReadOnlyPaths=/mnt/documents

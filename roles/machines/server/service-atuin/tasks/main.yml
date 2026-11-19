@@ -89,6 +89,12 @@
     dest: /usr/local/bin/
     mode: "0755"
 
+- name: Configure atuin backup retention
+  ansible.builtin.copy:
+    src: atuin-backup-tmpfiles.conf
+    dest: /etc/tmpfiles.d/atuin-backup.conf
+    mode: "0644"
+
 - name: Install atuin-backup timer and service
   notify: Systemd daemon-reload
   loop: [timer, service]

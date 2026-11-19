@@ -92,6 +92,12 @@
     dest: /usr/local/bin/places-backup.sh
     mode: "0755"
 
+- name: Configure Places backup retention
+  ansible.builtin.copy:
+    src: places-backup-tmpfiles.conf
+    dest: /etc/tmpfiles.d/places-backup.conf
+    mode: "0644"
+
 - name: Install Places backup service and timer
   ansible.builtin.copy:
     src: "places-backup.{{ item }}"

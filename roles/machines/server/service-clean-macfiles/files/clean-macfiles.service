@@ -1,5 +1,6 @@
 [Unit]
 Description=Remove macOS dot files
+RequiresMountsFor=/mnt/documents
 
 [Service]
 ExecStart=/usr/bin/sentry-cli monitors run ${SENTRY_MONITOR_SLUG} -- \

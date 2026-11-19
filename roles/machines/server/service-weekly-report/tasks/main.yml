@@ -20,7 +20,7 @@
 
 - name: Install weekly-report timer and service
   notify: Systemd daemon-reload
-  with_items: [timer, service]
+  loop: [timer, service]
   ansible.builtin.copy:
     src: weekly-report.{{ item }}
     dest: /etc/systemd/system/

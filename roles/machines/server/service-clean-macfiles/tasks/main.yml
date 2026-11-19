@@ -1,6 +1,6 @@
 - name: Install clean-macfiles timer and service
   notify: Systemd daemon-reload
-  with_items: [timer, service]
+  loop: [timer, service]
   ansible.builtin.copy:
     src: clean-macfiles.{{ item }}
     dest: /etc/systemd/system/

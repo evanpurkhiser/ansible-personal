@@ -32,7 +32,7 @@
     mode: "0755"
 
 - name: Enable ZFS services
-  with_items:
+  loop:
     - zfs.target
     - zfs-import.target
     - zfs-import-cache.service

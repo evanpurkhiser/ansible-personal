@@ -1,5 +1,5 @@
 - name: Ensure atuin directories
-  with_items:
+  loop:
     - path: atuin/data
       mode: "0700"
     - path: atuin/config
@@ -70,7 +70,7 @@
     daemon_reload: true
 
 - name: Ensure atuin containers are running
-  with_items: [atuin-postgres, atuin-server]
+  loop: [atuin-postgres, atuin-server]
   ansible.builtin.systemd:
     name: container-{{ item }}
     state: started
@@ -91,7 +91,7 @@
 
 - name: Install atuin-backup timer and service
   notify: Systemd daemon-reload
-  with_items: [timer, service]
+  loop: [timer, service]
   ansible.builtin.copy:
     src: atuin-backup.{{ item }}
     dest: /etc/systemd/system/

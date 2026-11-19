@@ -1,6 +1,6 @@
 - name: Install iptorrents-keepalive timer and service
   notify: Systemd daemon-reload
-  with_items: [timer, service]
+  loop: [timer, service]
   ansible.builtin.copy:
     src: iptorrents-keepalive.{{ item }}
     dest: /etc/systemd/system/

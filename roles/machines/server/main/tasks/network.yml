@@ -39,7 +39,7 @@
 
 - name: Set interface names
   notify: Reload udev rules
-  with_items:
+  loop:
     - 00-lan0.link
     - 00-wan0.link
   ansible.builtin.copy:
@@ -59,7 +59,7 @@
 
 - name: Reconfigure network
   notify: Require network intervention
-  with_items:
+  loop:
     - 01-internal.network
     - 01-external.network
   ansible.builtin.copy:

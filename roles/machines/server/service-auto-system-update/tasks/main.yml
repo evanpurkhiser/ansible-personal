@@ -31,7 +31,7 @@
     src: auto-system-update.{{ item }}
     dest: /etc/systemd/system/
     mode: "0644"
-  with_items: [timer, service]
+  loop: [timer, service]
   notify: Systemd daemon-reload
 
 - name: Enable auto-system-update timer service

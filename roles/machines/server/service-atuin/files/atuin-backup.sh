@@ -14,5 +14,3 @@ podman exec -e PGPASSWORD=atuin atuin-postgres \
 	gzip >"${LOCATION}/${FILE_NAME}"
 
 chown evan:users "${LOCATION}/${FILE_NAME}"
-
-find "${LOCATION}" -name 'atuin_*.sql.gz' -mtime +7 -delete

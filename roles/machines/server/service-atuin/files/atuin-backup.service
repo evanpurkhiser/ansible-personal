@@ -2,6 +2,7 @@
 Description=Dump the atuin postgres database
 Requires=container-atuin-postgres.service
 After=container-atuin-postgres.service
+RequiresMountsFor=/mnt/documents
 
 [Service]
 ReadWritePaths=/mnt/documents/backups/atuin

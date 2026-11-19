@@ -9,4 +9,3 @@ temporary=$(mktemp "$location/.places.XXXXXX")
 trap 'rm -f "$temporary"' EXIT
 podman exec places-postgres pg_dump -U places -d places --format=custom >"$temporary"
 mv "$temporary" "$file"
-find "$location" -name 'places_*.dump' -mtime +7 -delete

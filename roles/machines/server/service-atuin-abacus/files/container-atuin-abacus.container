@@ -1,0 +1,17 @@
+[Unit]
+Requires=container-atuin-server.service
+After=container-atuin-server.service
+
+[Container]
+Image=ghcr.io/evanpurkhiser/atuin-abacus:latest
+ContainerName=atuin-abacus
+Volume=/var/lib/atuin-abacus:/var/lib/atuin-abacus
+EnvironmentFile=/etc/atuin-abacus.conf
+Network=host
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

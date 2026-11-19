@@ -1,4 +1,5 @@
 - name: Restart home-assistant
-  containers.podman.podman_container:
-    name: home-assistant
-    restart: true
+  ansible.builtin.systemd:
+    name: container-home-assistant
+    state: restarted
+    daemon_reload: true

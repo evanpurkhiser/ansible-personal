@@ -7,34 +7,17 @@
     mode: "0700"
   loop: [charts, output, run, state]
 
-- name: Ensure Kala appliance container
-  register: mcp_kala_container
-  containers.podman.podman_container:
-    name: kala-appliance
-    image: ghcr.io/evanpurkhiser/kala-mcp:latest
-    authfile: /etc/containers/auth.json
-    state: present
-    network: none
-    volume:
-      - /var/lib/kala-mcp/charts:/charts
-      - /var/lib/kala-mcp/output:/output
-      - /var/lib/kala-mcp/run:/run/kala-mcp
-      - /var/lib/kala-mcp/state:/state
-    stop_timeout: 30
-    label:
-      io.containers.autoupdate: registry
-    generate_systemd:
-      path: /etc/systemd/system/
-      restart_policy: always
-      restart_sec: 5
-      stop_timeout: 40
-      new: true
+- name: Install kala-appliance Quadlet
+  register: mcp_kala_quadlet
+  ansible.builtin.copy:
+    src: container-kala-appliance.container
+    dest: /etc/containers/systemd/
+    mode: "0644"
 
 - name: Ensure Kala appliance is running
   ansible.builtin.systemd:
     name: container-kala-appliance
-    state: "{{ 'restarted' if mcp_kala_container.changed else 'started' }}"
-    enabled: true
+    state: "{{ 'restarted' if mcp_kala_quadlet.changed else 'started' }}"
     daemon_reload: true
 
 - name: Expose Kala MCP

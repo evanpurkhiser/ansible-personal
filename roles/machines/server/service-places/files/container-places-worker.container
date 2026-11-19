@@ -1,0 +1,17 @@
+[Unit]
+Requires=container-places-server.service
+After=container-places-server.service
+PartOf=container-places-server.service pod-places.service
+
+[Container]
+Image=ghcr.io/evanpurkhiser/places:latest
+ContainerName=places-worker
+Volume=/etc/places.yaml:/etc/places.yaml:ro
+Exec=worker
+Pod=places.pod
+CgroupsMode=no-conmon
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=180

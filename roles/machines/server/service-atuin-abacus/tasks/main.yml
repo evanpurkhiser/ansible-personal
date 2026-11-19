@@ -25,33 +25,16 @@
       ATUIN_SYNC_INTERVAL_SECONDS=300
       TZ=America/New_York
 
-- name: Ensure atuin-abacus container
-  register: atuin_abacus_container
-  containers.podman.podman_container:
-    name: atuin-abacus
-    image: ghcr.io/evanpurkhiser/atuin-abacus:latest
-    state: present
-    image_strict: true
-    recreate: "{{ atuin_abacus_config.changed }}"
-    network: host
-    volume:
-      - /var/lib/atuin-abacus:/var/lib/atuin-abacus
-    env_file:
-      - /etc/atuin-abacus.conf
-    label:
-      io.containers.autoupdate: registry
-    generate_systemd:
-      path: /etc/systemd/system/
-      restart_policy: always
-      new: true
-      after:
-        - container-atuin-server.service
-      requires:
-        - container-atuin-server.service
+- name: Install atuin-abacus Quadlet
+  register: atuin_abacus_quadlet
+  ansible.builtin.copy:
+    src: container-atuin-abacus.container
+    dest: /etc/containers/systemd/
+    mode: "0644"
 
 - name: Ensure atuin-abacus container is running
   ansible.builtin.systemd:
     name: container-atuin-abacus
-    state: "{{ 'restarted' if atuin_abacus_container.changed else 'started' }}"
-    enabled: true
+    state: >-
+      {{ 'restarted' if atuin_abacus_quadlet.changed or atuin_abacus_config.changed else 'started' }}
     daemon_reload: true

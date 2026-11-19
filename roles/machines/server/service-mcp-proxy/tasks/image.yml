@@ -12,6 +12,7 @@
     mode: "0644"
 
 - name: Build MCP proxy image
+  register: mcp_proxy_image_build
   containers.podman.podman_image:
     name: localhost/mcp-proxy:latest
     state: build

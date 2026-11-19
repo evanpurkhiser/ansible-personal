@@ -1,0 +1,13 @@
+[Container]
+Image=ghcr.io/evanpurkhiser/meal-log:latest
+ContainerName=meal-log
+PublishPort=127.0.0.1:9006:8888
+Volume=/var/lib/meal-log:/data
+EnvironmentFile=/etc/meal-log.conf
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

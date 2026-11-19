@@ -30,6 +30,7 @@
     force: true
 
 - name: Build Telegram MCP image
+  register: mcp_telegram_image
   containers.podman.podman_image:
     name: localhost/telegram-mcp:latest
     state: build
@@ -62,29 +63,20 @@
       MCP_HOST=127.0.0.1
       MCP_PORT=8766
 
-- name: Ensure Telegram MCP container
-  register: mcp_telegram_container
-  containers.podman.podman_container:
-    name: telegram-mcp-server
-    image: localhost/telegram-mcp:latest
-    state: present
-    image_strict: true
-    recreate: "{{ mcp_telegram_config.changed or mcp_telegram_source.changed }}"
-    network: host
-    env_file: [/etc/telegram-mcp/environment]
-    volume:
-      - "/var/lib/telegram-mcp:/data:idmap=uids=0-1000-1;gids=0-1000-1"
-      - "/home/evan/.cache/telegram-mcp:/exchange"
-    generate_systemd:
-      path: /etc/systemd/system/
-      restart_policy: always
-      new: true
+- name: Install telegram-mcp-server Quadlet
+  register: mcp_telegram_quadlet
+  ansible.builtin.copy:
+    src: container-telegram-mcp-server.container
+    dest: /etc/containers/systemd/
+    mode: "0644"
 
 - name: Ensure Telegram MCP is running
   ansible.builtin.systemd:
     name: container-telegram-mcp-server
-    state: "{{ 'restarted' if mcp_telegram_container.changed else 'started' }}"
-    enabled: true
+    state: >-
+      {{ 'restarted'
+         if mcp_telegram_quadlet.changed or mcp_telegram_config.changed or mcp_telegram_image.changed
+         else 'started' }}
     daemon_reload: true
 
 - name: Expose Telegram MCP

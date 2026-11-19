@@ -1,0 +1,21 @@
+[Unit]
+PartOf=pod-places.service
+Requires=container-places-postgres.service
+After=container-places-postgres.service
+
+[Container]
+Image=ghcr.io/evanpurkhiser/places:latest
+ContainerName=places-server
+Volume=/etc/places.yaml:/etc/places.yaml:ro
+Notify=healthy
+HealthCmd=curl --fail --silent http://127.0.0.1:5188/health
+HealthInterval=2s
+HealthTimeout=2s
+Pod=places.pod
+CgroupsMode=no-conmon
+AutoUpdate=registry
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=180

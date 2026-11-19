@@ -1,0 +1,24 @@
+{% if mcp_proxy_upstream_units %}
+[Unit]
+Requires={{ mcp_proxy_upstream_units | join(' ') }}
+After={{ mcp_proxy_upstream_units | join(' ') }}
+PartOf={{ mcp_proxy_upstream_units | join(' ') }}
+
+{% endif %}
+[Container]
+Image={{ mcp_proxy_image }}
+ContainerName=mcp-{{ mcp_proxy_name }}
+Network=host
+EnvironmentFile=/etc/mcp-{{ mcp_proxy_name }}/environment
+Environment=FASTMCP_HOME=/data
+Volume=/var/lib/mcp-{{ mcp_proxy_name }}:/data
+Volume=/etc/mcp-{{ mcp_proxy_name }}/signing-key:/run/secrets/signing-key:ro
+{% for volume in mcp_proxy_volumes %}
+Volume={{ volume }}
+{% endfor %}
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

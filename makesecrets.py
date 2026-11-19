@@ -78,6 +78,8 @@ SECRETS: Secrets = {
     },
     # Places
     "places": {
+        "api_token_evan": "op://Private/Places/ymsbrjcarnj757gtv2sgk3og4u",
+        "api_token_vivian": "op://Private/Places/qvxhchpvuxn2mkviizco5v3moy",
         "google_api_key": "op://Private/ss4qbfjbpbep7ph5prrdxxmena/Google Map Places API Key",
         "openai_api_key": "op://Private/fc4edctkopi57hlm476o6r46oq/places API Key",
     },

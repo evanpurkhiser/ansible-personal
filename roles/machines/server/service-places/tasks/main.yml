@@ -78,5 +78,8 @@
     mcp_proxy_port: 9597
     mcp_proxy_backend:
       url: http://127.0.0.1:5188/mcp
+    mcp_proxy_user_backends:
+      evan: { bearer_token: "{{ places.api_token_evan }}" }
+      vivian: { bearer_token: "{{ places.api_token_vivian }}" }
     mcp_proxy_upstream_units:
       - container-places-server.service

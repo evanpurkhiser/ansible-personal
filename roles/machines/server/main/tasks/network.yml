@@ -159,14 +159,15 @@
     state: directory
     mode: "0755"
 
-- name: Override dnsmasq.service
+- name: Wait for the LAN interface before starting dnsmasq
   ansible.builtin.copy:
-    dest: /etc/systemd/system/dnsmasq.service.d/override
+    dest: /etc/systemd/system/dnsmasq.service.d/override.conf
     content: |
-      [Service]
-      # Small delay to ensure the lan0 device was correctly triggered by udev
-      ExecStartPre=/bin/sleep 1
+      [Unit]
+      Requires=systemd-networkd-wait-online@lan0.service
+      After=systemd-networkd-wait-online@lan0.service
     mode: "0644"
+  notify: Restart dnsmasq
 
 - name: Ensure dnsmasq is enabled
   ansible.builtin.service:

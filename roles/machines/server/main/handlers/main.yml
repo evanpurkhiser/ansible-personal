@@ -14,8 +14,9 @@
     state: restarted
 
 - name: Restart dnsmasq
-  ansible.builtin.service:
+  ansible.builtin.systemd_service:
     name: dnsmasq
+    daemon_reload: true
     state: restarted
 
 - name: Reload udev rules

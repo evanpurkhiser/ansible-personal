@@ -3,12 +3,6 @@
     name: lego
     state: present
 
-- name: Ensure lego data directory
-  ansible.builtin.file:
-    path: /var/lib/lego
-    state: directory
-    mode: "0700"
-
 - name: Set private certificate directory permissions
   ansible.builtin.file:
     path: /etc/ssl/private
@@ -20,8 +14,8 @@
 
 - name: Install lego Cloudflare credentials
   ansible.builtin.copy:
-    dest: /etc/lego-cloudflare.conf
-    content: "CF_DNS_API_TOKEN={{ nginx.cloudflare_dns_api_token }}\n"
+    dest: /etc/lego-cloudflare.token
+    content: "{{ nginx.cloudflare_dns_api_token }}\n"
     mode: "0600"
   no_log: true
 

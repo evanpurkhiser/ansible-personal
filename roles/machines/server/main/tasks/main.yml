@@ -181,6 +181,11 @@
   ansible.builtin.import_role:
     { name: machines/server/service-mcp-telegram }
 
+- name: Import Xiaohongshu MCP role
+  tags: [never, xiaohongshu-mcp]
+  ansible.builtin.import_role:
+    { name: machines/server/service-xiaohongshu-mcp }
+
 - name: Import waitress role
   tags: [waitress]
   ansible.builtin.import_role: { name: machines/server/service-waitress }

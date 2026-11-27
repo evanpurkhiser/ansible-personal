@@ -1,0 +1,40 @@
+- name: Ensure Xiaohongshu MCP state directory
+  ansible.builtin.file:
+    path: /var/lib/xiaohongshu-mcp
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Generate Xiaohongshu MCP bearer token
+  no_log: true
+  ansible.builtin.shell:
+    cmd: |
+      set -eu
+      umask 077
+      token=$(openssl rand -hex 32)
+      printf 'AUTH_TOKEN=%s\n' "$token" > /etc/xiaohongshu-mcp.conf
+    creates: /etc/xiaohongshu-mcp.conf
+  register: xiaohongshu_mcp_config
+
+- name: Ensure Quadlet directory
+  ansible.builtin.file:
+    path: /etc/containers/systemd
+    state: directory
+    mode: "0755"
+
+- name: Install Xiaohongshu MCP Quadlet
+  ansible.builtin.copy:
+    src: container-xiaohongshu-mcp.container
+    dest: /etc/containers/systemd/
+    mode: "0644"
+  register: xiaohongshu_mcp_quadlet
+
+- name: Ensure Xiaohongshu MCP is running
+  ansible.builtin.systemd:
+    name: container-xiaohongshu-mcp
+    state: >-
+      {{ 'restarted'
+         if xiaohongshu_mcp_quadlet.changed or xiaohongshu_mcp_config.changed
+         else 'started' }}
+    daemon_reload: true

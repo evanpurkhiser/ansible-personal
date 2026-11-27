@@ -11,6 +11,13 @@
     mode: "0644"
   notify: Reload nginx
 
+- name: Ensure codex remote access proxy
+  ansible.builtin.copy:
+    src: codex.conf
+    dest: /etc/nginx/internal-services.d/10-codex.conf
+    mode: "0644"
+  notify: Reload nginx
+
 - name: Ensure development service unavailable page
   ansible.builtin.copy:
     src: dev-service-unavailable.html

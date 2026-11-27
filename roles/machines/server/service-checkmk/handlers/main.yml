@@ -1,0 +1,11 @@
+- name: Restart Checkmk
+  ansible.builtin.systemd:
+    name: container-checkmk.service
+    state: restarted
+    daemon_reload: true
+
+- name: Restart Checkmk agent socket
+  ansible.builtin.systemd:
+    name: check-mk-agent.socket
+    state: restarted
+    daemon_reload: true

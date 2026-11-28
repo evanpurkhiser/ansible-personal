@@ -16,6 +16,13 @@ from mcp.types import ErrorData
 
 
 def backend_client(backend):
+    if "bearer_token" in backend:
+        token = backend["bearer_token"]
+        if not isinstance(token, str) or not token.strip():
+            raise ValueError("MCP backend bearer token must be set")
+        transport = StreamableHttpTransport(backend["url"], auth=token)
+        return ProxyClient(transport, forward_incoming_headers=False)
+
     if "socket_path" in backend:
         transport = StreamableHttpTransport(
             backend["url"],

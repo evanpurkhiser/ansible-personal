@@ -198,3 +198,37 @@ def test_unix_socket_backend(monkeypatch, tmp_path):
                 await task
 
     asyncio.run(asyncio.wait_for(check(), timeout=15))
+
+
+@pytest.mark.parametrize("username", ["evan", "vivian"])
+def test_http_backend_uses_selected_bearer_token(monkeypatch, username):
+    from types import SimpleNamespace
+
+    monkeypatch.setattr(
+        proxy,
+        "get_access_token",
+        lambda: SimpleNamespace(claims={"preferred_username": username}),
+    )
+    monkeypatch.setattr(
+        proxy, "StreamableHttpTransport", lambda url, *, auth: (url, auth)
+    )
+    monkeypatch.setattr(
+        proxy, "ProxyClient", lambda transport, **kwargs: (transport, kwargs)
+    )
+    url = "http://127.0.0.1:5188/mcp"
+    client = proxy.user_client_factory(
+        {
+            "evan": {"url": url, "bearer_token": "evan-places-token"},
+            "vivian": {"url": url, "bearer_token": "vivian-places-token"},
+        }
+    )
+
+    assert client() == (
+        (url, f"{username}-places-token"),
+        {"forward_incoming_headers": False},
+    )
+
+
+def test_http_backend_requires_configured_bearer_token():
+    with pytest.raises(ValueError, match="bearer token must be set"):
+        proxy.backend_client({"url": "http://127.0.0.1:5188/mcp", "bearer_token": ""})

@@ -58,10 +58,10 @@ NAME_PATTERN = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
 
 
 def render_nginx_config(domain, local_port, http2):
-    http2_directive = "    http2 on;\n" if http2 else ""
+    http2_directive = "\n    http2 on;" if http2 else ""
     return """server {{
     listen 443 ssl;
-{http2_directive}    server_name {domain}.prk.network;
+    server_name {domain}.prk.network;{http2_directive}
 
     ssl_certificate     /var/lib/lego/certificates/prk.network.crt;
     ssl_certificate_key /var/lib/lego/certificates/prk.network.key;

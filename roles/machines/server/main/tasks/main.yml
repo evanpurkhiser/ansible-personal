@@ -152,6 +152,7 @@
     - mcp-kala
     - mcp-telegram
     - mcp-wilhelm-archive
+    - xiaohongshu-mcp
     - places
     - wilhelm-archive
   ansible.builtin.import_role:
@@ -182,7 +183,7 @@
     { name: machines/server/service-mcp-telegram }
 
 - name: Import Xiaohongshu MCP role
-  tags: [never, xiaohongshu-mcp]
+  tags: [mcp, xiaohongshu-mcp]
   ansible.builtin.import_role:
     { name: machines/server/service-xiaohongshu-mcp }
 

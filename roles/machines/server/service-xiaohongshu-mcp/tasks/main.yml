@@ -17,6 +17,13 @@
     creates: /etc/xiaohongshu-mcp.conf
   register: xiaohongshu_mcp_config
 
+- name: Read Xiaohongshu MCP bearer token
+  no_log: true
+  when: not (ansible_check_mode and xiaohongshu_mcp_config.changed)
+  ansible.builtin.slurp:
+    src: /etc/xiaohongshu-mcp.conf
+  register: xiaohongshu_mcp_token_file
+
 - name: Ensure Quadlet directory
   ansible.builtin.file:
     path: /etc/containers/systemd
@@ -38,3 +45,19 @@
          if xiaohongshu_mcp_quadlet.changed or xiaohongshu_mcp_config.changed
          else 'started' }}
     daemon_reload: true
+
+- name: Expose Xiaohongshu MCP
+  ansible.builtin.import_role:
+    name: machines/server/service-mcp-proxy
+  vars:
+    mcp_proxy_name: xiaohongshu
+    mcp_proxy_port: 9600
+    mcp_proxy_backend:
+      url: http://127.0.0.1:28060/mcp
+    mcp_proxy_user_backends:
+      evan:
+        bearer_token: >-
+          {{ xiaohongshu_mcp_token_file.content | default('') |
+             b64decode | regex_replace('^AUTH_TOKEN=', '') | trim }}
+    mcp_proxy_upstream_units:
+      - container-xiaohongshu-mcp.service

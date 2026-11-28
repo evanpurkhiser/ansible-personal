@@ -34,6 +34,6 @@
     mcp_proxy_backend:
       url: http://127.0.0.1:28060/mcp
     mcp_proxy_user_backends:
-      evan: {}
+      vivian: {}
     mcp_proxy_upstream_units:
       - container-xiaohongshu-mcp.service

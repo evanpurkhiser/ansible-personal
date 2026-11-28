@@ -4,7 +4,6 @@ ContainerName=xiaohongshu-mcp
 PublishPort=127.0.0.1:28060:18060
 Volume=/var/lib/xiaohongshu-mcp:/app/data
 Environment=COOKIES_PATH=/app/data/cookies.json
-EnvironmentFile=/etc/xiaohongshu-mcp.conf
 
 [Service]
 Restart=on-failure

@@ -6,24 +6,6 @@
     group: root
     mode: "0700"
 
-- name: Generate Xiaohongshu MCP bearer token
-  no_log: true
-  ansible.builtin.shell:
-    cmd: |
-      set -eu
-      umask 077
-      token=$(openssl rand -hex 32)
-      printf 'AUTH_TOKEN=%s\n' "$token" > /etc/xiaohongshu-mcp.conf
-    creates: /etc/xiaohongshu-mcp.conf
-  register: xiaohongshu_mcp_config
-
-- name: Read Xiaohongshu MCP bearer token
-  no_log: true
-  when: not (ansible_check_mode and xiaohongshu_mcp_config.changed)
-  ansible.builtin.slurp:
-    src: /etc/xiaohongshu-mcp.conf
-  register: xiaohongshu_mcp_token_file
-
 - name: Ensure Quadlet directory
   ansible.builtin.file:
     path: /etc/containers/systemd
@@ -40,10 +22,7 @@
 - name: Ensure Xiaohongshu MCP is running
   ansible.builtin.systemd:
     name: container-xiaohongshu-mcp
-    state: >-
-      {{ 'restarted'
-         if xiaohongshu_mcp_quadlet.changed or xiaohongshu_mcp_config.changed
-         else 'started' }}
+    state: "{{ 'restarted' if xiaohongshu_mcp_quadlet.changed else 'started' }}"
     daemon_reload: true
 
 - name: Expose Xiaohongshu MCP
@@ -55,9 +34,6 @@
     mcp_proxy_backend:
       url: http://127.0.0.1:28060/mcp
     mcp_proxy_user_backends:
-      evan:
-        bearer_token: >-
-          {{ xiaohongshu_mcp_token_file.content | default('') |
-             b64decode | regex_replace('^AUTH_TOKEN=', '') | trim }}
+      evan: {}
     mcp_proxy_upstream_units:
       - container-xiaohongshu-mcp.service

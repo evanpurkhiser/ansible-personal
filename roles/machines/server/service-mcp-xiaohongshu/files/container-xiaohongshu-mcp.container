@@ -1,0 +1,13 @@
+[Container]
+Image=docker.io/xpzouying/xiaohongshu-mcp:v2.7.6
+ContainerName=xiaohongshu-mcp
+PublishPort=127.0.0.1:28060:18060
+Volume=/var/lib/xiaohongshu-mcp:/app/data
+Environment=COOKIES_PATH=/app/data/cookies.json
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target

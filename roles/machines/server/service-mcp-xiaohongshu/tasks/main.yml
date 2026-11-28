@@ -1,0 +1,39 @@
+- name: Ensure Xiaohongshu MCP state directory
+  ansible.builtin.file:
+    path: /var/lib/xiaohongshu-mcp
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Ensure Quadlet directory
+  ansible.builtin.file:
+    path: /etc/containers/systemd
+    state: directory
+    mode: "0755"
+
+- name: Install Xiaohongshu MCP Quadlet
+  ansible.builtin.copy:
+    src: container-xiaohongshu-mcp.container
+    dest: /etc/containers/systemd/
+    mode: "0644"
+  register: xiaohongshu_mcp_quadlet
+
+- name: Ensure Xiaohongshu MCP is running
+  ansible.builtin.systemd:
+    name: container-xiaohongshu-mcp
+    state: "{{ 'restarted' if xiaohongshu_mcp_quadlet.changed else 'started' }}"
+    daemon_reload: true
+
+- name: Expose Xiaohongshu MCP
+  ansible.builtin.import_role:
+    name: machines/server/service-mcp-proxy
+  vars:
+    mcp_proxy_name: xhs
+    mcp_proxy_port: 9601
+    mcp_proxy_backend:
+      url: http://127.0.0.1:28060/mcp
+    mcp_proxy_user_backends:
+      vivian: {}
+    mcp_proxy_upstream_units:
+      - container-xiaohongshu-mcp.service

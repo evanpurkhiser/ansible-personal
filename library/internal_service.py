@@ -25,6 +25,10 @@ options:
     description: Local port the service listens on.
     required: true
     type: int
+  http2:
+    description: Enable HTTP/2 for connections to the nginx virtual host.
+    type: bool
+    default: false
 """
 
 EXAMPLES = r"""
@@ -53,10 +57,12 @@ CONFIG_DIR = "/etc/nginx/internal-services.d"
 NAME_PATTERN = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
 
 
-def render_nginx_config(domain, local_port):
-    return """server {{
+def render_nginx_config(domain, local_port, http2):
+    http2_directive = "    http2 on;" if http2 else ""
+    config = """server {{
     listen 443 ssl;
     server_name {domain}.prk.network;
+{http2_directive}
 
     ssl_certificate     /var/lib/lego/certificates/prk.network.crt;
     ssl_certificate_key /var/lib/lego/certificates/prk.network.key;
@@ -76,7 +82,8 @@ def render_nginx_config(domain, local_port):
         proxy_set_header Connection $connection_upgrade;
     }}
 }}
-""".format(domain=domain, local_port=local_port)
+""".format(domain=domain, local_port=local_port, http2_directive=http2_directive)
+    return re.sub(r"\n{3,}", "\n\n", config)
 
 
 def write_nginx_config(module, name, config):
@@ -113,6 +120,7 @@ def main():
             name=dict(type="str", required=True),
             domain=dict(type="str"),
             local_port=dict(type="int", required=True),
+            http2=dict(type="bool", default=False),
         ),
         supports_check_mode=True,
     )
@@ -129,7 +137,7 @@ def main():
     if not 1 <= local_port <= 65535:
         module.fail_json(msg="local_port must be between 1 and 65535")
 
-    nginx_config = render_nginx_config(domain, local_port)
+    nginx_config = render_nginx_config(domain, local_port, module.params["http2"])
     nginx_changed = write_nginx_config(module, name, nginx_config)
 
     module.exit_json(changed=nginx_changed)

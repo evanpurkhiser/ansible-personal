@@ -69,6 +69,7 @@
   internal_service:
     name: places
     local_port: 5188
+    http2: true
 
 - name: Expose Places MCP
   ansible.builtin.import_role:

@@ -50,8 +50,8 @@
   ansible.builtin.import_role:
     name: machines/server/service-mcp-proxy
   vars:
-    mcp_proxy_name: xiaohongshu
-    mcp_proxy_port: 9600
+    mcp_proxy_name: xhs
+    mcp_proxy_port: 9601
     mcp_proxy_backend:
       url: http://127.0.0.1:28060/mcp
     mcp_proxy_user_backends:
